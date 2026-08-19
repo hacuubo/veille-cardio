@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veille Cardio — Dernières sorties</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page:           #f9f9f7;
+    --surface-1:      #fcfcfb;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --grid:           #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --series-1: #2a78d6; /* rythmologie */
+    --series-2: #eb6834; /* interventionnel & structurel */
+    --series-3: #1baf7a; /* insuffisance cardiaque */
+    --series-4: #eda100; /* cardiologie du sport / CFX */
+    --series-5: #e87ba4; /* prévention */
+    --series-7: #4a3aa7; /* cardiomyopathies & myocardites */
+    --status-critical: #d03b3b;
+    --status-warning:  #fab219;
+    --status-good:     #0ca30c;
+    --wash: rgba(11,11,11,0.045);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page:           #0d0d0d;
+      --surface-1:      #1a1a19;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --grid:           #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --series-4: #c98500;
+      --series-5: #d55181;
+      --series-7: #9085e9;
+      --wash: rgba(255,255,255,0.06);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page); color: var(--text-primary); line-height: 1.45;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 64px; }
+
+  header .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+  header h1 { font-size: 28px; font-weight: 700; margin-top: 4px; }
+  header h1 .beat { color: var(--status-critical); }
+  header .sub { color: var(--text-secondary); margin-top: 6px; font-size: 14.5px; }
+  .demo-note { margin-top: 14px; padding: 10px 14px; border: 1px dashed var(--baseline); border-radius: 10px; font-size: 13px; color: var(--text-secondary); background: var(--surface-1); }
+  .demo-note strong { color: var(--text-primary); }
+
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .tile .k { font-size: 26px; font-weight: 700; }
+  .tile .l { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; }
+
+  .filters { margin-top: 26px; }
+  .filters .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .filters .lab { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); font-weight: 600; width: 108px; flex: none; }
+  .chip { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; font-family: inherit; }
+  .chip:hover { background: var(--wash); }
+  .chip[aria-pressed="true"] { border-color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--text-primary); font-weight: 600; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+  /* ---------- barre de recherche ---------- */
+  .searchbar { position: relative; margin: 18px 0 4px; }
+  .searchbar input { width: 100%; font: inherit; font-size: 14.5px; padding: 11px 84px 11px 40px; border-radius: 12px; border: 1px solid var(--baseline); background: var(--surface-1); color: var(--text-primary); outline: none; }
+  .searchbar input:focus { border-color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--text-primary); }
+  .searchbar input::placeholder { color: var(--text-muted); }
+  .searchbar .icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 15px; pointer-events: none; }
+  .searchbar .clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: var(--wash); color: var(--text-secondary); border-radius: 8px; padding: 4px 10px; font: inherit; font-size: 12px; cursor: pointer; display: none; }
+  body.searching .searchbar .clear { display: block; }
+  .spec-tag { display: none; }
+  body.searching .spec-tag { display: inline-flex; }
+  body.searching .spec-h, body.searching .year-h, body.searching .radar, body.searching .radar-h { display: none !important; }
+  body.searching section.spec { margin-top: 0; }
+  .res-bar { display: none; margin: 18px 0 10px; font-size: 13px; color: var(--text-secondary); }
+  body.searching .res-bar { display: block; }
+  .no-res { display: none; margin: 20px 0; padding: 16px; border: 1px dashed var(--baseline); border-radius: 12px; color: var(--text-muted); font-size: 14px; text-align: center; }
+  body.searching.empty .no-res { display: block; }
+
+  /* ---------- sections par surspécialité ---------- */
+  section.spec { margin-top: 34px; }
+  .spec-h { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--text-primary); }
+  .spec-h .dot { width: 12px; height: 12px; }
+  .spec-h h2 { font-size: 17px; }
+  .spec-h .count { font-size: 12.5px; color: var(--text-muted); margin-left: auto; }
+  .year-h { display: flex; align-items: center; gap: 10px; margin: 16px 0 10px; }
+  .year-h .y { font-size: 13px; font-weight: 700; letter-spacing: .04em; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--text-primary); }
+  .year-h.current .y { background: var(--text-primary); color: var(--surface-1); }
+  .year-h .yl { font-size: 12px; color: var(--text-muted); }
+  .year-h .line { flex: 1; border-top: 1px solid var(--grid); }
+
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+  article.card[data-lvl="crit"] { border-left: 4px solid var(--status-critical); }
+  .une { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: var(--status-critical); letter-spacing: .03em; }
+  .card .top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; letter-spacing: .02em; }
+  .badge.crit  { color: #fff; background: var(--status-critical); }
+  .badge.warn  { color: #4a3500; background: var(--status-warning); }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .badge.warn { color: #1a1a19; }
+  }
+  .badge.watch { color: var(--text-secondary); background: var(--wash); border: 1px solid var(--border); }
+  .type { font-size: 11.5px; color: var(--text-muted); font-weight: 600; }
+  .card h3 { font-size: 16.5px; font-weight: 700; line-height: 1.3; }
+  .card .meta { font-size: 12.5px; color: var(--text-muted); margin-top: 4px; }
+  .card .meta b { color: var(--text-secondary); }
+  .card p.sum { font-size: 14px; color: var(--text-secondary); margin-top: 8px; }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .btn { font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 9px; padding: 7px 13px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { background: var(--wash); }
+  .btn.primary { background: var(--text-primary); color: var(--surface-1); border-color: var(--text-primary); }
+  .btn.ghost { border-style: dashed; color: var(--text-muted); cursor: default; }
+
+  .fiche { display: none; margin-top: 14px; border-top: 1px solid var(--grid); padding-top: 14px; }
+  .card.open .fiche { display: block; }
+  .fiche h4 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin: 12px 0 3px; }
+  .fiche h4:first-child { margin-top: 0; }
+  .fiche p, .fiche li { font-size: 13.5px; color: var(--text-secondary); }
+  .fiche ul { padding-left: 18px; }
+  .fiche .verdict { margin-top: 14px; padding: 11px 14px; border-radius: 10px; background: var(--wash); border-left: 3px solid var(--status-good); font-size: 13.5px; color: var(--text-primary); }
+  .fiche .sig { font-size: 11.5px; color: var(--text-muted); margin-top: 10px; font-style: italic; }
+
+  .radar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .radar .card { margin-bottom: 0; }
+  .radar ul { list-style: none; margin-top: 10px; }
+  .radar li { padding: 8px 0; border-top: 1px solid var(--grid); font-size: 13.5px; color: var(--text-secondary); }
+  .radar li b { color: var(--text-primary); }
+  .radar .when { font-size: 11.5px; color: var(--text-muted); }
+  .radar-h { display: flex; align-items: baseline; gap: 10px; margin: 34px 0 12px; }
+  .radar-h h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .06em; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; }
+
+  footer { margin-top: 36px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--grid); padding-top: 14px; }
+
+  @media (max-width: 780px) {
+    .tiles { grid-template-columns: repeat(2, 1fr); }
+    .radar { grid-template-columns: 1fr; }
+    .filters .lab { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Veille scientifique &middot; mise &agrave; jour hebdomadaire &middot; mercredi 19 ao&ucirc;t 2026</div>
+    <h1>Veille Cardio <span class="beat">&#10084;</span> Derni&egrave;res sorties</h1>
+    <div class="sub">Les avanc&eacute;es class&eacute;es <b>par sursp&eacute;cialit&eacute;</b>, puis <b>par ann&eacute;e</b> (2026 en cours &middot; 2025) — au sein de chaque ann&eacute;e, les sorties les plus importantes sont mises en avant en t&ecirc;te (&#9733; &agrave; la une, lis&eacute;r&eacute; rouge), chaque sortie avec son niveau d&rsquo;impact, le lien vers l&rsquo;article original et sa fiche de lecture.</div>
+    <div class="demo-note"><strong>&Eacute;dition initiale du 19/08/2026</strong> — s&eacute;lection d&rsquo;exemples r&eacute;els. L&rsquo;&eacute;dition z&eacute;ro (rattrapage complet 2025&#8211;2026) arrive, puis mise &agrave; jour automatique chaque lundi.</div>
+  </header>
+
+  <div class="tiles">
+    <div class="tile"><div class="k">11</div><div class="l">sorties suivies sur 2025&#8211;2026</div></div>
+    <div class="tile"><div class="k">3</div><div class="l">changements de pratique probables</div></div>
+    <div class="tile"><div class="k">J&#8722;9</div><div class="l">ESC Congress 2026 — Munich, 28&#8211;31 ao&ucirc;t</div></div>
+    <div class="tile"><div class="k">4</div><div class="l">recos ESC attendues en 2026</div></div>
+  </div>
+
+  <div class="searchbar">
+    <span class="icon">&#128269;</span>
+    <input id="q" type="search" placeholder="Rechercher en fran&ccedil;ais ou en anglais — ex. &laquo; FA &raquo;, &laquo; atrial fibrillation &raquo;, &laquo; TAVI &raquo;, &laquo; VO2 max &raquo;&hellip;" autocomplete="off">
+    <button class="clear" id="qclear">Effacer</button>
+  </div>
+
+  <div class="filters" id="filters">
+    <div class="row">
+      <span class="lab">Sursp&eacute;cialit&eacute;</span>
+      <button class="chip" data-f="spec" data-v="all" aria-pressed="true">Toutes</button>
+      <button class="chip" data-f="spec" data-v="rythmo" aria-pressed="false"><span class="dot" style="background:var(--series-1)"></span>Rythmologie</button>
+      <button class="chip" data-f="spec" data-v="interv" aria-pressed="false"><span class="dot" style="background:var(--series-2)"></span>Interventionnel &amp; structurel</button>
+      <button class="chip" data-f="spec" data-v="ic" aria-pressed="false"><span class="dot" style="background:var(--series-3)"></span>Insuffisance cardiaque</button>
+      <button class="chip" data-f="spec" data-v="cmh" aria-pressed="false"><span class="dot" style="background:var(--series-7)"></span>Cardiomyopathies &amp; myocardites</button>
+      <button class="chip" data-f="spec" data-v="prev" aria-pressed="false"><span class="dot" style="background:var(--series-5)"></span>Pr&eacute;vention</button>
+      <button class="chip" data-f="spec" data-v="sport" aria-pressed="false"><span class="dot" style="background:var(--series-4)"></span>Cardiologie du sport &middot; CFX/VO&#8322;&nbsp;max</button>
+    </div>
+    <div class="row">
+      <span class="lab">Ann&eacute;e</span>
+      <button class="chip" data-f="year" data-v="all" aria-pressed="true">2025 + 2026</button>
+      <button class="chip" data-f="year" data-v="2026" aria-pressed="false">2026 — en cours</button>
+      <button class="chip" data-f="year" data-v="2025" aria-pressed="false">2025</button>
+    </div>
+    <div class="row">
+      <span class="lab">Niveau</span>
+      <button class="chip" data-f="lvl" data-v="all" aria-pressed="true">Tous</button>
+      <button class="chip" data-f="lvl" data-v="crit" aria-pressed="false">&#9679; Changement de pratique</button>
+      <button class="chip" data-f="lvl" data-v="warn" aria-pressed="false">&#9650; &Agrave; conna&icirc;tre</button>
+      <button class="chip" data-f="lvl" data-v="watch" aria-pressed="false">&#9678; Veille — &agrave; suivre</button>
+    </div>
+  </div>
+
+  <div class="res-bar" id="resbar"></div>
+  <div class="no-res">Aucun r&eacute;sultat — essayez un synonyme (fran&ccedil;ais ou anglais) ou un acronyme (FA/AF, CMH/HCM, IC/HF&hellip;).</div>
+
+  <!-- ================= RYTHMOLOGIE ================= -->
+  <section class="spec" data-spec="rythmo">
+    <div class="spec-h"><span class="dot" style="background:var(--series-1)"></span><h2>Rythmologie</h2><span class="count">2 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+    <article class="card" data-spec="rythmo" data-year="2026" data-lvl="crit" data-kw="fibrillation atriale persistante FA ablation champ pulse premiere intention rythme antiarythmique atrial fibrillation AF pulsed field ablation PFA first line antiarrhythmic rhythm AVANT-GUARD">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Essai randomis&eacute; &middot; AVANT-GUARD</span>
+      </div>
+      <h3>Pulsed Field Ablation as Initial Therapy for Persistent Atrial Fibrillation</h3>
+      <div class="meta"><b>NEJM</b> &middot; mai 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26</div>
+      <p class="sum">Premier essai randomis&eacute; comparant l&rsquo;ablation par champ puls&eacute; (PFA) d&rsquo;embl&eacute;e au traitement anti-arythmique en premi&egrave;re intention chez des patients en FA persistante non encore trait&eacute;s : la strat&eacute;gie invasive pr&eacute;coce sort gagnante.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/42041224/" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/first-line-pulsed-field-ablation-persistent-af-beats-medication-avant-guard" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Chez les patients en FA persistante na&iuml;fs de traitement rythmique, faut-il proposer l&rsquo;ablation (PFA) d&rsquo;embl&eacute;e plut&ocirc;t que d&rsquo;attendre l&rsquo;&eacute;chec d&rsquo;un anti-arythmique&nbsp;?</p>
+        <h4>&Agrave; retenir</h4>
+        <ul>
+          <li>Sup&eacute;riorit&eacute; de la strat&eacute;gie ablation d&rsquo;embl&eacute;e sur le contr&ocirc;le du rythme m&eacute;dicamenteux.</li>
+          <li>Prolonge en FA <em>persistante</em> ce que EARLY-AF avait montr&eacute; en FA paroxystique.</li>
+        </ul>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> chez un patient symptomatique en FA persistante r&eacute;cente, l&rsquo;adressage pr&eacute;coce en rythmologie pour ablation devient une option de premi&egrave;re ligne &agrave; discuter, sans passage oblig&eacute; par l&rsquo;anti-arythmique.</div>
+        <div class="sig">Fiche r&eacute;dig&eacute;e par Claude — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-spec="rythmo" data-year="2025" data-lvl="warn" data-kw="fibrillation atriale paroxystique FA ablation champ pulse cryoablation cryoballon atrial fibrillation AF pulsed field PFA cryoballoon paroxysmal rythme rhythm">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomis&eacute; &middot; SINGLE SHOT CHAMPION</span>
+      </div>
+      <h3>Pulsed Field or Cryoballoon Ablation for Paroxysmal Atrial Fibrillation</h3>
+      <div class="meta"><b>NEJM</b> &middot; 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;EHRA 2025</div>
+      <p class="sum">Essai randomis&eacute; comparant PFA et cryoablation en single-shot dans la FA paroxystique, avec monitoring continu par holter implantable : non-inf&eacute;riorit&eacute; du champ puls&eacute; — les deux technologies sont des options valides de premi&egrave;re ligne.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/40162734/" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= INTERVENTIONNEL ================= -->
+  <section class="spec" data-spec="interv">
+    <div class="spec-h"><span class="dot" style="background:var(--series-2)"></span><h2>Interventionnel &amp; structurel</h2><span class="count">2 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+    <article class="card" data-spec="interv" data-year="2026" data-lvl="watch" data-kw="FFR fractional flow reserve angioplastie PCI coronarographie coronaire stenose physiologie revascularisation coronary angiography stenosis physiology revascularization stent FFRangio">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai clinique &middot; ALL-RISE</span>
+      </div>
+      <h3>Angiography-Derived Fractional Flow Reserve to Guide PCI</h3>
+      <div class="meta"><b>NEJM</b> &middot; juillet 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26 &middot; &eacute;valuation physiologique sans guide de pression</div>
+      <p class="sum">La FFR calcul&eacute;e &agrave; partir de l&rsquo;angiographie seule, compar&eacute;e &agrave; l&rsquo;&eacute;valuation conventionnelle chez le coronarien : de quoi simplifier l&rsquo;&eacute;valuation physiologique en salle.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.nejm.org/doi/abs/10.1056/NEJMoa2600949" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.hcplive.com/view/acc-26-recap-6-practice-changing-trials-to-know" target="_blank" rel="noopener">R&eacute;cap ACC.26 &#8599;</a>
+      </div>
+    </article>
+
+    <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-spec="interv" data-year="2025" data-lvl="warn" data-kw="TAVI TAVR protection cerebrale embolique AVC valve aortique retrecissement aortique cerebral embolic protection stroke aortic valve stenosis sentinel">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomis&eacute; &middot; BHF PROTECT-TAVI</span>
+      </div>
+      <h3>Routine Cerebral Embolic Protection during Transcatheter Aortic-Valve Implantation</h3>
+      <div class="meta"><b>NEJM</b> &middot; 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.25 &middot; &gt;7&nbsp;600 patients</div>
+      <p class="sum">Le plus grand essai randomis&eacute; de protection embolique c&eacute;r&eacute;brale au cours du TAVI : pas de r&eacute;duction des AVC avec l&rsquo;utilisation syst&eacute;matique du dispositif de capture — un frein net &agrave; son usage en routine.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2415120" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/strike-two-bhf-protect-tavi-throws-cold-water-embolic-protection" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= INSUFFISANCE CARDIAQUE ================= -->
+  <section class="spec" data-spec="ic">
+    <div class="spec-h"><span class="dot" style="background:var(--series-3)"></span><h2>Insuffisance cardiaque</h2><span class="count">2 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+    <article class="card open" data-spec="ic" data-year="2026" data-lvl="warn" data-kw="digitaliques digoxine digitoxine insuffisance cardiaque IC FEVG meta-analyse digitalis digoxin digitoxin heart failure HF HFrEF LVEF ejection fraction meta-analysis">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">M&eacute;ta-analyse &middot; DIG + DIGIT-HF + DECISION</span>
+      </div>
+      <h3>Efficacy and Safety of Digitalis Glycosides in Heart Failure: A Meta-Analysis</h3>
+      <div class="meta"><b>JAMA</b> &middot; 10 mai 2026 &middot; pr&eacute;sent&eacute; au congr&egrave;s HFA 2026</div>
+      <p class="sum">M&eacute;ta-analyse de 3 essais randomis&eacute;s contre placebo (9&nbsp;013 patients) : l&rsquo;ajout de digoxine/digitoxine faible dose r&eacute;duit de 15&nbsp;% le crit&egrave;re d&eacute;c&egrave;s CV ou aggravation d&rsquo;IC, chez des patients d&eacute;j&agrave; sous traitement contemporain optimis&eacute;.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fermer la fiche</button>
+        <a class="btn" href="https://jamanetwork.com/journals/jama/fullarticle/2848972" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.cardio-online.fr/actualites/couvertures-de-congres-en-cardiologie/hfa-2026/insuffisance-cardiaque-l-ajout-d-un-digitalique-reduit-significativement-les-evenements-lies-a-la-maladie" target="_blank" rel="noopener">Couverture Cardio-online &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Les digitaliques gardent-ils une place dans l&rsquo;IC &agrave; FEVG r&eacute;duite/moyenne &agrave; l&rsquo;&egrave;re de la quadrith&eacute;rapie&nbsp;?</p>
+        <h4>M&eacute;thode</h4>
+        <p>M&eacute;ta-analyse de 3 essais randomis&eacute;s vs placebo — DIG (1997, n&nbsp;=&nbsp;6&nbsp;800), DIGIT-HF (2025, n&nbsp;=&nbsp;1&nbsp;212), DECISION (2026, n&nbsp;=&nbsp;1&nbsp;001) — soit 9&nbsp;013 patients, FEVG &le;&nbsp;50&nbsp;%, largement trait&eacute;s par b&ecirc;tabloquant, IEC/ARA2/ARNI, antagoniste min&eacute;ralocortico&iuml;de et iSGLT2.</p>
+        <h4>R&eacute;sultats cl&eacute;s</h4>
+        <ul>
+          <li>D&eacute;c&egrave;s CV ou aggravation d&rsquo;IC&nbsp;: <b>HR 0,85</b> (IC95&nbsp;% 0,80&#8211;0,90&nbsp;; p&nbsp;&lt;&nbsp;0,001).</li>
+          <li>Aggravations d&rsquo;IC seules&nbsp;: <b>&#8722;25&nbsp;%</b> (HR 0,75).</li>
+          <li>Mortalit&eacute; CV et totale&nbsp;: neutre.</li>
+        </ul>
+        <h4>Limites</h4>
+        <ul>
+          <li>Poids majeur de DIG (1997), ant&eacute;rieur aux traitements modernes&nbsp;; effet class&eacute; sur la morbidit&eacute;, pas la mortalit&eacute;.</li>
+          <li>Marge th&eacute;rapeutique &eacute;troite&nbsp;: dosages faibles et surveillance de la digoxin&eacute;mie indispensables.</li>
+        </ul>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> option &agrave; reconsid&eacute;rer chez le patient qui reste symptomatique sous quadrith&eacute;rapie optimis&eacute;e (notamment en FA associ&eacute;e), &agrave; faible dose et sous surveillance — sans en faire un pilier du traitement.</div>
+        <div class="sig">Fiche r&eacute;dig&eacute;e par Claude — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-spec="ic" data-year="2025" data-lvl="warn" data-kw="digitoxine digitaliques insuffisance cardiaque IC FEVG reduite digitoxin digitalis heart failure HF HFrEF reduced ejection fraction">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomis&eacute; &middot; DIGIT-HF</span>
+      </div>
+      <h3>Digitoxin in Patients with Heart Failure and Reduced Ejection Fraction</h3>
+      <div class="meta"><b>NEJM</b> &middot; 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025 &middot; n&nbsp;=&nbsp;1&nbsp;212</div>
+      <p class="sum">Chez des patients en IC &agrave; FEVG r&eacute;duite sous traitement moderne, la digitoxine r&eacute;duit le crit&egrave;re principal (d&eacute;c&egrave;s toute cause ou hospitalisation pour IC) — le point de d&eacute;part du regain d&rsquo;int&eacute;r&ecirc;t confirm&eacute; par la m&eacute;ta-analyse 2026 ci-dessus.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/40879434/" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= CARDIOMYOPATHIES ================= -->
+  <section class="spec" data-spec="cmh">
+    <div class="spec-h"><span class="dot" style="background:var(--series-7)"></span><h2>Cardiomyopathies &amp; myocardites</h2><span class="count">2 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+    <article class="card" data-spec="cmh" data-year="2026" data-lvl="warn" data-kw="mavacamten camzyos cardiomyopathie hypertrophique CMH obstructive adolescent pediatrie inhibiteur de myosine hypertrophic cardiomyopathy HCM oHCM pediatric myosin inhibitor SCOUT-HCM">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai clinique</span>
+      </div>
+      <h3>Mavacamten in Adolescents with Obstructive Hypertrophic Cardiomyopathy</h3>
+      <div class="meta"><b>NEJM</b> &middot; 2026 &middot; essai SCOUT-HCM &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26 &middot; extension p&eacute;diatrique d&rsquo;une classe d&eacute;j&agrave; valid&eacute;e chez l&rsquo;adulte</div>
+      <p class="sum">Donn&eacute;es positives d&rsquo;efficacit&eacute; de l&rsquo;inhibiteur de myosine chez l&rsquo;adolescent avec CMH obstructive — un signal important pour les formes familiales suivies d&egrave;s le jeune &acirc;ge.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2601103" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.hcplive.com/view/acc-26-recap-6-practice-changing-trials-to-know" target="_blank" rel="noopener">R&eacute;cap ACC.26 &#8599;</a>
+      </div>
+    </article>
+
+    <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-spec="cmh" data-year="2025" data-lvl="crit" data-kw="myocardite pericardite recommandations reco IRM inflammation myocarditis pericarditis guidelines ESC MRI return to play sport">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Recommandations ESC 2025</span>
+      </div>
+      <h3>2025 ESC Guidelines for the Management of Myocarditis and Pericarditis</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; ao&ucirc;t 2025 &middot; ESC Congress 2025</div>
+      <p class="sum">Premier texte ESC enti&egrave;rement consacr&eacute; aux syndromes inflammatoires myop&eacute;ricardiques : parcours diagnostique (IRM en pivot), crit&egrave;res d&rsquo;hospitalisation, reprise du sport et suivi &agrave; long terme.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.escardio.org/Guidelines" target="_blank" rel="noopener">Texte ESC &#8599;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= PRÉVENTION ================= -->
+  <section class="spec" data-spec="prev">
+    <div class="spec-h"><span class="dot" style="background:var(--series-5)"></span><h2>Pr&eacute;vention</h2><span class="count">2 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+    <article class="card" data-spec="prev" data-year="2026" data-lvl="watch" data-kw="statine prevention primaire sujet age 70 ans cholesterol LDL demence statin primary prevention elderly dementia STAREE">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai randomis&eacute; &middot; STAREE &middot; Hot Line ESC 2026</span>
+      </div>
+      <h3>STAREE — Statins in Reducing Events in the Elderly</h3>
+      <div class="meta"><b>ESC Congress 2026</b> &middot; pr&eacute;sentation le 28&#8211;31 ao&ucirc;t &middot; question quotidienne en consultation</div>
+      <p class="sum">STAREE randomise des adultes de &ge;&nbsp;70 ans en bonne sant&eacute; sous statine vs placebo — crit&egrave;res cardiovasculaires et survie sans d&eacute;mence. Fiche de lecture d&egrave;s la pr&eacute;sentation.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche d&egrave;s pr&eacute;sentation</button>
+        <a class="btn" href="https://www.escardio.org/news/press/press-releases/hot-lines-revealed--the-trials-that-will-make-the-headlines-at-esc-congress-2026/" target="_blank" rel="noopener">Hot Lines ESC 2026 &#8599;</a>
+      </div>
+    </article>
+
+    <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-spec="prev" data-year="2025" data-lvl="warn" data-kw="dyslipidemie lipides LDL cholesterol statine recommandations reco dyslipidaemia dyslipidemia lipids statin guidelines ESC EAS">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Recommandations ESC 2025 (mise &agrave; jour cibl&eacute;e)</span>
+      </div>
+      <h3>2025 Focused Update of the 2019 ESC/EAS Guidelines for the Management of Dyslipidaemias</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; 2025 &middot; ESC Congress 2025</div>
+      <p class="sum">Actualisation des recommandations lipides int&eacute;grant les donn&eacute;es r&eacute;centes sur les strat&eacute;gies hypolip&eacute;miantes et leur intensification — &agrave; conna&icirc;tre pour les objectifs de LDL en pratique courante.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.escardio.org/Guidelines" target="_blank" rel="noopener">Texte ESC &#8599;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= CARDIOLOGIE DU SPORT ================= -->
+  <section class="spec" data-spec="sport">
+    <div class="spec-h"><span class="dot" style="background:var(--series-4)"></span><h2>Cardiologie du sport &middot; CFX / VO&#8322;&nbsp;max</h2><span class="count">3 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+    <article class="card" data-spec="sport" data-year="2026" data-lvl="warn" data-kw="VO2 max CFX epreuve d'effort athlete endurance mort subite master cardiopulmonary exercise testing CPET sudden cardiac death athlete normes">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Synth&egrave;se de congr&egrave;s &middot; ACC.26</span>
+      </div>
+      <h3>ACC.26 Sports and Exercise Cardiology: Key Takeaways From the 75th Annual Scientific Sessions</h3>
+      <div class="meta"><b>ACC.26</b> &middot; avril 2026 &middot; sessions Sports &amp; Exercise Cardiology</div>
+      <p class="sum">Messages cl&eacute;s de l&rsquo;ACC.26 : les &eacute;quations de pr&eacute;diction en population g&eacute;n&eacute;rale sous-estiment le pic de VO&#8322; des endurants (valeurs &laquo; supranormales &raquo; = leur normale, registre CHEER) — risque de faux n&eacute;gatifs ; la CFX s&rsquo;affirme comme comp&eacute;tence centrale, et l&rsquo;aptitude devient un processus longitudinal individualis&eacute;, plus une d&eacute;cision binaire. Chez le master athl&egrave;te, la coronaropathie reste la premi&egrave;re cause de mort subite.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/articles/2026/04/20/11/20/acc26-sports-and-exercise-cardiology" target="_blank" rel="noopener">Synth&egrave;se ACC.26 &#8599;</a>
+      </div>
+    </article>
+
+    <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-spec="sport" data-year="2025" data-lvl="crit" data-kw="sport aptitude certificat competition athlete decision partagee CMH QT long DAI sports participation eligibility shared decision HCM ICD competitive athletes CFX">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Recommandations ACC/AHA 2025</span>
+      </div>
+      <h3>Clinical Considerations for Competitive Sports Participation for Athletes With Cardiovascular Abnormalities: A Scientific Statement From the AHA and ACC</h3>
+      <div class="meta"><b>JACC</b> &middot; 2025 &middot; recommandations ACC/AHA sur la participation sportive</div>
+      <p class="sum">Changement de paradigme : d&eacute;cision partag&eacute;e plut&ocirc;t que listes de contre-indications. Sports class&eacute;s sur un continuum endurance/force, risques revus &agrave; la baisse (CMH, QT long, porteurs de DAI), g&eacute;notype-positifs/ph&eacute;notype-n&eacute;gatifs souvent autoris&eacute;s, et CFX valoris&eacute;e pour la stratification (cardiopathies cong&eacute;nitales).</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/articles/2025/12/09/17/52/2025-acc-aha-sports-participation-guidelines-for-athletes-with-cv-abnormalities" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Ce qui change</h4>
+        <ul>
+          <li>&laquo;&nbsp;Pas un texte de disqualification&nbsp;&raquo; mais un guide de discussion risques/b&eacute;n&eacute;fices avec l&rsquo;athl&egrave;te.</li>
+          <li>Myocardite&nbsp;: IRM en &eacute;valuation, reprise possible d&egrave;s 4&#8211;6 semaines si l&rsquo;inflammation est r&eacute;solue.</li>
+          <li>DAI&nbsp;: participation d&eacute;sormais consid&eacute;r&eacute;e comme &laquo;&nbsp;raisonnable&nbsp;&raquo;.</li>
+          <li>CFX mise en avant pour la stratification du risque des cardiopathies cong&eacute;nitales.</li>
+        </ul>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> pour vos bilans d&rsquo;aptitude et &eacute;preuves CFX/VO&#8322; max, la conduite passe d&rsquo;une logique de certificat binaire &agrave; une d&eacute;cision partag&eacute;e document&eacute;e, sport par sport, patient par patient.</div>
+        <div class="sig">Fiche r&eacute;dig&eacute;e par Claude — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="sport" data-year="2025" data-lvl="watch" data-kw="CFX epreuve d'effort VO2 max athlete elite classification des sports cardiopulmonary exercise testing CPET elite athletes sports classification">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">&Eacute;tude observationnelle</span>
+      </div>
+      <h3>Cardiopulmonary Exercise Testing in Elite Athletes: Rethinking Sports Classification</h3>
+      <div class="meta"><b>Journal of Clinical Medicine</b> &middot; 2025</div>
+      <p class="sum">Donn&eacute;es de CFX chez des athl&egrave;tes &eacute;lites sugg&eacute;rant que la classification traditionnelle des disciplines refl&egrave;te mal les profils physiologiques r&eacute;els mesur&eacute;s &agrave; l&rsquo;effort.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://doi.org/10.3390/jcm14134655" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= RADAR ================= -->
+  <div class="radar-h"><h2>&#128225; Radar — les prochaines semaines</h2></div>
+  <div class="radar">
+    <div class="card">
+      <div class="top"><span class="tag">ESC Congress 2026 &middot; Munich &middot; 28&#8211;31 ao&ucirc;t</span></div>
+      <h3 style="font-size:15px">Hot Lines &agrave; surveiller (59 essais, 12 sessions)</h3>
+      <ul>
+        <li><b>LIBREXIA ACS</b> — anti-Xia (milvexian) apr&egrave;s infarctus, &gt;14&nbsp;000 patients <span class="when">&middot; antithrombotiques</span></li>
+        <li><b>CARDIO-TTRansform</b> — eplontersen dans l&rsquo;amylose cardiaque &agrave; TTR <span class="when">&middot; cardiomyopathies</span></li>
+        <li><b>ACACIA-HCM</b> — aficamten dans la CMH <em>non</em> obstructive <span class="when">&middot; cardiomyopathies</span></li>
+        <li><b>PRESC1SE-MI</b> — diagnostic rapide d&rsquo;IDM aux urgences, ~68&nbsp;000 passages <span class="when">&middot; SCA</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="top"><span class="tag">Recommandations ESC programm&eacute;es en 2026</span></div>
+      <h3 style="font-size:15px">Recos attendues — fiches d&egrave;s parution</h3>
+      <ul>
+        <li><b>Insuffisance cardiaque</b> — refonte compl&egrave;te attendue <span class="when">&middot; ESC 2026</span></li>
+        <li><b>5&#7497; d&eacute;finition universelle de l&rsquo;infarctus</b> <span class="when">&middot; ESC 2026</span></li>
+        <li><b>R&eacute;adaptation cardiaque</b> — premi&egrave;re reco d&eacute;di&eacute;e <span class="when">&middot; ESC 2026</span></li>
+        <li><b>Maladie CV &amp; insuffisance r&eacute;nale chronique</b> <span class="when">&middot; ESC 2026</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    &Eacute;dition du 19/08/2026 — mise &agrave; jour automatique hebdomadaire &middot; Sources&nbsp;: NEJM, JAMA, JACC, EHJ, escardio.org, ACC.org, TCTMD, Cardio-online, HCPLive &middot; Les fiches de lecture sont des synth&egrave;ses d&rsquo;aide &agrave; la veille, elles ne remplacent pas la lecture de l&rsquo;article original ni le jugement clinique.
+  </footer>
+</div>
+
+<script>
+  function toggle(btn) {
+    const card = btn.closest('.card');
+    card.classList.toggle('open');
+    btn.innerHTML = card.classList.contains('open') ? '&#128196; Fermer la fiche' : '&#128196; Fiche de lecture';
+  }
+  function norm(s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+  const SPECS = {
+    rythmo: ['--series-1', 'Rythmologie'],
+    interv: ['--series-2', 'Interventionnel & structurel'],
+    ic:     ['--series-3', 'Insuffisance cardiaque'],
+    cmh:    ['--series-7', 'Cardiomyopathies & myocardites'],
+    prev:   ['--series-5', 'Prévention'],
+    sport:  ['--series-4', 'Cardiologie du sport · CFX/VO₂ max']
+  };
+  document.querySelectorAll('article.card[data-spec]').forEach(card => {
+    const s = SPECS[card.dataset.spec];
+    if (s) {
+      const tag = document.createElement('span');
+      tag.className = 'tag spec-tag';
+      tag.innerHTML = '<span class="dot" style="background:var(' + s[0] + ')"></span>' + s[1];
+      const top = card.querySelector('.top');
+      top.insertBefore(tag, top.firstChild);
+    }
+    const pick = sel => { const el = card.querySelector(sel); return el ? el.textContent : ''; };
+    card.dataset.hay = norm([pick('h3'), pick('.sum'), pick('.meta'), pick('.type'), card.getAttribute('data-kw') || ''].join(' '));
+  });
+  const state = { spec: 'all', year: 'all', lvl: 'all', q: '' };
+  function applyFilters() {
+    const terms = norm(state.q).split(/\s+/).filter(Boolean);
+    document.body.classList.toggle('searching', terms.length > 0);
+    let shown = 0;
+    document.querySelectorAll('article.card[data-spec]').forEach(card => {
+      const ok = (state.spec === 'all' || card.dataset.spec === state.spec)
+              && (state.year === 'all' || card.dataset.year === state.year)
+              && (state.lvl === 'all' || card.dataset.lvl === state.lvl)
+              && terms.every(t => card.dataset.hay.includes(t));
+      card.style.display = ok ? '' : 'none';
+      if (ok) shown++;
+    });
+    document.body.classList.toggle('empty', terms.length > 0 && shown === 0);
+    const rb = document.getElementById('resbar');
+    if (terms.length > 0) rb.textContent = shown + (shown > 1 ? ' résultats' : ' résultat') + ' pour « ' + state.q.trim() + ' » — toutes surspécialités confondues';
+    document.querySelectorAll('section.spec').forEach(sec => {
+      // année : masque les sous-titres d'année sans carte visible
+      sec.querySelectorAll('.year-h').forEach(yh => {
+        let el = yh.nextElementSibling, any = false;
+        while (el && el.tagName === 'ARTICLE') {
+          if (el.style.display !== 'none') any = true;
+          el = el.nextElementSibling;
+        }
+        yh.style.display = any ? '' : 'none';
+      });
+      const anyCard = [...sec.querySelectorAll('article.card')].some(c => c.style.display !== 'none');
+      sec.style.display = anyCard ? '' : 'none';
+    });
+  }
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const f = chip.dataset.f;
+      state[f] = chip.dataset.v;
+      document.querySelectorAll('.chip[data-f="' + f + '"]').forEach(c => c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'));
+      applyFilters();
+    });
+  });
+  const qInput = document.getElementById('q');
+  qInput.addEventListener('input', () => { state.q = qInput.value; applyFilters(); });
+  document.getElementById('qclear').addEventListener('click', () => { qInput.value = ''; state.q = ''; applyFilters(); qInput.focus(); });
+</script>
+</body>
+</html>

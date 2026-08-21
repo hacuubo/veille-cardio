@@ -54,6 +54,9 @@
   .wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 64px; }
 
   header .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+  header .eyebrow a.bl { color: var(--status-critical); font-weight: 700; text-decoration: none;
+                         border-bottom: 1px solid currentColor; white-space: nowrap; }
+  header .eyebrow a.bl-arch { color: var(--text-muted); font-weight: 600; border-bottom-color: var(--baseline); margin-left: 6px; }
   header h1 { font-size: 28px; font-weight: 700; margin-top: 4px; }
   header h1 .beat { color: var(--status-critical); }
   header .sub { color: var(--text-secondary); margin-top: 6px; font-size: 14.5px; }
@@ -207,7 +210,7 @@
 <div class="wrap">
 
   <header>
-    <div class="eyebrow">Veille scientifique &middot; 66 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 19 ao&ucirc;t 2026</div>
+    <div class="eyebrow">Veille scientifique &middot; 66 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 19 ao&ucirc;t 2026<!--BULLETIN:DEBUT--> &middot; <a class="bl bl-arch" href="bulletin/">Bulletins hebdo</a><!--BULLETIN:FIN--></div>
     <h1>Veille Cardio <span class="beat">&#10084;</span> Derni&egrave;res sorties</h1>
   </header>
 

@@ -56,8 +56,60 @@ date de mise à jour).
   (son prompt de référence est repris dans ce dépôt et dans le projet Claude de Robin).
 - Pendant les grands congrès (ESC, ACC, AHA, TCT, EuroPCR, HFA), passer en couverture quotidienne des
   Hot Lines via « Run now ».
-- Après modification : commit + push sur `main`. GitHub Pages republie tout seul en 1–2 minutes.
+- **Une fois `index.html` à jour, toujours lancer `bash outils/faire-bulletin.sh`** (voir la section
+  suivante) : c'est ce qui fabrique le bulletin PDF de la semaine.
+- Après modification : commit + push sur `main` (index.html **et** le dossier `bulletin/`).
+  GitHub Pages republie tout seul en 1–2 minutes.
 - Toujours vérifier avant de pousser : HTML valide, liens qui fonctionnent, filtres et recherche opérants.
+
+## Bulletin PDF hebdomadaire
+
+Après chaque mise à jour, un **bulletin d'une à trois pages** récapitule uniquement ce qui vient d'être
+ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues du groupe.
+
+- Une seule commande, à lancer depuis la racine du dépôt : `bash outils/faire-bulletin.sh`
+- Elle compare les articles de `index.html` à ceux déjà signalés (mémorisés dans `bulletin/etat.json`,
+  la comparaison se fait sur le titre) :
+  - **s'il y a du nouveau** → écrit `bulletin/bulletin-AAAA-MM-JJ.html`, l'imprime en PDF avec Chromium,
+    met à jour la page d'archives `bulletin/index.html` et pose le lien « 📄 Bulletin du … » dans la ligne
+    d'en-tête du tableau de bord ;
+  - **s'il n'y a rien de neuf** → n'écrit aucun fichier et affiche `RIEN`. Pas de bulletin vide : Robin
+    n'est sollicité que quand il y a quelque chose à lire.
+- Contenu d'une entrée : surspécialité, niveau, type d'étude, titre (cliquable vers l'article original),
+  journal et date, résumé, et l'encadré **« Au cabinet »** repris de la fiche de lecture. Ordre :
+  crit → warn → watch. Le pied de page rappelle que les fiches sont rédigées par Claude et à valider.
+- Le PDF est publié avec le site : `https://hacuubo.github.io/veille-cardio/bulletin/` liste tous les
+  bulletins, le plus récent en tête. `bulletin/exemple.pdf` sert d'aperçu avant le premier vrai bulletin.
+- Les fichiers de `bulletin/` (PDF, `index.html`, `etat.json`) doivent être **commités** : c'est `etat.json`
+  qui évite de re-signaler la semaine suivante les articles déjà annoncés.
+- Autres commandes utiles : `node outils/bulletin.mjs --init` (remémorise tous les articles actuels sans
+  produire de bulletin — à ne relancer qu'en cas de remise à zéro), `bash outils/faire-bulletin.sh --apercu`
+  (bulletin d'essai à partir des 5 dernières sorties 2026, ne touche à rien d'autre),
+  `--date=AAAA-MM-JJ` pour forcer la date du bulletin.
+- Ne jamais toucher aux repères `<!--BULLETIN:DEBUT-->` / `<!--BULLETIN:FIN-->` de `index.html` : c'est là
+  que le script insère le lien vers le dernier bulletin.
+
+## Envoi du bulletin par e-mail
+
+Dès qu'un nouveau bulletin arrive sur `main`, GitHub l'envoie par e-mail avec le PDF en pièce jointe
+(corps du message : la liste des nouveautés ; le détail est dans le PDF).
+
+- Mécanique : `.github/workflows/bulletin-mail.yml` se déclenche sur les pushes vers `main` qui touchent
+  `bulletin/bulletin-*.pdf`, et lance `outils/envoyer-bulletin.py` (Python standard, envoi via SMTP Gmail).
+- Réglages, à enregistrer une seule fois dans **Settings → Secrets and variables → Actions** :
+  - `GMAIL_ADRESSE` — l'adresse Gmail qui envoie ;
+  - `GMAIL_MOT_DE_PASSE_APPLICATION` — le « mot de passe d'application » Gmail (16 lettres, à créer sur
+    myaccount.google.com/apppasswords ; ce n'est pas le mot de passe du compte) ;
+  - `BULLETIN_DESTINATAIRES` — facultatif, adresses séparées par des virgules. **Absent = le bulletin part
+    vers `GMAIL_ADRESSE`**, c'est-à-dire vers Robin seul. Pour ajouter les autres cardiologues, il suffit
+    d'ajouter ce secret.
+- Le dépôt est **public** : les adresses ne sont jamais écrites dans un fichier, uniquement dans ce secret,
+  et les destinataires sont mis en copie cachée.
+- Si les identifiants ne sont pas (encore) enregistrés, le script affiche « envoi ignoré » et se termine
+  normalement — pas d'échec rouge ni de notification d'erreur.
+- Envoi manuel de test : onglet **Actions → Bulletin par e-mail → Run workflow**, en indiquant
+  `bulletin/exemple.pdf` dans le champ prévu. En local : `python3 outils/envoyer-bulletin.py --essai`
+  affiche le message sans rien envoyer.
 
 ## Sources de veille
 

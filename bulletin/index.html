@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veille Cardio — bulletins hebdomadaires</title>
+<style>
+  :root { color-scheme: light dark; --page:#f9f9f7; --surface:#fcfcfb; --texte:#0b0b0b;
+          --doux:#52514e; --muet:#898781; --bord:rgba(11,11,11,.10); --rouge:#d03b3b; }
+  @media (prefers-color-scheme: dark) {
+    :root { --page:#0d0d0d; --surface:#1a1a19; --texte:#fff; --doux:#c3c2b7; --muet:#898781;
+            --bord:rgba(255,255,255,.10); }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--page);
+         color: var(--texte); line-height: 1.45; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muet); font-weight: 600; }
+  h1 { font-size: 26px; margin-top: 4px; }
+  h1 .c { color: var(--rouge); }
+  .retour { display: inline-block; margin-top: 14px; font-size: 14px; color: var(--doux); }
+  ul { list-style: none; margin-top: 26px; }
+  li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; background: var(--surface);
+       border: 1px solid var(--bord); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+  li.dernier { border-color: var(--texte); box-shadow: inset 0 0 0 1px var(--texte); }
+  li a.pdf { font-size: 15.5px; font-weight: 600; color: var(--texte); text-decoration: none; }
+  li a.pdf::before { content: "\1F4C4\00A0"; }
+  li .n { font-size: 13px; color: var(--muet); margin-left: auto; }
+  .vide { color: var(--muet); font-size: 14.5px; margin-top: 26px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Veille Cardio &middot; archives</div>
+  <h1>Bulletins hebdomadaires <span class="c">&#10084;</span></h1>
+  <a class="retour" href="../">&#8592; Retour au tableau de bord</a>
+  <p class="vide">Aucun bulletin pour le moment — le premier para&icirc;tra d&egrave;s qu&rsquo;une nouvelle sortie sera ajout&eacute;e au tableau de bord.<br><br>En attendant, voici <a href="exemple.pdf">un exemple de bulletin</a> pour voir &agrave; quoi il ressemblera.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+# Envoie le bulletin PDF par e-mail dès qu'un nouveau bulletin arrive sur « main ».
+#
+# Réglages à enregistrer une seule fois dans GitHub :
+#   Settings → Secrets and variables → Actions → New repository secret
+#     GMAIL_ADRESSE                   robin.bouchau@gmail.com
+#     GMAIL_MOT_DE_PASSE_APPLICATION  le « mot de passe d'application » Gmail (16 lettres)
+#     BULLETIN_DESTINATAIRES          (facultatif) adresses séparées par des virgules ;
+#                                     si absent, le bulletin part vers GMAIL_ADRESSE
+#
+# Tant que les deux premiers secrets ne sont pas enregistrés, l'envoi est simplement
+# ignoré : rien ne casse, aucune alerte d'échec.
+
+name: Bulletin par e-mail
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bulletin/bulletin-*.pdf'
+  workflow_dispatch:
+    inputs:
+      fichier:
+        description: "PDF à envoyer (vide = le plus récent ; bulletin/exemple.pdf pour un test)"
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  envoyer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Envoyer le bulletin
+        env:
+          GMAIL_ADRESSE: ${{ secrets.GMAIL_ADRESSE }}
+          GMAIL_MOT_DE_PASSE_APPLICATION: ${{ secrets.GMAIL_MOT_DE_PASSE_APPLICATION }}
+          BULLETIN_DESTINATAIRES: ${{ secrets.BULLETIN_DESTINATAIRES }}
+          FICHIER: ${{ github.event.inputs.fichier }}
+        run: |
+          if [ -n "$FICHIER" ]; then
+            python3 outils/envoyer-bulletin.py --pdf "$FICHIER"
+          else
+            python3 outils/envoyer-bulletin.py
+          fi

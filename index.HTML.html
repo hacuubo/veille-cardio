@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veille Cardio — Dernières sorties</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page:           #f9f9f7;
+    --surface-1:      #fcfcfb;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --grid:           #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --series-1: #2a78d6; /* rythmologie */
+    --series-2: #eb6834; /* interventionnel & structurel */
+    --series-3: #1baf7a; /* insuffisance cardiaque */
+    --series-4: #eda100; /* cardiologie du sport / CFX */
+    --series-5: #e87ba4; /* prévention */
+    --series-7: #4a3aa7; /* cardiomyopathies & myocardites */
+    --status-critical: #d03b3b;
+    --status-warning:  #fab219;
+    --status-good:     #0ca30c;
+    --wash: rgba(11,11,11,0.045);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page:           #0d0d0d;
+      --surface-1:      #1a1a19;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --grid:           #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --series-4: #c98500;
+      --series-5: #d55181;
+      --series-7: #9085e9;
+      --wash: rgba(255,255,255,0.06);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page); color: var(--text-primary); line-height: 1.45;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 64px; }
+
+  header .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+  header h1 { font-size: 28px; font-weight: 700; margin-top: 4px; }
+  header h1 .beat { color: var(--status-critical); }
+  header .sub { color: var(--text-secondary); margin-top: 6px; font-size: 14.5px; }
+  .demo-note { margin-top: 14px; padding: 10px 14px; border: 1px dashed var(--baseline); border-radius: 10px; font-size: 13px; color: var(--text-secondary); background: var(--surface-1); }
+  .demo-note strong { color: var(--text-primary); }
+
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .tile .k { font-size: 26px; font-weight: 700; }
+  .tile .l { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; }
+
+  .filters { margin-top: 26px; }
+  .filters .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .filters .lab { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); font-weight: 600; width: 108px; flex: none; }
+  .chip { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; font-family: inherit; }
+  .chip:hover { background: var(--wash); }
+  .chip[aria-pressed="true"] { border-color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--text-primary); font-weight: 600; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+  /* ---------- barre de recherche ---------- */
+  .searchbar { position: relative; margin: 18px 0 4px; }
+  .searchbar input { width: 100%; font: inherit; font-size: 14.5px; padding: 11px 84px 11px 40px; border-radius: 12px; border: 1px solid var(--baseline); background: var(--surface-1); color: var(--text-primary); outline: none; }
+  .searchbar input:focus { border-color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--text-primary); }
+  .searchbar input::placeholder { color: var(--text-muted); }
+  .searchbar .icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 15px; pointer-events: none; }
+  .searchbar .clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: var(--wash); color: var(--text-secondary); border-radius: 8px; padding: 4px 10px; font: inherit; font-size: 12px; cursor: pointer; display: none; }
+  body.searching .searchbar .clear { display: block; }
+  body:not(.searching) .spec-tag { display: none; }
+  body.searching .spec-tag { display: inline-flex; }
+  body.searching .spec-h, body.searching .year-h, body.searching .radar, body.searching .radar-h { display: none !important; }
+  body.searching section.spec { margin-top: 0; }
+  .res-bar { display: none; margin: 18px 0 10px; font-size: 13px; color: var(--text-secondary); }
+  body.searching .res-bar { display: block; }
+  .no-res { display: none; margin: 20px 0; padding: 16px; border: 1px dashed var(--baseline); border-radius: 12px; color: var(--text-muted); font-size: 14px; text-align: center; }
+  body.searching.empty .no-res { display: block; }
+
+
+  /* ---------- lignes compactes (accordéon) ---------- */
+  .card { padding: 0; overflow: hidden; margin-bottom: 8px; }
+  .artrow {
+    width: 100%; display: flex; gap: 10px; align-items: flex-start;
+    padding: 11px 14px; background: none; border: none; cursor: pointer;
+    font: inherit; color: inherit; text-align: left;
+  }
+  .artrow:hover { background: var(--wash); }
+  .artrow:focus-visible { outline: 2px solid var(--text-primary); outline-offset: -2px; }
+  .artrow > .dot { margin-top: 6px; }
+  .art-main { flex: 1; min-width: 0; }
+  .art-title { font-size: 14.5px; font-weight: 650; line-height: 1.35; }
+  .art-tags { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-left: 8px; vertical-align: 1px; }
+  .art-year { display: none; font-size: 11.5px; font-weight: 600; color: var(--text-muted); }
+  body.searching .art-year { display: inline; }
+  .art-spec { display: none; font-size: 11.5px; font-weight: 600; color: var(--text-secondary); }
+  body.searching .art-spec { display: inline; }
+  .chev { flex: none; color: var(--text-muted); font-size: 12px; margin-top: 3px; transition: transform .15s; }
+  .card.exp .chev { transform: rotate(90deg); }
+  .card .body { display: none; padding: 0 16px 16px 33px; }
+  .card.exp .body { display: block; }
+  .card .body h3 { display: none; }
+  .card .body .top { margin-bottom: 6px; }
+  .card .body .meta { margin-top: 0; }
+  .spec-tag { display: none; }
+
+  /* ---------- sections par surspécialité ---------- */
+  section.spec { margin-top: 34px; }
+  .spec-h { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--text-primary); }
+  .spec-h .dot { width: 12px; height: 12px; }
+  .spec-h h2 { font-size: 17px; }
+  .spec-h .count { font-size: 12.5px; color: var(--text-muted); margin-left: auto; }
+  .year-h { display: flex; align-items: center; gap: 10px; margin: 16px 0 10px; }
+  .year-h .y { font-size: 13px; font-weight: 700; letter-spacing: .04em; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--text-primary); }
+  .year-h.current .y { background: var(--text-primary); color: var(--surface-1); }
+  .year-h .yl { font-size: 12px; color: var(--text-muted); }
+  .year-h .line { flex: 1; border-top: 1px solid var(--grid); }
+
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+  article.card[data-lvl="crit"] { border-left: 4px solid var(--status-critical); }
+  .une { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: var(--status-critical); letter-spacing: .03em; }
+  .card .top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; letter-spacing: .02em; }
+  .badge.crit  { color: #fff; background: var(--status-critical); }
+  .badge.warn  { color: #4a3500; background: var(--status-warning); }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .badge.warn { color: #1a1a19; }
+  }
+  .badge.watch { color: var(--text-secondary); background: var(--wash); border: 1px solid var(--border); }
+  .type { font-size: 11.5px; color: var(--text-muted); font-weight: 600; }
+  .card h3 { font-size: 16.5px; font-weight: 700; line-height: 1.3; }
+  .card .meta { font-size: 12.5px; color: var(--text-muted); margin-top: 4px; }
+  .card .meta b { color: var(--text-secondary); }
+  .card p.sum { font-size: 14px; color: var(--text-secondary); margin-top: 8px; }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .btn { font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 9px; padding: 7px 13px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { background: var(--wash); }
+  .btn.primary { background: var(--text-primary); color: var(--surface-1); border-color: var(--text-primary); }
+  .btn.ghost { border-style: dashed; color: var(--text-muted); cursor: default; }
+
+  .fiche { display: none; margin-top: 14px; border-top: 1px solid var(--grid); padding-top: 14px; }
+  .card.open .fiche { display: block; }
+  .fiche h4 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin: 12px 0 3px; }
+  .fiche h4:first-child { margin-top: 0; }
+  .fiche p, .fiche li { font-size: 13.5px; color: var(--text-secondary); }
+  .fiche ul { padding-left: 18px; }
+  .fiche .verdict { margin-top: 14px; padding: 11px 14px; border-radius: 10px; background: var(--wash); border-left: 3px solid var(--status-good); font-size: 13.5px; color: var(--text-primary); }
+  .fiche .sig { font-size: 11.5px; color: var(--text-muted); margin-top: 10px; font-style: italic; }
+
+  .radar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .radar .card { margin-bottom: 0; }
+  .radar ul { list-style: none; margin-top: 10px; }
+  .radar li { padding: 8px 0; border-top: 1px solid var(--grid); font-size: 13.5px; color: var(--text-secondary); }
+  .radar li b { color: var(--text-primary); }
+  .radar .when { font-size: 11.5px; color: var(--text-muted); }
+  .radar-h { display: flex; align-items: baseline; gap: 10px; margin: 34px 0 12px; }
+  .radar-h h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .06em; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; }
+
+  footer { margin-top: 36px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--grid); padding-top: 14px; }
+
+  @media (max-width: 780px) {
+    .tiles { grid-template-columns: repeat(2, 1fr); }
+    .radar { grid-template-columns: 1fr; }
+    .filters .lab { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Veille scientifique &middot; 66 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 19 ao&ucirc;t 2026</div>
+    <h1>Veille Cardio <span class="beat">&#10084;</span> Derni&egrave;res sorties</h1>
+  </header>
+
+  <div class="filters" id="filters">
+    <div class="row">
+      <span class="lab">Sursp&eacute;cialit&eacute;</span>
+      <button class="chip" data-f="spec" data-v="all" aria-pressed="true">Toutes</button>
+      <button class="chip" data-f="spec" data-v="rythmo" aria-pressed="false"><span class="dot" style="background:var(--series-1)"></span>Rythmologie</button>
+      <button class="chip" data-f="spec" data-v="interv" aria-pressed="false"><span class="dot" style="background:var(--series-2)"></span>Interventionnel &amp; structurel</button>
+      <button class="chip" data-f="spec" data-v="ic" aria-pressed="false"><span class="dot" style="background:var(--series-3)"></span>Insuffisance cardiaque</button>
+      <button class="chip" data-f="spec" data-v="cmh" aria-pressed="false"><span class="dot" style="background:var(--series-7)"></span>Cardiomyopathies &amp; myocardites</button>
+      <button class="chip" data-f="spec" data-v="prev" aria-pressed="false"><span class="dot" style="background:var(--series-5)"></span>Pr&eacute;vention</button>
+      <button class="chip" data-f="spec" data-v="sport" aria-pressed="false"><span class="dot" style="background:var(--series-4)"></span>Cardiologie du sport &middot; CFX/VO&#8322;&nbsp;max</button>
+    </div>
+    <div class="row">
+      <span class="lab">Ann&eacute;e</span>
+      <button class="chip" data-f="year" data-v="all" aria-pressed="true">2025 + 2026</button>
+      <button class="chip" data-f="year" data-v="2026" aria-pressed="false">2026 — en cours</button>
+      <button class="chip" data-f="year" data-v="2025" aria-pressed="false">2025</button>
+    </div>
+    <div class="row">
+      <span class="lab">Niveau</span>
+      <button class="chip" data-f="lvl" data-v="all" aria-pressed="true">Tous</button>
+      <button class="chip" data-f="lvl" data-v="crit" aria-pressed="false">&#9679; Changement de pratique</button>
+      <button class="chip" data-f="lvl" data-v="warn" aria-pressed="false">&#9650; &Agrave; conna&icirc;tre</button>
+      <button class="chip" data-f="lvl" data-v="watch" aria-pressed="false">&#9678; Veille — &agrave; suivre</button>
+    </div>
+  </div>
+
+  <div class="searchbar">
+    <span class="icon">&#128269;</span>
+    <input id="q" type="search" placeholder="Rechercher en fran&ccedil;ais ou en anglais — ex. &laquo; FA &raquo;, &laquo; atrial fibrillation &raquo;, &laquo; TAVI &raquo;, &laquo; VO2 max &raquo;&hellip;" autocomplete="off">
+    <button class="clear" id="qclear">Effacer</button>
+  </div>
+
+  <div class="res-bar" id="resbar"></div>
+  <div class="no-res">Aucun r&eacute;sultat — essayez un synonyme (fran&ccedil;ais ou anglais) ou un acronyme (FA/AF, CMH/HCM, IC/HF&hellip;).</div>
+
+  <!-- ================= RYTHMOLOGIE ================= -->
+  <section class="spec" data-spec="rythmo">
+    <div class="spec-h"><span class="dot" style="background:var(--series-1)"></span><h2>Rythmologie</h2><span class="count">12 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+<article class="card" data-spec="rythmo" data-year="2026" data-lvl="crit" data-kw="fibrillation atriale persistante FA ablation champ pulse premiere intention rythme antiarythmique atrial fibrillation AF pulsed field ablation PFA first line antiarrhythmic rhythm AVANT-GUARD">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Essai randomis&eacute; &middot; AVANT-GUARD</span>
+      </div>
+      <h3>Pulsed Field Ablation as Initial Therapy for Persistent Atrial Fibrillation</h3>
+      <div class="meta"><b>NEJM</b> &middot; mai 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26</div>
+      <p class="sum">Premier essai randomis&eacute; comparant l&rsquo;ablation par champ puls&eacute; (PFA) d&rsquo;embl&eacute;e au traitement anti-arythmique en premi&egrave;re intention chez des patients en FA persistante non encore trait&eacute;s : la strat&eacute;gie invasive pr&eacute;coce sort gagnante.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/42041224/" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/first-line-pulsed-field-ablation-persistent-af-beats-medication-avant-guard" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Chez les patients en FA persistante na&iuml;fs de traitement rythmique, faut-il proposer l&rsquo;ablation (PFA) d&rsquo;embl&eacute;e plut&ocirc;t que d&rsquo;attendre l&rsquo;&eacute;chec d&rsquo;un anti-arythmique&nbsp;?</p>
+        <h4>&Agrave; retenir</h4>
+        <ul>
+          <li>Sup&eacute;riorit&eacute; de la strat&eacute;gie ablation d&rsquo;embl&eacute;e sur le contr&ocirc;le du rythme m&eacute;dicamenteux.</li>
+          <li>Prolonge en FA <em>persistante</em> ce que EARLY-AF avait montr&eacute; en FA paroxystique.</li>
+        </ul>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> chez un patient symptomatique en FA persistante r&eacute;cente, l&rsquo;adressage pr&eacute;coce en rythmologie pour ablation devient une option de premi&egrave;re ligne &agrave; discuter, sans passage oblig&eacute; par l&rsquo;anti-arythmique.</div>
+        <div class="sig">Fiche r&eacute;dig&eacute;e par Claude — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="rythmo" data-year="2026" data-lvl="crit" data-kw="fibrillation atriale FA fermeture auricule gauche Watchman FLX left atrial appendage closure LAAC LAAO CHAMPION-AF anticoagulation AOD DOAC NOAC AVC stroke hémorragie">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Essai randomisé &middot; CHAMPION-AF</span>
+      </div>
+      <h3>Left Atrial Appendage Closure or Anticoagulation for Atrial Fibrillation</h3>
+      <div class="meta"><b>NEJM</b> &middot; mars 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26</div>
+      <p class="sum">3 000 patients en FA éligibles aux AOD randomisés fermeture d'auricule (Watchman FLX) vs AOD, suivis 3 ans. Non-infériorité atteinte sur le critère décès CV/AVC/embolie (5,7 % vs 4,8 %) et hémorragies non procédurales réduites (10,9 % vs 19,0 %), mais davantage d'AVC ischémiques dans le bras dispositif (3,2 % vs 2,2 %).</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2517213" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/champion-af-win-watchman-flx-caveats" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Marge de non-infériorité jugée large, taux d'événements plus bas qu'attendu, excès numérique d'AVC ischémiques — ne pas élargir les indications en première intention.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Les patients demanderont la « fermeture pour arrêter les anticoagulants » : savoir présenter le compromis (moins de saignements, plus d'AVC ischémiques) et réserver la fermeture aux vraies contre-indications aux AOD.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="rythmo" data-year="2026" data-lvl="warn" data-kw="fibrillation atriale persistante FA ablation paroi postérieure posterior wall isolation PWI PVI isolation veines pulmonaires CORNERSTONE AF persistent atrial fibrillation">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; CORNERSTONE AF</span>
+      </div>
+      <h3>Adjunctive posterior wall isolation for persistent and long-standing persistent atrial fibrillation: the CORNERSTONE AF trial</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; juin 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;EHRA 2026</div>
+      <p class="sum">Essai multicentrique randomisé en FA persistante (première ablation) : l'ajout de l'isolation de la paroi postérieure à l'isolation des veines pulmonaires n'apporte pas de bénéfice sur la récidive d'arythmie atriale, confirmant CAPLA.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://academic.oup.com/eurheartj/advance-article-abstract/doi/10.1093/eurheartj/ehag486/8711757" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Durabilité incomplète des lésions de paroi postérieure, pouvant sous-estimer un éventuel bénéfice d'une isolation durable.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Pour la FA persistante adressée à une première ablation, l'isolation des veines pulmonaires seule reste la stratégie de référence.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="rythmo" data-year="2026" data-lvl="warn" data-kw="défibrillateur sous-cutané S-ICD subcutaneous ICD test de défibrillation defibrillation testing DFT PRAETORIAN-DFT mort subite sudden death implantation">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; PRAETORIAN-DFT</span>
+      </div>
+      <h3>Subcutaneous Defibrillator Implantation With or Without Defibrillation Test: The Primary Results of the Randomized PRAETORIAN-DFT Trial</h3>
+      <div class="meta"><b>Circulation</b> &middot; avril 2026 &middot; pr&eacute;sent&eacute; &agrave; HRS 2026</div>
+      <p class="sum">965 patients implantés d'un défibrillateur sous-cutané : l'implantation sans test de défibrillation, guidée par le score PRAETORIAN, est non inférieure sur l'échec du premier choc pour arythmie ventriculaire spontanée, avec mortalité comparable.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.ahajournals.org/doi/10.1161/CIRCULATIONAHA.126.080638" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/praetorian-dft-safe-forgo-defibrillation-testing-s-icd-implant" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Résultat conditionné à un score PRAETORIAN favorable — non extrapolable aux positions d'implantation sous-optimales.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Chez le candidat au défibrillateur sous-cutané, l'omission du test de défibrillation devient la norme si l'imagerie est favorable — procédure simplifiée à expliquer au patient.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="rythmo" data-year="2026" data-lvl="warn" data-kw="ablation champ pulsé pulsed field ablation PFA électroporation electroporation consensus HRS EHRA recommandations scientific statement fibrillation atriale FA sécurité safety">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Recommandations</span>
+      </div>
+      <h3>2026 HRS/EHRA scientific statement on pulsed field ablation for cardiac arrhythmias</h3>
+      <div class="meta"><b>Heart Rhythm</b> &middot; février 2026</div>
+      <p class="sum">Premier document de consensus HRS/EHRA dédié à l'ablation par champ pulsé : mécanismes, efficacité et sécurité comparées aux énergies thermiques, applications au-delà de la FA, formation des opérateurs et lacunes de connaissances — au moment où la PFA devient l'énergie dominante en ablation de FA.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.heartrhythmjournal.com/article/S1547-5271(26)00124-4/fulltext" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.hrsonline.org/news/hrs-releases-scientific-statement-pfa-for-cardiac-arrhythmias/" target="_blank" rel="noopener">Analyse &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Document d'experts fondé sur des données encore jeunes, sans recul à long terme.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Référence à connaître pour répondre aux questions des patients adressés en ablation par champ pulsé (bénéfices, risques spécifiques, place par rapport aux techniques thermiques).</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="rythmo" data-year="2026" data-lvl="watch" data-kw="tachycardie ventriculaire TV ablation ventricular tachycardia VT antiarythmiques antiarrhythmic drugs AAD CAAD-VT cardiomyopathie ischémique non ischémique orage rythmique VT storm">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai randomisé &middot; CAAD-VT</span>
+      </div>
+      <h3>Catheter Ablation Versus Anti-Arrhythmic Drugs for Ventricular Tachycardia in Ischaemic and Non-Ischaemic Cardiomyopathy: the CAAD-VT Trial</h3>
+      <div class="meta"><b>Heart Rhythm (late-breaking)</b> &middot; avril 2026 &middot; pr&eacute;sent&eacute; &agrave; HRS 2026</div>
+      <p class="sum">100 patients avec TV sur cardiopathie ischémique ou non ischémique, ablation vs antiarythmiques. À 35,7 mois (médiane) : critère composite (récidive de TV, orage rythmique, mortalité) 51 % vs 71 %, sans différence de mortalité.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.heartrhythmjournal.com/article/S1547-5271(26)02179-X/fulltext" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.hrsonline.org/news/cathether-ablation-reduces-vt-underrepresented-patients/" target="_blank" rel="noopener">Analyse &#8599;</a>
+      </div>
+    </article>
+<div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-spec="rythmo" data-year="2025" data-lvl="crit" data-kw="fibrillation atriale FA ablation atrial fibrillation AF anticoagulation AOD DOAC arrêt discontinuation ALONE-AF AVC stroke hémorragie bleeding">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Essai randomisé &middot; ALONE-AF</span>
+      </div>
+      <h3>Long-Term Anticoagulation Discontinuation After Catheter Ablation for Atrial Fibrillation: The ALONE-AF Randomized Clinical Trial</h3>
+      <div class="meta"><b>JAMA</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
+      <p class="sum">Premier essai randomisé sur l'arrêt de l'anticoagulation après ablation de FA réussie : 840 patients avec ≥1 facteur de risque et sans récidive ≥1 an, randomisés arrêt de l'AOD vs poursuite. À 2 ans, critère composite (AVC, embolie systémique, hémorragie majeure) : 0,3 % (arrêt) vs 2,2 % (poursuite), porté par l'absence d'hémorragie majeure dans le groupe arrêt.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://jamanetwork.com/journals/jama/article-abstract/2838294" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/alone-af-less-bleeding-when-oac-stopped-after-successful-ablation" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Puissance insuffisante pour le risque ischémique isolé ; population exclusivement sud-coréenne, faible taux d'événements.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Chez un patient sans récidive ≥1 an après ablation réussie et à risque modéré, l'arrêt de l'AOD devient une option discutable et documentée — décision partagée, avec surveillance rythmique.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+<article class="card" data-spec="rythmo" data-year="2025" data-lvl="warn" data-kw="fibrillation atriale paroxystique FA ablation champ pulse cryoablation cryoballon atrial fibrillation AF pulsed field PFA cryoballoon paroxysmal rythme rhythm">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomis&eacute; &middot; SINGLE SHOT CHAMPION</span>
+      </div>
+      <h3>Pulsed Field or Cryoballoon Ablation for Paroxysmal Atrial Fibrillation</h3>
+      <div class="meta"><b>NEJM</b> &middot; 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;EHRA 2025</div>
+      <p class="sum">Essai randomis&eacute; comparant PFA et cryoablation en single-shot dans la FA paroxystique, avec monitoring continu par holter implantable : non-inf&eacute;riorit&eacute; du champ puls&eacute; — les deux technologies sont des options valides de premi&egrave;re ligne.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/40162734/" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="rythmo" data-year="2025" data-lvl="warn" data-kw="fibrillation atriale FA ablation atrial fibrillation AF anticoagulation rivaroxaban aspirine aspirin OCEAN AOD DOAC AVC stroke post-ablation">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; OCEAN</span>
+      </div>
+      <h3>Antithrombotic Therapy after Successful Catheter Ablation for Atrial Fibrillation</h3>
+      <div class="meta"><b>NEJM</b> &middot; novembre 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;AHA 2025</div>
+      <p class="sum">1 284 patients à risque, indemnes de récidive ≥1 an après ablation réussie, randomisés rivaroxaban 15 mg vs aspirine. Pas de réduction du critère composite (AVC, embolie systémique, AVC embolique infraclinique à l'IRM) : 0,8 % vs 1,4 % (RR 0,56 ; IC95 % 0,19–1,65), mais davantage d'hémorragies sous rivaroxaban.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2509688" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/stopping-doacs-after-successful-af-ablation-feasible-low-risk-patients-ocean" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Taux d'événements emboliques très inférieur à l'attendu, limitant la puissance ; comparateur aspirine et non placebo.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Conforte, avec ALONE-AF, la possibilité d'alléger l'antithrombotique chez le patient sans récidive ≥1 an après ablation réussie.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="rythmo" data-year="2025" data-lvl="warn" data-kw="fibrillation atriale FA fermeture auricule gauche left atrial appendage closure occlusion LAAO LAAC CLOSURE-AF anticoagulation AOD DOAC haut risque hémorragique bleeding">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; CLOSURE-AF</span>
+      </div>
+      <h3>Left Atrial Appendage Closure or Medical Therapy in Atrial Fibrillation</h3>
+      <div class="meta"><b>NEJM</b> &middot; novembre 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;AHA 2025</div>
+      <p class="sum">912 patients âgés (médiane 79 ans) en FA à haut risque d'AVC ET hémorragique, randomisés fermeture d'auricule vs traitement médical (majoritairement AOD). La fermeture n'atteint pas la non-infériorité sur le critère composite : 16,83 vs 13,27 pour 100 patients-années (HR ajusté 1,28 ; IC95 % 1,01–1,62), en faveur du traitement médical.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2513310" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/laao-doesnt-match-medical-therapy-high-risk-af-patients-closure-af" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Bras médical hétérogène laissé au choix du médecin ; population très âgée limitant l'extrapolation.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Tempère fortement le réflexe « haut risque hémorragique = fermeture d'auricule » : un AOD bien conduit reste souvent le meilleur choix.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="rythmo" data-year="2025" data-lvl="warn" data-kw="fibrillation atriale paroxystique FA ablation champ pulsé pulsed field ablation PFA radiofréquence radiofrequency RF BEAT PAROX-AF isolation veines pulmonaires PVI">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; BEAT PAROX-AF</span>
+      </div>
+      <h3>Pulsed field vs radiofrequency ablation for paroxysmal atrial fibrillation: the BEAT PAROX-AF trial</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
+      <p class="sum">289 patients avec FA paroxystique résistante aux antiarythmiques, randomisés champ pulsé (PFA) vs radiofréquence. Succès à 12 mois : 77,2 % vs 77,6 % (p=0,84) — pas de supériorité de la PFA, mais procédure plus courte (56 vs 95 min) et moins d'événements indésirables graves (3,4 % vs 7,6 %).</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://academic.oup.com/eurheartj/advance-article/doi/10.1093/eurheartj/ehaf1115/8436829" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/beat-parox-af-pulsed-field-ablation-not-superior-radiofrequency" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Effectif modeste, absence d'aveugle ; bras radiofréquence réalisé par des opérateurs experts.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Pour informer le patient adressé à l'ablation : efficacité équivalente PFA/RF, avantage de la PFA surtout en rapidité et profil de sécurité.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="rythmo" data-year="2025" data-lvl="warn" data-kw="stimulation physiologique branche gauche LBBAP conduction system pacing CRT resynchronisation biventricular pacing insuffisance cardiaque heart failure I-CLAS pacemaker">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Registre majeur &middot; I-CLAS</span>
+      </div>
+      <h3>Left bundle branch area pacing compared with biventricular pacing for cardiac resynchronization therapy in patients with left ventricular ejection fraction ≤50%: Results from the I-CLAS Study</h3>
+      <div class="meta"><b>Heart Rhythm</b> &middot; avril 2025 &middot; pr&eacute;sent&eacute; &agrave; HRS 2025</div>
+      <p class="sum">Registre international (2 579 patients) comparant stimulation de la branche gauche (LBBAP) et stimulation biventriculaire chez des candidats à la resynchronisation (FEVG ≤50 %). À 34 mois en moyenne : décès ou hospitalisation pour IC 22,2 % (LBBAP) vs 30,8 % (BiV).</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/40288475/" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.hrsonline.org/news/lcbt-showcase-promising-outcomes-left-bundle-branch-area-pacing/" target="_blank" rel="noopener">Analyse &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Étude non randomisée (biais de sélection possible) ; essais randomisés en cours.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Argument supplémentaire pour discuter la stimulation physiologique (LBBAP) comme alternative à la CRT biventriculaire lors de l'adressage pour resynchronisation.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= INTERVENTIONNEL ================= -->
+  <section class="spec" data-spec="interv">
+    <div class="spec-h"><span class="dot" style="background:var(--series-2)"></span><h2>Interventionnel &amp; structurel</h2><span class="count">13 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+    <article class="card" data-spec="interv" data-year="2026" data-lvl="warn" data-kw="TAVI TAVR PCI angioplastie coronaropathie CAD revascularisation revascularization PRO-TAVI sténose aortique aortic stenosis saignement bleeding stratégie différée deferred">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; PRO-TAVI</span>
+      </div>
+      <h3>Deferral of percutaneous coronary intervention in patients undergoing transcatheter aortic valve implantation (PRO-TAVI): a randomised controlled trial</h3>
+      <div class="meta"><b>The Lancet</b> &middot; mars 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26</div>
+      <p class="sum">466 patients (médiane 81 ans) avec sténose coronaire ≥70 % et TAVI programmé : différer l'angioplastie (stratégie guidée par les symptômes) est non inférieur à l'angioplastie systématique pré-TAVI à 1 an (24 % vs 26 %), avec beaucoup moins de saignements majeurs (6 % vs 15 %) ; seuls 11 % du bras différé ont finalement été dilatés.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(26)00308-9/abstract" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/deferring-pci-until-after-tavi-safe-reduces-bleeding-pro-tavi" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Essai ouvert de taille modeste, patients âgés à coronaropathie stable ; à confronter à NOTION-3.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Ne plus considérer la revascularisation coronaire systématique comme un préalable au TAVI chez le patient âgé stable : l'angioplastie se discute après, selon les symptômes.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="interv" data-year="2026" data-lvl="warn" data-kw="IVUS imagerie endocoronaire intravascular imaging PCI complexe complex PCI angioplastie stent tronc commun left main bifurcation DKCRUSH OPTIMAL IVUS-CHIP angiographie">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; IVUS-CHIP</span>
+      </div>
+      <h3>Intravascular Ultrasound–Guided or Angiography-Guided Complex High-Risk PCI</h3>
+      <div class="meta"><b>NEJM</b> &middot; mars 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26</div>
+      <p class="sum">2 020 patients avec angioplastie complexe à haut risque : le guidage par IVUS n'a pas réduit la défaillance du vaisseau cible vs angiographie seule (13,9 % vs 11,1 % ; p=0,08). Au même congrès, OPTIMAL (tronc commun) était également neutre, alors que DKCRUSH VIII (bifurcations) restait très positif pour l'IVUS.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/abs/10.1056/NEJMoa2601521" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/articles/2026/04/27/19/07/acc26-coronary-interventional-trials" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>En contradiction avec les méta-analyses antérieures favorables à l'imagerie endocoronaire ; effet d'apprentissage et cross-over possibles.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Tempère le dogme « imagerie systématique pour toute angioplastie complexe » ; l'IVUS garde une place forte dans les bifurcations complexes.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="interv" data-year="2026" data-lvl="warn" data-kw="mitrale mitral valve-in-valve ViV bioprothèse bioprosthesis dégénérescence chirurgie redux redo surgery TMVR SURViV valvulopathie structurel structural">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; SURViV</span>
+      </div>
+      <h3>Redo-surgery versus transcatheter valve-in-valve for mitral bioprosthetic dysfunction: The SURVIV trial</h3>
+      <div class="meta"><b>ACC.26 (publication en attente)</b> &middot; mars 2026</div>
+      <p class="sum">Premier essai randomisé valve-in-valve mitral percutané vs réintervention chirurgicale (150 patients, dégénérescence de bioprothèse mitrale) : décès ou AVC invalidant à 1 an 5,3 % vs 20,8 % (HR 0,23 ; IC95 % 0,07–0,68), avec moins de saignements et une hospitalisation de 4 vs 14 jours.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.pcronline.com/News/Congress-coverages/ACC/2026/SURVIV-Redo-surgery-vs-valve-in-valve-for-mitral-dysfunction" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/transcatheter-viv-solid-option-failed-mitral-bioprostheses-surviv" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Petit effectif, centres très expérimentés, population rhumatismale jeune peu représentative ; durabilité au-delà d'1 an inconnue.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Devant une bioprothèse mitrale dégénérée chez un patient à risque, orienter d'emblée vers un centre proposant le valve-in-valve percutané.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+<article class="card" data-spec="interv" data-year="2026" data-lvl="watch" data-kw="FFR fractional flow reserve angioplastie PCI coronarographie coronaire stenose physiologie revascularisation coronary angiography stenosis physiology revascularization stent FFRangio">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai clinique &middot; ALL-RISE</span>
+      </div>
+      <h3>Angiography-Derived Fractional Flow Reserve to Guide PCI</h3>
+      <div class="meta"><b>NEJM</b> &middot; juillet 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26 &middot; &eacute;valuation physiologique sans guide de pression</div>
+      <p class="sum">La FFR calcul&eacute;e &agrave; partir de l&rsquo;angiographie seule, compar&eacute;e &agrave; l&rsquo;&eacute;valuation conventionnelle chez le coronarien : de quoi simplifier l&rsquo;&eacute;valuation physiologique en salle.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.nejm.org/doi/abs/10.1056/NEJMoa2600949" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.hcplive.com/view/acc-26-recap-6-practice-changing-trials-to-know" target="_blank" rel="noopener">R&eacute;cap ACC.26 &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="interv" data-year="2026" data-lvl="watch" data-kw="TAVI TAVR PCI FFR physiologie coronaire coronary physiology revascularisation méta-analyse meta-analysis NOTION-3 FAITAVI ACTIVATION TCW sténose aortique">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Méta-analyse</span>
+      </div>
+      <h3>Coronary revascularisation in patients undergoing TAVI: individual patient data meta-analysis (ACTIVATION, FAITAVI, NOTION-3, TCW)</h3>
+      <div class="meta"><b>EuroPCR 2026 (late-breaking)</b> &middot; mai 2026</div>
+      <p class="sum">Méta-analyse sur données individuelles de 4 essais (n=1 050, ~83 ans) chez des patients TAVI coronariens : l'angioplastie réduit modestement les MACE à 1 an (HR 0,70), bénéfice porté par les revascularisations non programmées. Seule l'angioplastie guidée par FFR est associée à une réduction significative (HR 0,58), pas celle guidée par l'angiographie.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.pcronline.com/News/PCR-Press-Releases/2026/EuroPCR-2026-Coronary-revascularisation-in-patients-undergoing-TAVI" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/pci-prior-tavi-only-modest-benefit-patients-cad-and-aortic-stenosis" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="interv" data-year="2026" data-lvl="watch" data-kw="HOST-EXAM clopidogrel aspirine aspirin monothérapie monotherapy PCI stent prévention secondaire secondary prevention antiplaquettaire antiplatelet long terme long-term">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai randomisé &middot; HOST-EXAM Extended</span>
+      </div>
+      <h3>Aspirin versus clopidogrel for chronic maintenance monotherapy after percutaneous coronary intervention: 10-year follow-up of the HOST-EXAM trial</h3>
+      <div class="meta"><b>The Lancet</b> &middot; mars 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26</div>
+      <p class="sum">Suivi à 10,5 ans des 5 438 patients randomisés après angioplastie entre clopidogrel et aspirine en monothérapie : le clopidogrel reste supérieur sur le composite (25,4 % vs 28,5 % ; HR 0,86), avec moins d'événements thrombotiques ET moins de saignements, sans différence de mortalité totale.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(26)00422-8/abstract" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/articles/2026/04/07/19/53/host-exam-acc-2026" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+    </article>
+<div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-spec="interv" data-year="2025" data-lvl="crit" data-kw="bêtabloquant beta-blocker infarctus myocardial infarction post-IDM post-MI REBOOT BETAMI DANBLOCK FEVG préservée preserved ejection fraction SCA ACS déprescription">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Essai randomisé &middot; REBOOT</span>
+      </div>
+      <h3>Beta-Blockers after Myocardial Infarction without Reduced Ejection Fraction</h3>
+      <div class="meta"><b>NEJM</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
+      <p class="sum">8 438 patients post-infarctus avec FEVG > 40 % : le bêtabloquant n'a pas réduit le critère décès/réinfarctus/hospitalisation pour IC (HR 1,04 ; IC95 % 0,89–1,22) à ~4 ans. Le programme BETAMI-DANBLOCK (FEVG ≥ 40 %), présenté au même congrès, retrouvait au contraire un bénéfice modeste (HR 0,85), concentré sur les FEVG 40–49 %.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/abs/10.1056/NEJMoa2504735" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/mixed-results-beta-blockers-post-mi-patients-preserved-ef" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Résultats discordants avec BETAMI-DANBLOCK ; essais ouverts, données limitées pour la FEVG 40–49 %.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Chez le post-IDM revascularisé à FEVG normale sans autre indication, la déprescription du bêtabloquant devient défendable ; le maintenir si FEVG 40–49 %.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="interv" data-year="2025" data-lvl="crit" data-kw="valvulopathies valvular heart disease recommandations guidelines ESC EACTS TAVI TAVR rétrécissement aortique aortic stenosis insuffisance mitrale mitral regurgitation tricuspide tricuspid TEER MitraClip Heart Team">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Recommandations</span>
+      </div>
+      <h3>2025 ESC/EACTS Guidelines for the management of valvular heart disease</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
+      <p class="sum">Mise à jour majeure des recommandations européennes valvulopathies : indications du TAVI élargies avec choix TAVI/chirurgie structuré par l'âge, intervention plus précoce dans le rétrécissement aortique serré asymptomatique (intégrant EARLY TAVR/AVATAR), montée en puissance des traitements percutanés mitral (TEER) et tricuspide.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://academic.oup.com/eurheartj/article/46/44/4635/8234488" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.escardio.org/news/press/press-releases/New-ESC-EACTS-Guidelines-Guidelines-for-Valvular-Heart-Disease-will-help-prevent-under-treatment-of-patients-and-support/" target="_blank" rel="noopener">Analyse &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Nombre de recommandations reposant sur des niveaux de preuve B/C, notamment pour la tricuspide.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Adresser plus tôt au Heart Team les RA serrés même asymptomatiques et les fuites mitrales/tricuspides significatives : l'échographie de ville devient la porte d'entrée du parcours.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+<article class="card" data-spec="interv" data-year="2025" data-lvl="warn" data-kw="TAVI TAVR protection cerebrale embolique AVC valve aortique retrecissement aortique cerebral embolic protection stroke aortic valve stenosis sentinel">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomis&eacute; &middot; BHF PROTECT-TAVI</span>
+      </div>
+      <h3>Routine Cerebral Embolic Protection during Transcatheter Aortic-Valve Implantation</h3>
+      <div class="meta"><b>NEJM</b> &middot; 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.25 &middot; &gt;7&nbsp;600 patients</div>
+      <p class="sum">Le plus grand essai randomis&eacute; de protection embolique c&eacute;r&eacute;brale au cours du TAVI : pas de r&eacute;duction des AVC avec l&rsquo;utilisation syst&eacute;matique du dispositif de capture — un frein net &agrave; son usage en routine.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2415120" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/strike-two-bhf-protect-tavi-throws-cold-water-embolic-protection" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="interv" data-year="2025" data-lvl="warn" data-kw="SCA ACS syndrome coronarien aigu STEMI NSTEMI recommandations guidelines ACC AHA SCAI DAPT antiplaquettaire antiplatelet désescalade de-escalation colchicine LDL revascularisation complète complete revascularization radial">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Recommandations</span>
+      </div>
+      <h3>2025 ACC/AHA/ACEP/NAEMSP/SCAI Guideline for the Management of Patients With Acute Coronary Syndromes</h3>
+      <div class="meta"><b>Circulation / JACC</b> &middot; février 2025</div>
+      <p class="sum">Nouvelles recommandations américaines SCA (STEMI et NSTEMI unifiés) : DAPT avec préférence ticagrelor/prasugrel puis désescalade personnalisée, voie radiale en première intention, revascularisation complète dans le STEMI multitronculaire, intensification lipidique précoce et colchicine citée comme option anti-inflammatoire.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.ahajournals.org/doi/10.1161/CIR.0000000000001309" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/guidelines/guidelines/2025/02/27/17/21/acute-coronary-syndromes-2025" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Recommandations américaines ; la pratique française reste alignée sur l'ESC 2023, mais la convergence des messages est notable.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Renforce en post-SCA la désescalade antiplaquettaire personnalisée et l'intensification hypolipémiante sans attendre, dès le suivi de ville.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="interv" data-year="2025" data-lvl="warn" data-kw="TAVI TAVR rétrécissement aortique aortic stenosis dapagliflozine dapagliflozin SGLT2 iSGLT2 insuffisance cardiaque heart failure DapaTAVI valve aortique">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; DapaTAVI</span>
+      </div>
+      <h3>Dapagliflozin in Patients Undergoing Transcatheter Aortic-Valve Implantation</h3>
+      <div class="meta"><b>NEJM</b> &middot; mars 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.25</div>
+      <p class="sum">1 257 patients âgés (moyenne 82 ans) avec antécédent d'IC traités par TAVI : la dapagliflozine réduit le critère décès toutes causes ou aggravation d'IC à 1 an (15,0 % vs 20,1 % ; HR 0,72 ; IC95 % 0,55–0,95), tirée par la réduction des aggravations d'IC.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2500366" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/dapagliflozin-works-well-high-risk-tavi-patients-hf-dapatavi" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Essai ouvert, population espagnole sélectionnée avec IC préexistante ; effet neutre sur la mortalité.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Chez le patient TAVI avec antécédent d'IC, initier ou poursuivre un iSGLT2 après la procédure devient un réflexe raisonnable en consultation de suivi.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="interv" data-year="2025" data-lvl="warn" data-kw="clopidogrel aspirine aspirin monothérapie monotherapy prévention secondaire secondary prevention coronaropathie CAD antiplaquettaire antiplatelet SAPT méta-analyse meta-analysis PCI">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Méta-analyse</span>
+      </div>
+      <h3>Clopidogrel versus aspirin for secondary prevention of coronary artery disease: a systematic review and individual patient data meta-analysis</h3>
+      <div class="meta"><b>The Lancet</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
+      <p class="sum">Méta-analyse sur données individuelles de 7 essais (28 982 coronariens) : la monothérapie par clopidogrel réduit les MACCE d'environ 14 % vs aspirine (p=0,0082), avec ~20 % de réduction relative des IDM et AVC, sans excès de saignements majeurs ni différence de mortalité.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(25)01562-4/abstract" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/journal-scans/2025/09/19/16/45/clopidogrel-superior-to-aspirin" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Hétérogénéité des essais inclus ; métaboliseurs lents CYP2C19 potentiellement moins bien couverts.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Chez le coronarien stable en monothérapie au long cours, le clopidogrel devient une alternative de premier plan à l'aspirine, notamment après angioplastie.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="interv" data-year="2025" data-lvl="watch" data-kw="ballon actif drug-coated balloon DCB sirolimus stent actif DES angioplastie PCI lésion de novo SELUTION leave nothing behind TCT restenose restenosis">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai randomisé &middot; SELUTION DeNovo</span>
+      </div>
+      <h3>One-year results of the SELUTION DeNovo trial comparing a strategy of PCI with a sirolimus-eluting balloon and provisional stenting versus systematic DES implantation</h3>
+      <div class="meta"><b>TCT 2025 (late-breaking)</b> &middot; octobre 2025</div>
+      <p class="sum">Plus grand essai randomisé ballon actif vs stent : 3 341 patients avec lésions de novo, stratégie ballon au sirolimus + stenting provisionnel vs stent actif systématique. Non-infériorité atteinte sur la défaillance du vaisseau cible à 1 an (5,3 % vs 4,4 %), au prix d'un peu plus de revascularisations.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.tctmd.com/news/sirolimus-coated-balloon-meets-mark-de-novo-lesions-and-isr-selution" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= INSUFFISANCE CARDIAQUE ================= -->
+  <section class="spec" data-spec="ic">
+    <div class="spec-h"><span class="dot" style="background:var(--series-3)"></span><h2>Insuffisance cardiaque</h2><span class="count">10 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+<article class="card open" data-spec="ic" data-year="2026" data-lvl="warn" data-kw="digitaliques digoxine digitoxine insuffisance cardiaque IC FEVG meta-analyse digitalis digoxin digitoxin heart failure HF HFrEF LVEF ejection fraction meta-analysis">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">M&eacute;ta-analyse &middot; DIG + DIGIT-HF + DECISION</span>
+      </div>
+      <h3>Efficacy and Safety of Digitalis Glycosides in Heart Failure: A Meta-Analysis</h3>
+      <div class="meta"><b>JAMA</b> &middot; 10 mai 2026 &middot; pr&eacute;sent&eacute; au congr&egrave;s HFA 2026</div>
+      <p class="sum">M&eacute;ta-analyse de 3 essais randomis&eacute;s contre placebo (9&nbsp;013 patients) : l&rsquo;ajout de digoxine/digitoxine faible dose r&eacute;duit de 15&nbsp;% le crit&egrave;re d&eacute;c&egrave;s CV ou aggravation d&rsquo;IC, chez des patients d&eacute;j&agrave; sous traitement contemporain optimis&eacute;.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fermer la fiche</button>
+        <a class="btn" href="https://jamanetwork.com/journals/jama/fullarticle/2848972" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.cardio-online.fr/actualites/couvertures-de-congres-en-cardiologie/hfa-2026/insuffisance-cardiaque-l-ajout-d-un-digitalique-reduit-significativement-les-evenements-lies-a-la-maladie" target="_blank" rel="noopener">Couverture Cardio-online &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Les digitaliques gardent-ils une place dans l&rsquo;IC &agrave; FEVG r&eacute;duite/moyenne &agrave; l&rsquo;&egrave;re de la quadrith&eacute;rapie&nbsp;?</p>
+        <h4>M&eacute;thode</h4>
+        <p>M&eacute;ta-analyse de 3 essais randomis&eacute;s vs placebo — DIG (1997, n&nbsp;=&nbsp;6&nbsp;800), DIGIT-HF (2025, n&nbsp;=&nbsp;1&nbsp;212), DECISION (2026, n&nbsp;=&nbsp;1&nbsp;001) — soit 9&nbsp;013 patients, FEVG &le;&nbsp;50&nbsp;%, largement trait&eacute;s par b&ecirc;tabloquant, IEC/ARA2/ARNI, antagoniste min&eacute;ralocortico&iuml;de et iSGLT2.</p>
+        <h4>R&eacute;sultats cl&eacute;s</h4>
+        <ul>
+          <li>D&eacute;c&egrave;s CV ou aggravation d&rsquo;IC&nbsp;: <b>HR 0,85</b> (IC95&nbsp;% 0,80&#8211;0,90&nbsp;; p&nbsp;&lt;&nbsp;0,001).</li>
+          <li>Aggravations d&rsquo;IC seules&nbsp;: <b>&#8722;25&nbsp;%</b> (HR 0,75).</li>
+          <li>Mortalit&eacute; CV et totale&nbsp;: neutre.</li>
+        </ul>
+        <h4>Limites</h4>
+        <ul>
+          <li>Poids majeur de DIG (1997), ant&eacute;rieur aux traitements modernes&nbsp;; effet class&eacute; sur la morbidit&eacute;, pas la mortalit&eacute;.</li>
+          <li>Marge th&eacute;rapeutique &eacute;troite&nbsp;: dosages faibles et surveillance de la digoxin&eacute;mie indispensables.</li>
+        </ul>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> option &agrave; reconsid&eacute;rer chez le patient qui reste symptomatique sous quadrith&eacute;rapie optimis&eacute;e (notamment en FA associ&eacute;e), &agrave; faible dose et sous surveillance — sans en faire un pilier du traitement.</div>
+        <div class="sig">Fiche r&eacute;dig&eacute;e par Claude — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="ic" data-year="2026" data-lvl="warn" data-kw="spironolactone MRA antagoniste récepteur minéralocorticoïde mineralocorticoid receptor antagonist ICFEp HFpEF ICFEmr HFmrEF FEVG LVEF insuffisance cardiaque heart failure SPIRIT-HF TOPCAT finérénone finerenone">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; SPIRIT-HF</span>
+      </div>
+      <h3>Spironolactone in the Treatment of Heart Failure (SPIRIT-HF)</h3>
+      <div class="meta"><b>NEJM</b> &middot; mars 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26</div>
+      <p class="sum">730 patients ICFEmr/ICFEp symptomatiques (FEVG ≥40 %) : la spironolactone n'a pas réduit le critère décès CV/hospitalisations totales pour IC à 24 mois vs placebo. Le recrutement s'est arrêté à 47 % de l'effectif prévu, rendant l'essai nettement sous-puissant.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.acc.org/About-ACC/Press-Releases/2026/03/29/14/57/Study-Finds-No-Significant-Benefit-of-Spironolactone-in-HFpEF-or-HFmrEF" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/spirit-hf-spironolactones-benefit-still-uncertain-hf-preserved-mildly-reduced-ef" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Sous-puissance majeure et arrêts de traitement fréquents — ne permet pas de conclure définitivement.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Ne relance pas la spironolactone dans l'ICFEp : privilégier les classes validées (iSGLT2, finérénone selon FINEARTS-HF).</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="ic" data-year="2026" data-lvl="warn" data-kw="définition universelle universal definition insuffisance cardiaque heart failure HF classification FEVG LVEF HFrEF HFpEF HFimpEF rémission remission stade B pre-heart failure consensus AHA ACC ESC WHF">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Recommandations</span>
+      </div>
+      <h3>AHA/ACC/ESC/WHF Expert Consensus Document: Second Universal Definition of Heart Failure</h3>
+      <div class="meta"><b>Circulation (co-publication EHJ, JACC)</b> &middot; juin 2026</div>
+      <p class="sum">Consensus international actualisant la définition universelle de l'IC : classification FEVG recentrée sur trois catégories actionnables (réduite, préservée, améliorée), formalisation des trajectoires (amélioration, rémission, récupération) et accent sur le stade pré-IC comme fenêtre d'intervention.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.ahajournals.org/doi/10.1161/CIR.0000000000001455" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://professional.heart.org/en/science-news/expert-consensus-document-second-universal-definition-of-heart-failure-2026/top-things-to-know" target="_blank" rel="noopener">Analyse &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Document de consensus sans nouvelles données d'essais ; impact dépendant de sa reprise dans les recommandations ESC.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Adopter le vocabulaire « IC en rémission » plutôt que « guérie » chez les FEVG améliorées — et ne pas interrompre le traitement de fond.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="ic" data-year="2026" data-lvl="warn" data-kw="ICFEp HFpEF insuffisance cardiaque à fraction d'éjection préservée preserved ejection fraction recommandations guidelines ACC ECDP iSGLT2 SGLT2 finérénone finerenone GLP-1 sémaglutide obésité obesity amylose amyloidosis">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Recommandations</span>
+      </div>
+      <h3>Management of Heart Failure With Preserved Ejection Fraction: 2026 ACC Expert Consensus Decision Pathway</h3>
+      <div class="meta"><b>JACC</b> &middot; juillet 2026</div>
+      <p class="sum">Actualisation du parcours décisionnel ACC sur l'ICFEp : place centrale des iSGLT2, intégration de la finérénone (FINEARTS-HF) et des traitements de l'obésité (GLP-1) chez les phénotypes obèses, algorithme diagnostique pragmatique et dépistage de l'amylose.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.jacc.org/doi/10.1016/j.jacc.2026.06.018" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/journal-scans/2026/07/22/17/25/updated-acc-ecdp-addresses-management-of-hfpef" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Document nord-américain : transposition en France à adapter aux AMM et remboursements.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Algorithme pratique directement utilisable au cabinet pour structurer diagnostic et traitement de l'ICFEp (iSGLT2 pour tous, perte de poids ciblée chez l'obèse, dépistage amylose).</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="ic" data-year="2026" data-lvl="watch" data-kw="télésurveillance telemonitoring remote monitoring intelligence artificielle artificial intelligence AI voix voice biomarqueur vocal insuffisance cardiaque heart failure HF hospitalisation TIM-HF3">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Registre majeur &middot; TIM-HF3</span>
+      </div>
+      <h3>TIM-HF3: voice-based prediction of heart failure hospitalization</h3>
+      <div class="meta"><b>Heart Failure 2026 (HFA-ESC)</b> &middot; mai 2026 &middot; pr&eacute;sent&eacute; &agrave; HFA 2026</div>
+      <p class="sum">Étude allemande de télésurveillance vocale (105 patients IC) : l'analyse hebdomadaire par IA d'une voyelle tenue enregistrée sur tablette détecte les hospitalisations pour IC avec une sensibilité de 84 % (vs 36 % pour le poids), avec un délai médian alerte-hospitalisation de 29 jours.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://esc365.escardio.org/presentation/324657" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/just-single-vowel-can-shed-light-hf-hospitalization-risk-tim-hf3" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+    </article>
+<div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+<article class="card" data-spec="ic" data-year="2025" data-lvl="warn" data-kw="digitoxine digitaliques insuffisance cardiaque IC FEVG reduite digitoxin digitalis heart failure HF HFrEF reduced ejection fraction">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomis&eacute; &middot; DIGIT-HF</span>
+      </div>
+      <h3>Digitoxin in Patients with Heart Failure and Reduced Ejection Fraction</h3>
+      <div class="meta"><b>NEJM</b> &middot; 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025 &middot; n&nbsp;=&nbsp;1&nbsp;212</div>
+      <p class="sum">Chez des patients en IC &agrave; FEVG r&eacute;duite sous traitement moderne, la digitoxine r&eacute;duit le crit&egrave;re principal (d&eacute;c&egrave;s toute cause ou hospitalisation pour IC) — le point de d&eacute;part du regain d&rsquo;int&eacute;r&ecirc;t confirm&eacute; par la m&eacute;ta-analyse 2026 ci-dessus.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/40879434/" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="ic" data-year="2025" data-lvl="warn" data-kw="carence martiale iron deficiency fer carboxymaltose ferric carboxymaltose FCM insuffisance cardiaque heart failure HF HFrEF ICFEr FEVG LVEF FAIR-HF2">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; FAIR-HF2</span>
+      </div>
+      <h3>Intravenous Ferric Carboxymaltose in Heart Failure With Iron Deficiency: The FAIR-HF2 DZHK05 Randomized Clinical Trial</h3>
+      <div class="meta"><b>JAMA</b> &middot; mars 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.25</div>
+      <p class="sum">1 105 patients ICFEr carencés en fer : le fer carboxymaltose IV n'a pas réduit significativement le critère décès CV/première hospitalisation pour IC (HR 0,79, non significatif selon la procédure hiérarchique). Bonne tolérance et amélioration de la qualité de vie.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://jamanetwork.com/journals/jama/fullarticle/2831807" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/journal-scans/2025/03/24/16/30/sun-8am-fair-hf2-acc-2025" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Essai sous-puissant ; bénéfice « limite » cohérent avec les méta-analyses antérieures mais non concluant.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Continuer à dépister la carence martiale dans l'ICFEr et proposer le fer IV surtout pour les symptômes et la qualité de vie.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="ic" data-year="2025" data-lvl="warn" data-kw="restriction hydrique fluid restriction apports hydriques fluid intake insuffisance cardiaque chronique chronic heart failure HF KCCQ qualité de vie quality of life FRESH-UP">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; FRESH-UP</span>
+      </div>
+      <h3>Liberal fluid intake versus fluid restriction in chronic heart failure: a randomized clinical trial</h3>
+      <div class="meta"><b>Nature Medicine</b> &middot; mars 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.25</div>
+      <p class="sum">504 patients en IC chronique stable (NYHA II-III) : la libéralisation des apports hydriques ne dégrade pas le statut de santé (KCCQ) par rapport à la restriction à 1 500 ml/j, sans signal de sécurité, avec moins de sensation de soif.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nature.com/articles/s41591-025-03628-4" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/tight-fluid-restriction-not-needed-chronic-hf-patients-fresh" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Essai ouvert, de courte durée, chez des patients stables — non extrapolable à la décompensation ou à l'hyponatrémie.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Ne plus imposer de restriction hydrique systématique à l'IC chronique stable ; la réserver aux situations congestives ou d'hyponatrémie.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="ic" data-year="2025" data-lvl="warn" data-kw="dapagliflozine dapagliflozin iSGLT2 SGLT2 inhibitor insuffisance cardiaque aiguë acute heart failure décompensation hospitalisation initiation intra-hospitalière in-hospital initiation DAPA ACT HF TIMI 68">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; DAPA ACT HF-TIMI 68</span>
+      </div>
+      <h3>Dapagliflozin in Patients Hospitalized for Heart Failure: the DAPA ACT HF-TIMI 68 Randomized Clinical Trial and Meta-Analysis</h3>
+      <div class="meta"><b>Circulation</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
+      <p class="sum">2 401 patients hospitalisés pour IC aiguë : la dapagliflozine débutée en intra-hospitalier n'a pas significativement réduit le critère décès CV/aggravation d'IC à 2 mois. La méta-analyse préspécifiée des essais d'initiation hospitalière d'iSGLT2 montre en revanche une réduction du décès CV/aggravation (HR 0,71) et de la mortalité totale (HR 0,57).</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.ahajournals.org/doi/10.1161/CIRCULATIONAHA.125.076575" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/articles/2025/08/26/11/47/sat-215am-dapa-act-esc-2025" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Essai individuellement négatif sur le critère primaire ; le signal positif repose sur la méta-analyse.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Vérifier systématiquement dès la sortie d'hospitalisation qu'un iSGLT2 a été initié — et l'introduire rapidement au cabinet s'il manque.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="ic" data-year="2025" data-lvl="warn" data-kw="vériciguat vericiguat stimulateur guanylate cyclase insuffisance cardiaque heart failure HFrEF ICFEr FEVG LVEF NT-proBNP VICTOR VICTORIA">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; VICTOR</span>
+      </div>
+      <h3>Vericiguat in patients with chronic heart failure and reduced ejection fraction (VICTOR): a double-blind, placebo-controlled, randomised, phase 3 trial</h3>
+      <div class="meta"><b>The Lancet</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
+      <p class="sum">6 105 patients ICFEr stables sous traitement optimisé : le vériciguat n'a pas réduit le critère décès CV/hospitalisation pour IC (HR 0,93 ; p=0,22), mais a réduit la mortalité cardiovasculaire (HR 0,83, critère secondaire). L'analyse poolée VICTORIA+VICTOR suggère un bénéfice surtout si NT-proBNP ≤6 000 pg/ml.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(25)01665-4/abstract" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/vericiguat-misses-mark-stable-well-treated-hfref-patients-victor" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Critère primaire négatif ; le bénéfice sur la mortalité CV est une hypothèse à confirmer.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Ne pas élargir le vériciguat à l'ICFEr stable ; le réserver aux patients avec aggravation récente, conformément à son indication.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= CARDIOMYOPATHIES ================= -->
+  <section class="spec" data-spec="cmh">
+    <div class="spec-h"><span class="dot" style="background:var(--series-7)"></span><h2>Cardiomyopathies &amp; myocardites</h2><span class="count">10 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+<article class="card" data-spec="cmh" data-year="2026" data-lvl="warn" data-kw="mavacamten camzyos cardiomyopathie hypertrophique CMH obstructive adolescent pediatrie inhibiteur de myosine hypertrophic cardiomyopathy HCM oHCM pediatric myosin inhibitor SCOUT-HCM">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai clinique</span>
+      </div>
+      <h3>Mavacamten in Adolescents with Obstructive Hypertrophic Cardiomyopathy</h3>
+      <div class="meta"><b>NEJM</b> &middot; 2026 &middot; essai SCOUT-HCM &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26 &middot; extension p&eacute;diatrique d&rsquo;une classe d&eacute;j&agrave; valid&eacute;e chez l&rsquo;adulte</div>
+      <p class="sum">Donn&eacute;es positives d&rsquo;efficacit&eacute; de l&rsquo;inhibiteur de myosine chez l&rsquo;adolescent avec CMH obstructive — un signal important pour les formes familiales suivies d&egrave;s le jeune &acirc;ge.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2601103" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.hcplive.com/view/acc-26-recap-6-practice-changing-trials-to-know" target="_blank" rel="noopener">R&eacute;cap ACC.26 &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="cmh" data-year="2026" data-lvl="warn" data-kw="amylose cardiaque transthyrétine ATTR-CM transthyretin amyloid cardiomyopathy acoramidis stabilisateur TTR stabilizer ATTRibute-CM mortalité mortality diagnostic précoce early treatment">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; ATTRibute-CM OLE</span>
+      </div>
+      <h3>Long-Term Durability of Acoramidis Efficacy in Transthyretin Amyloid Cardiomyopathy: Open-Label Extension of the ATTRibute-CM Trial</h3>
+      <div class="meta"><b>JAMA Cardiology</b> &middot; mars 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26</div>
+      <p class="sum">Extension ouverte de l'essai pivot acoramidis dans l'ATTR-CM (suivi médian 53 mois) : mortalité toutes causes à 54 mois 26,2 % sous acoramidis continu vs 43,6 % chez les patients passés du placebo à l'acoramidis à 30 mois (HR 0,55 ; IC95 % 0,42–0,74).</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://jamanetwork.com/journals/jamacardiology/fullarticle/2847055" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Extension ouverte sans bras placebo maintenu ; comparaison « continu vs différé » sujette à biais.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Chaque mois de retard au traitement de l'ATTR-CM se paie en mortalité : scintigraphie osseuse au moindre doute chez un ICFEp hypertrophié.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="cmh" data-year="2026" data-lvl="watch" data-kw="cardiomyopathie dilatée CMD dilated cardiomyopathy DCM conseil génétique genetic counselling test génétique genetic testing cardiogénétique cardiogenetics consensus HFA ESC parcours de soins">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Recommandations</span>
+      </div>
+      <h3>Genetic counselling implementation in dilated cardiomyopathy: A clinical consensus statement of the HFA/ESC</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; mars 2026</div>
+      <p class="sum">Second volet du consensus HFA/ESC sur la CMD, consacré à la mise en œuvre pratique du conseil génétique : parcours pré- et post-test, information du patient et de la famille, articulation entre cardiologue traitant et centre expert.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://academic.oup.com/eurheartj/advance-article/doi/10.1093/eurheartj/ehag159/8529603" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="cmh" data-year="2026" data-lvl="watch" data-kw="amylose cardiaque cardiac amyloidosis ATTR-CM AL amyloidosis arythmie arrhythmia fibrillation atriale atrial fibrillation bradyarythmie bradyarrhythmia holter implantable loop recorder EXCALIBUR pacemaker">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Registre majeur &middot; EXCALIBUR</span>
+      </div>
+      <h3>Exploration of Arrhythmia Burden in Cardiac Amyloidosis Using Implantable Loop Recorders: The EXCALIBUR Study</h3>
+      <div class="meta"><b>JACC</b> &middot; mai 2026 &middot; pr&eacute;sent&eacute; &agrave; HFA 2026</div>
+      <p class="sum">Étude prospective par holter implantable chez 110 patients avec amylose cardiaque : bradyarythmies chez 17,3 % (23,8 % dans l'ATTR-CM) et FA de novo chez 28,2 %, souvent silencieuses.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.jacc.org/doi/10.1016/j.jacc.2026.04.030" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+<div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+<article class="card" data-spec="cmh" data-year="2025" data-lvl="crit" data-kw="myocardite pericardite recommandations reco IRM inflammation myocarditis pericarditis guidelines ESC MRI return to play sport">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Recommandations ESC 2025</span>
+      </div>
+      <h3>2025 ESC Guidelines for the Management of Myocarditis and Pericarditis</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; ao&ucirc;t 2025 &middot; ESC Congress 2025</div>
+      <p class="sum">Premier texte ESC enti&egrave;rement consacr&eacute; aux syndromes inflammatoires myop&eacute;ricardiques : parcours diagnostique (IRM en pivot), crit&egrave;res d&rsquo;hospitalisation, reprise du sport et suivi &agrave; long terme.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.escardio.org/Guidelines" target="_blank" rel="noopener">Texte ESC &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="cmh" data-year="2025" data-lvl="crit" data-kw="cardiomyopathie hypertrophique obstructive CMH hypertrophic cardiomyopathy HCM aficamten métoprolol metoprolol inhibiteur de myosine cardiac myosin inhibitor MAPLE-HCM première ligne first-line VO2">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Essai randomisé &middot; MAPLE-HCM</span>
+      </div>
+      <h3>Aficamten or Metoprolol Monotherapy for Obstructive Hypertrophic Cardiomyopathy</h3>
+      <div class="meta"><b>NEJM</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
+      <p class="sum">Essai de phase 3 (n=175) : l'aficamten en monothérapie est supérieur au métoprolol dans la CMH obstructive symptomatique sur le pic de VO2 à 24 semaines (+1,1 vs −1,2 mL/kg/min ; p<0,001), avec amélioration de la classe NYHA (51 % vs 26 %), du KCCQ et du gradient intra-VG, sans excès d'événements graves.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2504654" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/maple-hcm-win-odyssey-hcm-isnt-obstructive-vs-nonobstructive-divide" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Comparaison au seul métoprolol, durée limitée à 24 semaines, critère fonctionnel et non de morbi-mortalité.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> L'inhibiteur de myosine se positionne comme alternative de première ligne au bêtabloquant dans la CMH obstructive symptomatique — à anticiper pour l'orientation vers les centres prescripteurs.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="cmh" data-year="2025" data-lvl="crit" data-kw="amylose cardiaque cardiac amyloidosis ATTR-CM transthyrétine transthyretin vutrisiran siRNA silencer tafamidis insuffisance cardiaque heart failure HELIOS-B">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Essai randomisé &middot; HELIOS-B</span>
+      </div>
+      <h3>Vutrisiran in Patients with Transthyretin Amyloidosis with Cardiomyopathy</h3>
+      <div class="meta"><b>NEJM</b> &middot; janvier 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2024</div>
+      <p class="sum">Essai de phase 3 chez 655 patients avec cardiomyopathie amyloïde à transthyrétine (ATTR-CM) : le vutrisiran trimestriel (ARN interférent « silencer » de la TTR) réduit le critère décès toutes causes + événements CV récurrents (HR 0,72 ; p=0,01), y compris chez les patients sans tafamidis (HR 0,67). Fondement de l'extension d'indication 2025.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2409134" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.jacc.org/doi/10.1016/j.jacc.2025.04.008" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Environ 40 % des patients recevaient déjà du tafamidis, ce qui complique la hiérarchisation stabilisateur vs silencer.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Devant toute ATTR-CM confirmée, adresser précocement vers un centre amylose : une deuxième classe modificatrice de la maladie est disponible en plus des stabilisateurs.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="cmh" data-year="2025" data-lvl="warn" data-kw="cardiomyopathie hypertrophique non obstructive CMH nonobstructive hypertrophic cardiomyopathy nHCM mavacamten inhibiteur de myosine myosin inhibitor ODYSSEY-HCM essai négatif negative trial FEVG LVEF">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; ODYSSEY-HCM</span>
+      </div>
+      <h3>Mavacamten in Symptomatic Nonobstructive Hypertrophic Cardiomyopathy</h3>
+      <div class="meta"><b>NEJM</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
+      <p class="sum">Essai de phase 3 (n=580, 48 semaines) dans la CMH NON obstructive symptomatique : échec sur les deux co-critères primaires (pic de VO2 p=0,07 ; KCCQ p=0,06). Signal de sécurité : FEVG <50 % chez 21,5 % sous mavacamten vs 1,7 % sous placebo.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2505927" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/clinical-trials/2025/09/23/16/55/odyssey-hcm" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Effet placebo important sur le KCCQ et population hétérogène, ayant pu diluer un éventuel bénéfice.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Pas de prescription hors AMM de mavacamten dans la CMH non obstructive : bénéfice non démontré et risque réel de dysfonction VG — surveillance échographique stricte des patients traités pour forme obstructive.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="cmh" data-year="2025" data-lvl="warn" data-kw="cardiomyopathie hypertrophique CMH hypertrophic cardiomyopathy HCM exercice physique sport exercise training high-intensity SAFE-HCM réadaptation activité physique physical activity mort subite sudden death">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; SAFE-HCM</span>
+      </div>
+      <h3>High intensity exercise programme in patients with hypertrophic cardiomyopathy: a randomized trial (SAFE-HCM)</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; mai 2025</div>
+      <p class="sum">Essai randomisé britannique (n=80, CMH de 16 à 60 ans) : un programme d'exercice d'intensité élevée structuré de 12 semaines s'avère faisable et sûr, sans excès d'événements arythmiques, avec amélioration de la capacité cardiorespiratoire, de la pression artérielle et du bien-être.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://doi.org/10.1093/eurheartj/ehae919" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Effectif limité et puissance insuffisante pour les événements rythmiques rares ; encadrement spécialisé.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Argument pour lever l'interdiction systématique d'exercice chez le patient CMH stable : encourager une activité structurée, y compris plus intense, après évaluation spécialisée.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="cmh" data-year="2025" data-lvl="warn" data-kw="cardiomyopathie dilatée CMD dilated cardiomyopathy DCM dépistage familial family screening cascade génétique genetic testing conseil génétique apparentés first-degree relatives LMNA FLNC consensus HFA ESC">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Recommandations</span>
+      </div>
+      <h3>Clinical care of family members of patients with dilated cardiomyopathy: A clinical consensus statement of the HFA/ESC</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; septembre 2025</div>
+      <p class="sum">Consensus HFA/ESC structurant le dépistage familial dans la cardiomyopathie dilatée : bilan de base (ECG + imagerie) chez tout apparenté du premier degré, stratification selon le statut génétique, intervalles de surveillance personnalisés et IRM privilégiée pour les gènes à haut risque rythmique (LMNA, FLNC).</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://academic.oup.com/eurheartj/article/46/43/4569/8247278" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Consensus d'experts sans niveau de preuve randomisé ; dépend de l'accès au conseil génétique et à l'IRM.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Cadre pratique pour organiser le dépistage en cascade des apparentés de vos patients CMD : qui convoquer, quel bilan initial, à quel rythme les revoir.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= PRÉVENTION ================= -->
+  <section class="spec" data-spec="prev">
+    <div class="spec-h"><span class="dot" style="background:var(--series-5)"></span><h2>Pr&eacute;vention</h2><span class="count">12 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+    <article class="card" data-spec="prev" data-year="2026" data-lvl="crit" data-kw="dyslipidémie dyslipidemia LDL cholestérol cholesterol recommandations guidelines ACC AHA 2026 Lp(a) statine statin ézétimibe ezetimibe acide bempédoïque bempedoic acid PCSK9 inclisiran PREVENT">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Recommandations</span>
+      </div>
+      <h3>2026 ACC/AHA Guideline on the Management of Dyslipidemia</h3>
+      <div class="meta"><b>Circulation / JACC</b> &middot; mars 2026</div>
+      <p class="sum">Nouvelles recommandations américaines lipides (remplacent 2018) : objectifs LDL-C chiffrés par niveau de risque (<70 mg/dL haut risque, <55 mg/dL très haut risque en prévention secondaire), dosage de la Lp(a) au moins une fois dans la vie adulte, calculateur PREVENT, et place codifiée des non-statines (ézétimibe, acide bempédoïque, anti-PCSK9, inclisiran).</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.ahajournals.org/doi/10.1161/CIR.0000000000001423" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/journal-scans/2026/03/13/15/20/acc-aha-release-new-clinical-guideline-for-managing-dyslipidemia" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Recommandations américaines ; le calculateur PREVENT n'est pas validé en Europe (SCORE2) et les seuils diffèrent de l'ESC/EAS.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Conforte le dosage systématique unique de la Lp(a) et des objectifs LDL stricts avec intensification précoce au-delà des statines.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+<article class="card" data-spec="prev" data-year="2026" data-lvl="watch" data-kw="statine prevention primaire sujet age 70 ans cholesterol LDL demence statin primary prevention elderly dementia STAREE">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai randomis&eacute; &middot; STAREE &middot; Hot Line ESC 2026</span>
+      </div>
+      <h3>STAREE — Statins in Reducing Events in the Elderly</h3>
+      <div class="meta"><b>ESC Congress 2026</b> &middot; pr&eacute;sentation le 28&#8211;31 ao&ucirc;t &middot; question quotidienne en consultation</div>
+      <p class="sum">STAREE randomise des adultes de &ge;&nbsp;70 ans en bonne sant&eacute; sous statine vs placebo — crit&egrave;res cardiovasculaires et survie sans d&eacute;mence. Fiche de lecture d&egrave;s la pr&eacute;sentation.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche d&egrave;s pr&eacute;sentation</button>
+        <a class="btn" href="https://www.escardio.org/news/press/press-releases/hot-lines-revealed--the-trials-that-will-make-the-headlines-at-esc-congress-2026/" target="_blank" rel="noopener">Hot Lines ESC 2026 &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="prev" data-year="2026" data-lvl="watch" data-kw="orforglipron GLP-1 oral diabète diabetes type 2 ACHIEVE-4 insuline glargine insulin sécurité cardiovasculaire cardiovascular safety obésité obesity">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai randomisé &middot; ACHIEVE-4</span>
+      </div>
+      <h3>ACHIEVE-4: orforglipron versus insulin glargine in type 2 diabetes at high cardiovascular risk (topline)</h3>
+      <div class="meta"><b>Communiqué topline (non publié)</b> &middot; avril 2026</div>
+      <p class="sum">Résultats topline de phase 3 : l'orforglipron, premier agoniste GLP-1 oral non peptidique, démontre sa sécurité cardiovasculaire vs insuline glargine chez >2 700 patients (HR MACE 0,84 ; IC95 % 0,59–1,20, non-infériorité), avec un signal favorable nominal sur la mortalité totale.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.prnewswire.com/news-releases/achieve-4-the-longest-phase-3-study-of-lillys-foundayo-orforglipron-to-date-reaffirmed-its-cardiovascular-and-overall-safety-profile-as-well-as-consistent-improvements-across-key-measures-of-cardiometabolic-health-302744289.html" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.hcplive.com/view/achieve-4-orforglipron-non-inferior-to-insulin-glargine-for-cardiovascular-protection-in-t2d" target="_blank" rel="noopener">Analyse &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="prev" data-year="2026" data-lvl="watch" data-kw="ziltivekimab IL-6 inflammation hsCRP CRP ZEUS prévention prevention cardiovasculaire cardiovascular maladie rénale chronique CKD ASCVD anti-inflammatoire anti-inflammatory">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai randomisé &middot; ZEUS</span>
+      </div>
+      <h3>ZEUS: ziltivekimab in people with ASCVD, CKD and inflammation (topline)</h3>
+      <div class="meta"><b>Communiqué topline (non publié)</b> &middot; juillet 2026</div>
+      <p class="sum">Résultat topline négatif : chez >6 300 patients avec maladie athéroscléreuse, maladie rénale chronique et inflammation (hsCRP ≥2 mg/L), le ziltivekimab (anti-IL-6) n'a pas réduit le MACE-3 (HR 0,99 ; IC95 % 0,88–1,11) malgré la baisse de l'inflammation. Revers majeur pour l'hypothèse anti-IL-6.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.globenewswire.com/news-release/2026/07/31/3336733/0/en/novo-nordisk-provides-update-on-the-zeus-phase-3-trial-in-people-with-ascvd-ckd-and-inflammation.html" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.hcplive.com/view/ziltivekimab-fails-to-reduce-mace-risk-in-phase-3-zeus-trial" target="_blank" rel="noopener">Analyse &#8599;</a>
+      </div>
+    </article>
+<div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-spec="prev" data-year="2025" data-lvl="crit" data-kw="évolocumab evolocumab PCSK9 LDL cholestérol cholesterol prévention primaire primary prevention VESALIUS-CV statine statin MACE">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Essai randomisé &middot; VESALIUS-CV</span>
+      </div>
+      <h3>Evolocumab in Patients without a Previous Myocardial Infarction or Stroke</h3>
+      <div class="meta"><b>NEJM</b> &middot; novembre 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;AHA 2025</div>
+      <p class="sum">12 257 patients à haut risque (athérosclérose ou diabète, LDL ≥90 mg/dL) SANS antécédent d'IDM ni d'AVC : l'évolocumab réduit le MACE-3 (HR 0,75 ; IC95 % 0,65–0,86) et le MACE-4 (HR 0,81) sur 4,6 ans. Première démonstration qu'un anti-PCSK9 prévient le premier événement chez ces patients.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2514428" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/evolocumab-cuts-mace-risk-patients-without-prior-mi-stroke-vesalius-cv" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Population incluant des maladies athéroscléreuses établies sans IDM/AVC : pas de la prévention primaire « pure » ; coût et accès des anti-PCSK9.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Argument fort pour intensifier précocement (anti-PCSK9 inclus) chez le coronarien stable, l'artéritique ou le diabétique à haut risque n'ayant jamais fait d'IDM/AVC.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+<article class="card" data-spec="prev" data-year="2025" data-lvl="warn" data-kw="dyslipidemie lipides LDL cholesterol statine recommandations reco dyslipidaemia dyslipidemia lipids statin guidelines ESC EAS">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Recommandations ESC 2025 (mise &agrave; jour cibl&eacute;e)</span>
+      </div>
+      <h3>2025 Focused Update of the 2019 ESC/EAS Guidelines for the Management of Dyslipidaemias</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; 2025 &middot; ESC Congress 2025</div>
+      <p class="sum">Actualisation des recommandations lipides int&eacute;grant les donn&eacute;es r&eacute;centes sur les strat&eacute;gies hypolip&eacute;miantes et leur intensification — &agrave; conna&icirc;tre pour les objectifs de LDL en pratique courante.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.escardio.org/Guidelines" target="_blank" rel="noopener">Texte ESC &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="prev" data-year="2025" data-lvl="warn" data-kw="sémaglutide semaglutide oral GLP-1 diabète diabetes type 2 prévention prevention cardiovasculaire cardiovascular MACE SOUL agoniste agonist">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; SOUL</span>
+      </div>
+      <h3>Oral Semaglutide and Cardiovascular Outcomes in High-Risk Type 2 Diabetes</h3>
+      <div class="meta"><b>NEJM</b> &middot; mars 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.25</div>
+      <p class="sum">9 650 patients ≥50 ans avec diabète de type 2 et maladie athéroscléreuse et/ou rénale chronique : le sémaglutide ORAL réduit le MACE-3 (12,0 % vs 13,8 % ; HR 0,86 ; p=0,006). Le bénéfice cardiovasculaire de la classe GLP-1 s'étend à la voie orale.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2501006" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/clinical-trials/2025/03/27/15/04/soul" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Population diabétique à très haut risque ; transposabilité limitée aux risques plus faibles.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Chez le diabétique coronarien ou rénal réticent aux injections, un GLP-1 oral devient une option validée sur les événements cardiovasculaires.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="prev" data-year="2025" data-lvl="warn" data-kw="HTA hypertension pression artérielle blood pressure recommandations guidelines AHA ACC PREVENT cible target automesure home BP aldostéronisme aldosteronism">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Recommandations</span>
+      </div>
+      <h3>2025 AHA/ACC Guideline for the Prevention, Detection, Evaluation and Management of High Blood Pressure in Adults</h3>
+      <div class="meta"><b>Circulation / JACC</b> &middot; août 2025</div>
+      <p class="sum">Nouvelles recommandations américaines HTA (remplacent 2017) : cible confirmée <130/80 mmHg pour la plupart des adultes, stratification par le score PREVENT, accent sur la mesure hors cabinet, la prévention du déclin cognitif et un dépistage élargi de l'hyperaldostéronisme primaire.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.ahajournals.org/doi/10.1161/CIR.0000000000001356" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/journal-scans/2025/08/14/15/36/new-acc-aha-guideline-addresses-prevention-detection-evaluation-and-management-of-hbp" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Recommandations américaines ; en Europe, l'ESC 2024 reste la référence.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Renforce la cible <130/80 mmHg, l'automesure systématique et un recours plus large au dépistage de l'hyperaldostéronisme chez l'hypertendu résistant.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="prev" data-year="2025" data-lvl="warn" data-kw="baxdrostat aldostérone synthase aldosterone HTA résistante resistant hypertension BaxHTN pression artérielle blood pressure spironolactone">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; BaxHTN</span>
+      </div>
+      <h3>Efficacy and Safety of Baxdrostat in Uncontrolled and Resistant Hypertension</h3>
+      <div class="meta"><b>NEJM</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
+      <p class="sum">Essai de phase 3 (HTA non contrôlée ou résistante) : le baxdrostat, inhibiteur de l'aldostérone synthase, réduit la PAS de −8,7 à −9,8 mmHg vs placebo à 12 semaines (p<0,0001), avec ~1 % d'hyperkaliémies >6 mmol/L. Première validation de phase 3 de cette nouvelle classe.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/abs/10.1056/NEJMoa2507109" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/baxhtn-baxdrostat-lowers-bp-uncontrolled-and-resistant-hypertension" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Critère intermédiaire (pression artérielle) sur 12 semaines ; pas de données de morbi-mortalité.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Nouvelle classe à connaître pour l'HTA résistante, en alternative ou complément de la spironolactone ; non encore disponible en France.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="prev" data-year="2025" data-lvl="warn" data-kw="tirzépatide tirzepatide dulaglutide GLP-1 GIP diabète diabetes obésité obesity SURPASS-CVOT MACE prévention prevention poids weight">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; SURPASS-CVOT</span>
+      </div>
+      <h3>Cardiovascular Outcomes with Tirzepatide versus Dulaglutide in Type 2 Diabetes</h3>
+      <div class="meta"><b>NEJM</b> &middot; décembre 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;EASD 2025</div>
+      <p class="sum">Face-à-face chez 13 299 patients avec diabète de type 2 et maladie athéroscléreuse : le tirzépatide est non inférieur au dulaglutide sur le MACE-3 (12,2 % vs 13,1 %), avec des bénéfices métaboliques nettement supérieurs (poids −11,6 % vs −4,5 % ; HbA1c −1,66 % vs −0,88 %).</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2505928" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/surpass-cvot-published-large-trial-confirms-cvd-efficacy-tirzepatide" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Comparateur actif déjà cardioprotecteur ; supériorité sur le MACE-3 non démontrée.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Le tirzépatide offre au diabétique coronarien une protection cardiovasculaire au moins équivalente au GLP-1 de référence avec un contrôle pondéral supérieur.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="prev" data-year="2025" data-lvl="watch" data-kw="obicetrapib CETP LDL cholestérol cholesterol hypolipémiant lipid-lowering statine statin BROADWAY hypercholestérolémie hypercholesterolemia">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai randomisé &middot; BROADWAY</span>
+      </div>
+      <h3>Safety and Efficacy of Obicetrapib in Patients at High Cardiovascular Risk</h3>
+      <div class="meta"><b>NEJM</b> &middot; mai 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;EAS 2025</div>
+      <p class="sum">2 530 patients à haut risque sous traitement hypolipémiant maximal toléré : l'obicetrapib 10 mg/j (inhibiteur CETP oral) réduit le LDL-C de 29,9 % vs placebo, avec bonne tolérance. Relance la piste CETP après les échecs antérieurs de la classe.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.nejm.org/doi/abs/10.1056/NEJMoa2415820" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/back-brink-obicetrapib-performs-well-broadway-tandem" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="prev" data-year="2025" data-lvl="watch" data-kw="Lp(a) lipoprotéine lipoprotein(a) lépodisiran lepodisiran siRNA ARN interférent ALPACA olpasiran pelacarsen prévention prevention risque résiduel residual risk">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Essai randomisé &middot; ALPACA</span>
+      </div>
+      <h3>Lepodisiran — A Long-Duration Small Interfering RNA Targeting Lipoprotein(a)</h3>
+      <div class="meta"><b>NEJM</b> &middot; mars 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.25</div>
+      <p class="sum">Essai de phase 2 (n=320) : une injection de lépodisiran 400 mg (siRNA anti-apo(a) de longue durée) réduit la Lp(a) de 93,9 % en moyenne entre J60 et J180, effet largement maintenu à 1 an. Un traitement biannuel voire annuel de la Lp(a) devient plausible.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.nejm.org/doi/abs/10.1056/NEJMoa2415818" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/clinical-trials/2025/03/27/18/03/alpaca" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= CARDIOLOGIE DU SPORT ================= -->
+  <section class="spec" data-spec="sport">
+    <div class="spec-h"><span class="dot" style="background:var(--series-4)"></span><h2>Cardiologie du sport &middot; CFX / VO&#8322;&nbsp;max</h2><span class="count">9 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+<article class="card" data-spec="sport" data-year="2026" data-lvl="warn" data-kw="VO2 max CFX epreuve d'effort athlete endurance mort subite master cardiopulmonary exercise testing CPET sudden cardiac death athlete normes">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Synth&egrave;se de congr&egrave;s &middot; ACC.26</span>
+      </div>
+      <h3>ACC.26 Sports and Exercise Cardiology: Key Takeaways From the 75th Annual Scientific Sessions</h3>
+      <div class="meta"><b>ACC.26</b> &middot; avril 2026 &middot; sessions Sports &amp; Exercise Cardiology</div>
+      <p class="sum">Messages cl&eacute;s de l&rsquo;ACC.26 : les &eacute;quations de pr&eacute;diction en population g&eacute;n&eacute;rale sous-estiment le pic de VO&#8322; des endurants (valeurs &laquo; supranormales &raquo; = leur normale, registre CHEER) — risque de faux n&eacute;gatifs ; la CFX s&rsquo;affirme comme comp&eacute;tence centrale, et l&rsquo;aptitude devient un processus longitudinal individualis&eacute;, plus une d&eacute;cision binaire. Chez le master athl&egrave;te, la coronaropathie reste la premi&egrave;re cause de mort subite.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/articles/2026/04/20/11/20/acc26-sports-and-exercise-cardiology" target="_blank" rel="noopener">Synth&egrave;se ACC.26 &#8599;</a>
+      </div>
+    </article>
+
+    <article class="card" data-spec="sport" data-year="2026" data-lvl="warn" data-kw="dépistage screening ECG jeune sportif young athlete mort subite sudden cardiac death SCA SCD visite d'aptitude preparticipation évaluation cardiovasculaire échocardiographie pénétrance">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Grande étude observationnelle</span>
+      </div>
+      <h3>Cardiac Screening for Conditions Associated With Sudden Cardiac Death: Yield, Interventions, and SCA/SCD Incidence in 104,369 Young Individuals</h3>
+      <div class="meta"><b>JACC</b> &middot; février 2026</div>
+      <p class="sum">Plus grande étude de dépistage cardiaque chez le jeune (14-35 ans) : questionnaire, ECG et échocardiographie sélective. Cardiopathie à risque identifiée chez 0,3 % ; à ~6 ans, 0,08 % des sujets initialement « blanchis » ont ensuite été diagnostiqués ou ont présenté un arrêt cardiaque, plaidant pour des évaluations sériées.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.jacc.org/doi/10.1016/j.jacc.2025.11.049" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.sciencemediacentre.org/expert-reaction-to-study-on-cardiac-screening-in-young-people-using-an-ecg-and-diagnosis-of-heart-conditions/" target="_blank" rel="noopener">Analyse &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Étude observationnelle sans groupe contrôle non dépisté ; ne tranche pas le débat coût-efficacité.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Renforce le dépistage par ECG lors des visites d'aptitude et surtout sa répétition chez les jeunes sportifs : un bilan normal unique ne clôt pas le dossier.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="sport" data-year="2026" data-lvl="warn" data-kw="athlète master masters athlete vétéran consensus EAPC ACC fibrillation atriale atrial fibrillation score calcique coronary calcium fibrose fibrosis aorte aortic dilatation aptitude eligibility décision partagée shared decision making">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Recommandations</span>
+      </div>
+      <h3>Masters Athletes With Abnormal Cardiovascular Findings: A Clinical Consensus Statement of the EAPC of the ESC and the ACC</h3>
+      <div class="meta"><b>JACC (co-publication EHJ)</b> &middot; avril 2026</div>
+      <p class="sum">Premier consensus conjoint EAPC/ACC dédié aux athlètes masters (>35 ans) porteurs d'anomalies cardiovasculaires : arythmies (dont FA), athérosclérose coronaire, dilatation aortique, fibrose myocardique. Privilégie l'évaluation individualisée du risque et la décision partagée plutôt que des restrictions génériques.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.jacc.org/doi/10.1016/j.jacc.2026.03.025" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/Latest-in-Cardiology/Journal-Scans/2026/04/08/14/08/Joint-CCS-Focuses-on-Masters-Athletes" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Consensus d'experts fondé sur des données majoritairement observationnelles.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Cadre de référence pour les bilans d'aptitude des sportifs vétérans avec découverte fortuite (score calcique élevé, LGE, FA, aorte dilatée) : quantifier le risque (dont CFX), traiter les FDR et co-décider le maintien du sport.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="sport" data-year="2026" data-lvl="watch" data-kw="aptitude cardiorespiratoire cardiorespiratory fitness VO2 max capacité d'effort exercise capacity épreuve d'effort treadmill CFX CPET vieillissement en santé healthy aging longévité longevity pronostic prognosis prévention">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Grande étude observationnelle</span>
+      </div>
+      <h3>Midlife Cardiorespiratory Fitness and Healthy Aging: An Observational Cohort Study</h3>
+      <div class="meta"><b>JACC</b> &middot; avril 2026</div>
+      <p class="sum">Cooper Center Longitudinal Study : 24 576 adultes indemnes de maladie chronique à 65 ans, capacité d'effort mesurée en milieu de vie, suivis via Medicare. Une aptitude cardiorespiratoire élevée est associée à une vie plus longue et une survenue des 11 maladies chroniques étudiées retardée d'environ 1,5 an (compression de morbidité).</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://www.jacc.org/doi/10.1016/j.jacc.2026.02.5122" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/journal-scans/2026/04/22/11/23/is-high-cardiorespiratory-fitness" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+    </article>
+<div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+<article class="card" data-spec="sport" data-year="2025" data-lvl="crit" data-kw="sport aptitude certificat competition athlete decision partagee CMH QT long DAI sports participation eligibility shared decision HCM ICD competitive athletes CFX">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Recommandations ACC/AHA 2025</span>
+      </div>
+      <h3>Clinical Considerations for Competitive Sports Participation for Athletes With Cardiovascular Abnormalities: A Scientific Statement From the AHA and ACC</h3>
+      <div class="meta"><b>JACC</b> &middot; 2025 &middot; recommandations ACC/AHA sur la participation sportive</div>
+      <p class="sum">Changement de paradigme : d&eacute;cision partag&eacute;e plut&ocirc;t que listes de contre-indications. Sports class&eacute;s sur un continuum endurance/force, risques revus &agrave; la baisse (CMH, QT long, porteurs de DAI), g&eacute;notype-positifs/ph&eacute;notype-n&eacute;gatifs souvent autoris&eacute;s, et CFX valoris&eacute;e pour la stratification (cardiopathies cong&eacute;nitales).</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/articles/2025/12/09/17/52/2025-acc-aha-sports-participation-guidelines-for-athletes-with-cv-abnormalities" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Ce qui change</h4>
+        <ul>
+          <li>&laquo;&nbsp;Pas un texte de disqualification&nbsp;&raquo; mais un guide de discussion risques/b&eacute;n&eacute;fices avec l&rsquo;athl&egrave;te.</li>
+          <li>Myocardite&nbsp;: IRM en &eacute;valuation, reprise possible d&egrave;s 4&#8211;6 semaines si l&rsquo;inflammation est r&eacute;solue.</li>
+          <li>DAI&nbsp;: participation d&eacute;sormais consid&eacute;r&eacute;e comme &laquo;&nbsp;raisonnable&nbsp;&raquo;.</li>
+          <li>CFX mise en avant pour la stratification du risque des cardiopathies cong&eacute;nitales.</li>
+        </ul>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> pour vos bilans d&rsquo;aptitude et &eacute;preuves CFX/VO&#8322; max, la conduite passe d&rsquo;une logique de certificat binaire &agrave; une d&eacute;cision partag&eacute;e document&eacute;e, sport par sport, patient par patient.</div>
+        <div class="sig">Fiche r&eacute;dig&eacute;e par Claude — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="sport" data-year="2025" data-lvl="warn" data-kw="marathon course à pied running arrêt cardiaque cardiac arrest mort subite sudden cardiac death sportif athlete incidence survie survival RCP CPR défibrillateur AED coronaropathie coronary artery disease">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Grande étude observationnelle &middot; RACER-2</span>
+      </div>
+      <h3>Cardiac Arrest During Long-Distance Running Races</h3>
+      <div class="meta"><b>JAMA</b> &middot; mars 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.25</div>
+      <p class="sum">Registre américain des arrêts cardiaques sur semi-marathons et marathons 2010-2023 : 176 arrêts pour ~29 millions de finishers, incidence stable (~0,60/100 000) mais létalité divisée par deux (34 % vs 71 %) grâce à la RCP par témoins et aux défibrillateurs. La coronaropathie est la cause la plus fréquente, la plupart des arrêts survenant dans le dernier quart de course.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://jamanetwork.com/journals/jama/fullarticle/2832121" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/racer-no-change-cardiac-arrests-during-marathons-survival" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Registre déclaratif, étiologie indéterminable dans une partie des cas.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Argument chiffré pour rassurer les coureurs d'endurance tout en ciblant le dépistage de la coronaropathie (dont CFX avec ECG d'effort) chez les marathoniens de plus de 40 ans.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="sport" data-year="2025" data-lvl="warn" data-kw="athlète master masters athlete endurance fibrose myocardique myocardial fibrosis LGE IRM CMR arythmie ventriculaire ventricular arrhythmia holter implantable loop recorder cyclisme triathlon coeur d'athlète athlete's heart VENTOUX">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Grande étude observationnelle &middot; VENTOUX</span>
+      </div>
+      <h3>Ventricular Arrhythmia and Cardiac Fibrosis in Endurance Experienced Athletes (VENTOUX)</h3>
+      <div class="meta"><b>Circulation: Cardiovascular Imaging</b> &middot; juillet 2025</div>
+      <p class="sum">106 cyclistes et triathlètes masters masculins (~59 ans, ≥10 h/sem depuis ≥15 ans) explorés par IRM puis suivis par holter implantable ~2 ans : fibrose myocardique non ischémique chez 47,2 %, arythmies ventriculaires chez 21,7 % ; la fibrose multiplie par 4,7 le risque d'arythmie ventriculaire.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.ahajournals.org/doi/10.1161/CIRCIMAGING.125.018470" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.tctmd.com/news/cardiac-fibrosis-linked-ventricular-arrhythmia-fit-male-athletes-ventoux" target="_blank" rel="noopener">Analyse TCTMD &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Cohorte exclusivement masculine, petite taille, pas de groupe témoin sédentaire.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Devant des ESV ou des symptômes chez un athlète d'endurance vétéran, seuil bas pour l'IRM avec gadolinium ; une fibrose inférolatérale justifie une surveillance rythmique renforcée.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="sport" data-year="2025" data-lvl="warn" data-kw="génotype positif phénotype négatif genotype positive phenotype negative cardiopathie génétique genetic heart disease retour au sport return to play aptitude eligibility décision partagée shared decision making mort subite sudden cardiac death athlète athlete">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Grande étude observationnelle</span>
+      </div>
+      <h3>Outcomes and Burdens to Return-to-Play for Phenotype Negative Athletes With a Genetic Heart Disease</h3>
+      <div class="meta"><b>JACC: Clinical Electrophysiology</b> &middot; août 2025</div>
+      <p class="sum">274 athlètes génotype-positifs/phénotype-négatifs pour une cardiopathie génétique autorisés à poursuivre la compétition après évaluation experte : aucun événement cardiaque ni décès sur ~1 300 patient-années. Conforte la poursuite du sport chez la plupart des porteurs sans phénotype, dans le cadre d'une décision partagée.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://www.jacc.org/doi/10.1016/j.jacep.2025.03.013" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://www.acc.org/latest-in-cardiology/articles/2026/07/08/16/58/2026-care-of-the-athletic-heart-take-home-points" target="_blank" rel="noopener">Analyse ACC &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Limites</h4>
+        <p>Centre expert unique (biais de sélection), suivi encore limité au regard de la pénétrance retardée.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> Chez un porteur génétique sans phénotype, ne plus disqualifier par principe : bilan annuel structuré (ECG, imagerie, épreuve d'effort/CFX) et décision partagée documentée.</div>
+        <div class="sig">Fiche abr&eacute;g&eacute;e r&eacute;dig&eacute;e par Claude (&eacute;dition z&eacute;ro) — &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+<article class="card" data-spec="sport" data-year="2025" data-lvl="watch" data-kw="CFX epreuve d'effort VO2 max athlete elite classification des sports cardiopulmonary exercise testing CPET elite athletes sports classification">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">&Eacute;tude observationnelle</span>
+      </div>
+      <h3>Cardiopulmonary Exercise Testing in Elite Athletes: Rethinking Sports Classification</h3>
+      <div class="meta"><b>Journal of Clinical Medicine</b> &middot; 2025</div>
+      <p class="sum">Donn&eacute;es de CFX chez des athl&egrave;tes &eacute;lites sugg&eacute;rant que la classification traditionnelle des disciplines refl&egrave;te mal les profils physiologiques r&eacute;els mesur&eacute;s &agrave; l&rsquo;effort.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://doi.org/10.3390/jcm14134655" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= RADAR ================= -->
+  <div class="radar-h"><h2>&#128225; Radar — les prochaines semaines</h2></div>
+  <div class="radar">
+    <div class="card">
+      <div class="top"><span class="tag">ESC Congress 2026 &middot; Munich &middot; 28&#8211;31 ao&ucirc;t</span></div>
+      <h3 style="font-size:15px">Hot Lines &agrave; surveiller (59 essais, 12 sessions)</h3>
+      <ul>
+        <li><b>LIBREXIA ACS</b> — anti-Xia (milvexian) apr&egrave;s infarctus, &gt;14&nbsp;000 patients <span class="when">&middot; antithrombotiques</span></li>
+        <li><b>CARDIO-TTRansform</b> — eplontersen dans l&rsquo;amylose cardiaque &agrave; TTR <span class="when">&middot; cardiomyopathies</span></li>
+        <li><b>ACACIA-HCM</b> — aficamten dans la CMH <em>non</em> obstructive <span class="when">&middot; cardiomyopathies</span></li>
+        <li><b>PRESC1SE-MI</b> — diagnostic rapide d&rsquo;IDM aux urgences, ~68&nbsp;000 passages <span class="when">&middot; SCA</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="top"><span class="tag">Recommandations ESC programm&eacute;es en 2026</span></div>
+      <h3 style="font-size:15px">Recos attendues — fiches d&egrave;s parution</h3>
+      <ul>
+        <li><b>Insuffisance cardiaque</b> — refonte compl&egrave;te attendue <span class="when">&middot; ESC 2026</span></li>
+        <li><b>5&#7497; d&eacute;finition universelle de l&rsquo;infarctus</b> <span class="when">&middot; ESC 2026</span></li>
+        <li><b>R&eacute;adaptation cardiaque</b> — premi&egrave;re reco d&eacute;di&eacute;e <span class="when">&middot; ESC 2026</span></li>
+        <li><b>Maladie CV &amp; insuffisance r&eacute;nale chronique</b> <span class="when">&middot; ESC 2026</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    &Eacute;dition z&eacute;ro du 19/08/2026 — mise &agrave; jour automatique hebdomadaire &middot; Sources&nbsp;: NEJM, JAMA, JACC, EHJ, escardio.org, ACC.org, TCTMD, Cardio-online, HCPLive &middot; Contenus g&eacute;n&eacute;r&eacute;s par recherche documentaire assist&eacute;e : les fiches sont des synth&egrave;ses d&rsquo;aide &agrave; la veille, elles ne remplacent pas la lecture de l&rsquo;article original ni le jugement clinique.
+  </footer>
+</div>
+
+<script>
+  function toggle(btn) {
+    const card = btn.closest('.card');
+    card.classList.toggle('open');
+    btn.innerHTML = card.classList.contains('open') ? '&#128196; Fermer la fiche' : '&#128196; Fiche de lecture';
+  }
+  function norm(s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+  const SPECS = {
+    rythmo: ['--series-1', 'Rythmologie'],
+    interv: ['--series-2', 'Interventionnel & structurel'],
+    ic:     ['--series-3', 'Insuffisance cardiaque'],
+    cmh:    ['--series-7', 'Cardiomyopathies & myocardites'],
+    prev:   ['--series-5', 'Prévention'],
+    sport:  ['--series-4', 'Cardiologie du sport · CFX/VO₂ max']
+  };
+  document.querySelectorAll('article.card[data-spec]').forEach(card => {
+    const pick = sel => { const el = card.querySelector(sel); return el ? el.textContent : ''; };
+    card.dataset.hay = norm([pick('h3'), pick('.sum'), pick('.meta'), pick('.type'), card.getAttribute('data-kw') || ''].join(' '));
+
+    // --- présentation compacte : une ligne titre + légende, dépliable au clic ---
+    const sp = SPECS[card.dataset.spec] || ['--text-muted', ''];
+    const h3 = card.querySelector('h3');
+    const top = card.querySelector('.top');
+    const badges = top ? [...top.querySelectorAll('.badge, .une')] : [];
+
+    const body = document.createElement('div');
+    body.className = 'body';
+    while (card.firstChild) body.appendChild(card.firstChild);
+
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'artrow';
+    row.setAttribute('aria-expanded', 'false');
+
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = 'var(' + sp[0] + ')';
+
+    const main = document.createElement('span');
+    main.className = 'art-main';
+    const title = document.createElement('span');
+    title.className = 'art-title';
+    title.textContent = h3 ? h3.textContent : '';
+    const tags = document.createElement('span');
+    tags.className = 'art-tags';
+    badges.forEach(b => tags.appendChild(b));
+    const spec = document.createElement('span');
+    spec.className = 'art-spec';
+    spec.textContent = sp[1];
+    tags.appendChild(spec);
+    const yr = document.createElement('span');
+    yr.className = 'art-year';
+    yr.textContent = card.dataset.year;
+    tags.appendChild(yr);
+    main.appendChild(title);
+    main.appendChild(tags);
+
+    const chev = document.createElement('span');
+    chev.className = 'chev';
+    chev.textContent = '\u25B8';
+
+    row.appendChild(dot); row.appendChild(main); row.appendChild(chev);
+    card.appendChild(row);
+    card.appendChild(body);
+    row.addEventListener('click', () => {
+      const open = card.classList.toggle('exp');
+      row.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+  const state = { spec: 'all', year: 'all', lvl: 'all', q: '' };
+  function applyFilters() {
+    const terms = norm(state.q).split(/\s+/).filter(Boolean);
+    document.body.classList.toggle('searching', terms.length > 0);
+    let shown = 0;
+    document.querySelectorAll('article.card[data-spec]').forEach(card => {
+      const ok = (state.spec === 'all' || card.dataset.spec === state.spec)
+              && (state.year === 'all' || card.dataset.year === state.year)
+              && (state.lvl === 'all' || card.dataset.lvl === state.lvl)
+              && terms.every(t => card.dataset.hay.includes(t));
+      card.style.display = ok ? '' : 'none';
+      if (ok) shown++;
+    });
+    document.body.classList.toggle('empty', terms.length > 0 && shown === 0);
+    const rb = document.getElementById('resbar');
+    if (terms.length > 0) rb.textContent = shown + (shown > 1 ? ' résultats' : ' résultat') + ' pour « ' + state.q.trim() + ' » — toutes surspécialités confondues';
+    document.querySelectorAll('section.spec').forEach(sec => {
+      // année : masque les sous-titres d'année sans carte visible
+      sec.querySelectorAll('.year-h').forEach(yh => {
+        let el = yh.nextElementSibling, any = false;
+        while (el && el.tagName === 'ARTICLE') {
+          if (el.style.display !== 'none') any = true;
+          el = el.nextElementSibling;
+        }
+        yh.style.display = any ? '' : 'none';
+      });
+      const anyCard = [...sec.querySelectorAll('article.card')].some(c => c.style.display !== 'none');
+      sec.style.display = anyCard ? '' : 'none';
+    });
+  }
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const f = chip.dataset.f;
+      state[f] = chip.dataset.v;
+      document.querySelectorAll('.chip[data-f="' + f + '"]').forEach(c => c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'));
+      applyFilters();
+    });
+  });
+  const qInput = document.getElementById('q');
+  qInput.addEventListener('input', () => { state.q = qInput.value; applyFilters(); });
+  document.getElementById('qclear').addEventListener('click', () => { qInput.value = ''; state.q = ''; applyFilters(); qInput.focus(); });
+</script>
+</body>
+</html>

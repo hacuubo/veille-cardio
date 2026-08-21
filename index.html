@@ -177,7 +177,14 @@
   body.searching .art-spec { display: inline; }
   .chev { flex: none; color: var(--text-muted); font-size: 11px; transition: transform .15s; }
   .card.exp .chev { transform: rotate(90deg); }
-  .card .body { display: none; padding: 2px 14px 14px 28px; }
+  .card .body { display: none; padding: 2px 16px 16px 28px; }
+  /* déplié = fiche de lecture complète, comme la version longue */
+  .card.exp .fiche { display: block; }
+  .card .body .btn.primary { display: none; }
+  .card.exp .art-title { font-size: 15px; font-weight: 700; -webkit-line-clamp: unset; }
+  .card.exp .artrow { padding-bottom: 4px; }
+  .card.exp .body .sum { font-size: 14px; line-height: 1.5; }
+  .card.exp .body .fiche { margin-top: 12px; }
   .card.exp .body { display: block; }
   .card .body h3 { display: none; }
   .card .body .top { margin-bottom: 5px; }

@@ -89,6 +89,28 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
 - Ne jamais toucher aux repères `<!--BULLETIN:DEBUT-->` / `<!--BULLETIN:FIN-->` de `index.html` : c'est là
   que le script insère le lien vers le dernier bulletin.
 
+## Envoi du bulletin par e-mail
+
+Dès qu'un nouveau bulletin arrive sur `main`, GitHub l'envoie par e-mail avec le PDF en pièce jointe
+(corps du message : la liste des nouveautés ; le détail est dans le PDF).
+
+- Mécanique : `.github/workflows/bulletin-mail.yml` se déclenche sur les pushes vers `main` qui touchent
+  `bulletin/bulletin-*.pdf`, et lance `outils/envoyer-bulletin.py` (Python standard, envoi via SMTP Gmail).
+- Réglages, à enregistrer une seule fois dans **Settings → Secrets and variables → Actions** :
+  - `GMAIL_ADRESSE` — l'adresse Gmail qui envoie ;
+  - `GMAIL_MOT_DE_PASSE_APPLICATION` — le « mot de passe d'application » Gmail (16 lettres, à créer sur
+    myaccount.google.com/apppasswords ; ce n'est pas le mot de passe du compte) ;
+  - `BULLETIN_DESTINATAIRES` — facultatif, adresses séparées par des virgules. **Absent = le bulletin part
+    vers `GMAIL_ADRESSE`**, c'est-à-dire vers Robin seul. Pour ajouter les autres cardiologues, il suffit
+    d'ajouter ce secret.
+- Le dépôt est **public** : les adresses ne sont jamais écrites dans un fichier, uniquement dans ce secret,
+  et les destinataires sont mis en copie cachée.
+- Si les identifiants ne sont pas (encore) enregistrés, le script affiche « envoi ignoré » et se termine
+  normalement — pas d'échec rouge ni de notification d'erreur.
+- Envoi manuel de test : onglet **Actions → Bulletin par e-mail → Run workflow**, en indiquant
+  `bulletin/exemple.pdf` dans le champ prévu. En local : `python3 outils/envoyer-bulletin.py --essai`
+  affiche le message sans rien envoyer.
+
 ## Sources de veille
 
 NEJM, Lancet, Circulation, European Heart Journal, JACC, JAMA / JAMA Cardiology, NEJM Evidence ;

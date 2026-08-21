@@ -90,6 +90,33 @@
   .no-res { display: none; margin: 20px 0; padding: 16px; border: 1px dashed var(--baseline); border-radius: 12px; color: var(--text-muted); font-size: 14px; text-align: center; }
   body.searching.empty .no-res { display: block; }
 
+
+  /* ---------- lignes compactes (accordéon) ---------- */
+  .card { padding: 0; overflow: hidden; margin-bottom: 8px; }
+  .artrow {
+    width: 100%; display: flex; gap: 10px; align-items: flex-start;
+    padding: 11px 14px; background: none; border: none; cursor: pointer;
+    font: inherit; color: inherit; text-align: left;
+  }
+  .artrow:hover { background: var(--wash); }
+  .artrow:focus-visible { outline: 2px solid var(--text-primary); outline-offset: -2px; }
+  .artrow > .dot { margin-top: 6px; }
+  .art-main { flex: 1; min-width: 0; }
+  .art-title { font-size: 14.5px; font-weight: 650; line-height: 1.35; }
+  .art-tags { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-left: 8px; vertical-align: 1px; }
+  .art-year { display: none; font-size: 11.5px; font-weight: 600; color: var(--text-muted); }
+  body.searching .art-year { display: inline; }
+  .art-spec { display: none; font-size: 11.5px; font-weight: 600; color: var(--text-secondary); }
+  body.searching .art-spec { display: inline; }
+  .chev { flex: none; color: var(--text-muted); font-size: 12px; margin-top: 3px; transition: transform .15s; }
+  .card.exp .chev { transform: rotate(90deg); }
+  .card .body { display: none; padding: 0 16px 16px 33px; }
+  .card.exp .body { display: block; }
+  .card .body h3 { display: none; }
+  .card .body .top { margin-bottom: 6px; }
+  .card .body .meta { margin-top: 0; }
+  .spec-tag { display: none; }
+
   /* ---------- sections par surspécialité ---------- */
   section.spec { margin-top: 34px; }
   .spec-h { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--text-primary); }
@@ -156,24 +183,9 @@
 <div class="wrap">
 
   <header>
-    <div class="eyebrow">Veille scientifique &middot; mise &agrave; jour hebdomadaire &middot; mercredi 19 ao&ucirc;t 2026</div>
+    <div class="eyebrow">Veille scientifique &middot; 66 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 19 ao&ucirc;t 2026</div>
     <h1>Veille Cardio <span class="beat">&#10084;</span> Derni&egrave;res sorties</h1>
-    <div class="sub">Les avanc&eacute;es class&eacute;es <b>par sursp&eacute;cialit&eacute;</b>, puis <b>par ann&eacute;e</b> (2026 en cours &middot; 2025) — au sein de chaque ann&eacute;e, les sorties les plus importantes sont mises en avant en t&ecirc;te (&#9733; &agrave; la une, lis&eacute;r&eacute; rouge), chaque sortie avec son niveau d&rsquo;impact, le lien vers l&rsquo;article original et sa fiche de lecture.</div>
-    <div class="demo-note"><strong>&Eacute;dition z&eacute;ro — 19/08/2026</strong> — rattrapage 2025&#8211;2026 : 66 sorties s&eacute;lectionn&eacute;es selon les crit&egrave;res de la veille (essais pivots, recommandations, m&eacute;ta-analyses majeures). Mise &agrave; jour automatique chaque lundi. Contenus g&eacute;n&eacute;r&eacute;s par recherche documentaire assist&eacute;e — v&eacute;rifiez l&rsquo;article original avant application clinique.</div>
   </header>
-
-  <div class="tiles">
-    <div class="tile"><div class="k">66</div><div class="l">sorties suivies sur 2025&#8211;2026</div></div>
-    <div class="tile"><div class="k">11</div><div class="l">changements de pratique probables</div></div>
-    <div class="tile"><div class="k">J&#8722;9</div><div class="l">ESC Congress 2026 — Munich, 28&#8211;31 ao&ucirc;t</div></div>
-    <div class="tile"><div class="k">4</div><div class="l">recos ESC attendues en 2026</div></div>
-  </div>
-
-  <div class="searchbar">
-    <span class="icon">&#128269;</span>
-    <input id="q" type="search" placeholder="Rechercher en fran&ccedil;ais ou en anglais — ex. &laquo; FA &raquo;, &laquo; atrial fibrillation &raquo;, &laquo; TAVI &raquo;, &laquo; VO2 max &raquo;&hellip;" autocomplete="off">
-    <button class="clear" id="qclear">Effacer</button>
-  </div>
 
   <div class="filters" id="filters">
     <div class="row">
@@ -199,6 +211,12 @@
       <button class="chip" data-f="lvl" data-v="warn" aria-pressed="false">&#9650; &Agrave; conna&icirc;tre</button>
       <button class="chip" data-f="lvl" data-v="watch" aria-pressed="false">&#9678; Veille — &agrave; suivre</button>
     </div>
+  </div>
+
+  <div class="searchbar">
+    <span class="icon">&#128269;</span>
+    <input id="q" type="search" placeholder="Rechercher en fran&ccedil;ais ou en anglais — ex. &laquo; FA &raquo;, &laquo; atrial fibrillation &raquo;, &laquo; TAVI &raquo;, &laquo; VO2 max &raquo;&hellip;" autocomplete="off">
+    <button class="clear" id="qclear">Effacer</button>
   </div>
 
   <div class="res-bar" id="resbar"></div>
@@ -1540,7 +1558,7 @@
   </div>
 
   <footer>
-    &Eacute;dition z&eacute;ro du 19/08/2026 — mise &agrave; jour automatique hebdomadaire &middot; Sources&nbsp;: NEJM, JAMA, JACC, EHJ, escardio.org, ACC.org, TCTMD, Cardio-online, HCPLive &middot; Les fiches de lecture sont des synth&egrave;ses d&rsquo;aide &agrave; la veille, elles ne remplacent pas la lecture de l&rsquo;article original ni le jugement clinique.
+    &Eacute;dition z&eacute;ro du 19/08/2026 — mise &agrave; jour automatique hebdomadaire &middot; Sources&nbsp;: NEJM, JAMA, JACC, EHJ, escardio.org, ACC.org, TCTMD, Cardio-online, HCPLive &middot; Contenus g&eacute;n&eacute;r&eacute;s par recherche documentaire assist&eacute;e : les fiches sont des synth&egrave;ses d&rsquo;aide &agrave; la veille, elles ne remplacent pas la lecture de l&rsquo;article original ni le jugement clinique.
   </footer>
 </div>
 
@@ -1560,16 +1578,58 @@
     sport:  ['--series-4', 'Cardiologie du sport · CFX/VO₂ max']
   };
   document.querySelectorAll('article.card[data-spec]').forEach(card => {
-    const s = SPECS[card.dataset.spec];
-    if (s) {
-      const tag = document.createElement('span');
-      tag.className = 'tag spec-tag';
-      tag.innerHTML = '<span class="dot" style="background:var(' + s[0] + ')"></span>' + s[1];
-      const top = card.querySelector('.top');
-      top.insertBefore(tag, top.firstChild);
-    }
     const pick = sel => { const el = card.querySelector(sel); return el ? el.textContent : ''; };
     card.dataset.hay = norm([pick('h3'), pick('.sum'), pick('.meta'), pick('.type'), card.getAttribute('data-kw') || ''].join(' '));
+
+    // --- présentation compacte : une ligne titre + légende, dépliable au clic ---
+    const sp = SPECS[card.dataset.spec] || ['--text-muted', ''];
+    const h3 = card.querySelector('h3');
+    const top = card.querySelector('.top');
+    const badges = top ? [...top.querySelectorAll('.badge, .une')] : [];
+
+    const body = document.createElement('div');
+    body.className = 'body';
+    while (card.firstChild) body.appendChild(card.firstChild);
+
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'artrow';
+    row.setAttribute('aria-expanded', 'false');
+
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = 'var(' + sp[0] + ')';
+
+    const main = document.createElement('span');
+    main.className = 'art-main';
+    const title = document.createElement('span');
+    title.className = 'art-title';
+    title.textContent = h3 ? h3.textContent : '';
+    const tags = document.createElement('span');
+    tags.className = 'art-tags';
+    badges.forEach(b => tags.appendChild(b));
+    const spec = document.createElement('span');
+    spec.className = 'art-spec';
+    spec.textContent = sp[1];
+    tags.appendChild(spec);
+    const yr = document.createElement('span');
+    yr.className = 'art-year';
+    yr.textContent = card.dataset.year;
+    tags.appendChild(yr);
+    main.appendChild(title);
+    main.appendChild(tags);
+
+    const chev = document.createElement('span');
+    chev.className = 'chev';
+    chev.textContent = '\u25B8';
+
+    row.appendChild(dot); row.appendChild(main); row.appendChild(chev);
+    card.appendChild(row);
+    card.appendChild(body);
+    row.addEventListener('click', () => {
+      const open = card.classList.toggle('exp');
+      row.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
   });
   const state = { spec: 'all', year: 'all', lvl: 'all', q: '' };
   function applyFilters() {

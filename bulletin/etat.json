@@ -68,14 +68,18 @@
     "2026ahaaccclinicalperformanceandqualitymeasuresforpatientswithatrialfibrillation",
     "impactofmyocardialfibrosisandfemalesexonlifethreateningarrhythmiasandsuddencardiacdeathinmitralvalveprolapse",
     "championafandclosureafreconcilingcontrastingresults",
+    "multivesselcoronaryarterybypassgraftingviasmallthoracotomyversussternotomymistaninvestigatorinitiatedinternationalopenlabelrandomisedcontrolledtrial",
+    "targetedassessmentinhighriskpatientswithdiabetestoidentifyundiagnosedheartfailuretartanhf",
+    "effectofsacubitrilvalsartanonfunctionalandstructuralcardiacparametersinadultswithnonobstructivehypertrophiccardiomyopathyarandomizedcontrolledtrial",
+    "leftatrialstructureandfunctionclinicaloutcomesandefficacyofvutrisiranintransthyretinamyloidosiswithcardiomyopathyasecondaryanalysisoftheheliosbrandomizedclinicaltrial",
     "bempedoicacidandfirstandrecurrentlimboutcomesinstatinintolerantpatientswithperipheralarterydiseaseinsightsfromtheclearoutcomestrial"
   ],
   "bulletins": [
     {
       "date": "2026-08-22",
       "fichier": "bulletin-2026-08-22.pdf",
-      "nb": 4,
-      "crit": 0
+      "nb": 8,
+      "crit": 1
     }
   ],
   "derniere_execution": "2026-08-22"

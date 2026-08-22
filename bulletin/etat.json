@@ -64,8 +64,19 @@
     "cardiacarrestduringlongdistancerunningraces",
     "ventriculararrhythmiaandcardiacfibrosisinenduranceexperiencedathletesventoux",
     "outcomesandburdenstoreturntoplayforphenotypenegativeathleteswithageneticheartdisease",
-    "cardiopulmonaryexercisetestingineliteathletesrethinkingsportsclassification"
+    "cardiopulmonaryexercisetestingineliteathletesrethinkingsportsclassification",
+    "2026ahaaccclinicalperformanceandqualitymeasuresforpatientswithatrialfibrillation",
+    "impactofmyocardialfibrosisandfemalesexonlifethreateningarrhythmiasandsuddencardiacdeathinmitralvalveprolapse",
+    "championafandclosureafreconcilingcontrastingresults",
+    "bempedoicacidandfirstandrecurrentlimboutcomesinstatinintolerantpatientswithperipheralarterydiseaseinsightsfromtheclearoutcomestrial"
   ],
-  "bulletins": [],
-  "derniere_execution": "2026-08-21"
+  "bulletins": [
+    {
+      "date": "2026-08-22",
+      "fichier": "bulletin-2026-08-22.pdf",
+      "nb": 4,
+      "crit": 0
+    }
+  ],
+  "derniere_execution": "2026-08-22"
 }

@@ -70,9 +70,11 @@ Autres règles de mise en page :
   trois colonnes sur ordinateur, deux sur téléphone, et « Toutes les surspécialités » sur toute la
   largeur. Ne pas revenir à une simple ligne de puces qui s'enchaînent.
 - **Écran d'ouverture** : au chargement, un plein écran affiche « PAUSE CARDIO » avec un tracé ECG qui se
-  dessine, puis s'efface sur l'accueil (moins de 2 secondes). Il se saute d'un clic ou d'une touche, ne
-  rejoue pas dans la même session (`sessionStorage`), et est neutralisé si le lecteur a demandé moins
-  d'animations. Le balisage est en tête de `<body>` (`#splash`), les styles sous « écran d'ouverture ».
+  dessine, le cœur qui bat, puis s'efface sur l'accueil — **durée totale 5 secondes** (maintien puis fondu).
+  Une ligne discrète « Touchez l'écran pour entrer » apparaît au bout de 2 secondes : l'écran se saute d'un
+  clic ou d'une touche. Il ne rejoue pas dans la même session (`sessionStorage`) et se réduit à un bref
+  fondu si le lecteur a demandé moins d'animations. Le balisage est en tête de `<body>` (`#splash`), les
+  styles sous « écran d'ouverture ».
 
 ## Mise à jour
 

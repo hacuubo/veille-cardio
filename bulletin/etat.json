@@ -64,8 +64,20 @@
     "cardiacarrestduringlongdistancerunningraces",
     "ventriculararrhythmiaandcardiacfibrosisinenduranceexperiencedathletesventoux",
     "outcomesandburdenstoreturntoplayforphenotypenegativeathleteswithageneticheartdisease",
-    "cardiopulmonaryexercisetestingineliteathletesrethinkingsportsclassification"
+    "cardiopulmonaryexercisetestingineliteathletesrethinkingsportsclassification",
+    "tricuspidregurgitationstandardizedstepwiseworkupfromreferraltoexpertheartvalvecentre",
+    "roleofmultimodalitycardiacimaginginthemanagementofpatientswithhypertrophiccardiomyopathy",
+    "comparisonofphotoncountingandenergyintegratingcomputedcoronarytomographyangiographyforcoronaryarterydisease",
+    "coronaryctangiographyguidedmanagementofpatientswithstablechestpain10yearoutcomesfromthescotheartrandomisedcontrolledtrialinscotland",
+    "efficacyandsafetyofdigitalisglycosidesinheartfailureametaanalysis"
   ],
-  "bulletins": [],
-  "derniere_execution": "2026-08-21"
+  "bulletins": [
+    {
+      "date": "2026-08-23",
+      "fichier": "bulletin-2026-08-23.pdf",
+      "nb": 4,
+      "crit": 1
+    }
+  ],
+  "derniere_execution": "2026-08-23"
 }

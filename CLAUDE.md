@@ -1,7 +1,15 @@
-# Veille Cardio — contexte du projet
+# Pause Cardio — contexte du projet
 
-Ce dépôt contient **un seul fichier utile : `index.html`**, publié automatiquement par GitHub Pages sur
-**https://hacuubo.github.io/veille-cardio/**. C'est un tableau de bord de veille scientifique en cardiologie.
+Le projet s'appelle **Pause Cardio**, descriptif : *« Screening des sorties hebdo, assisté par IA. »*
+(nom choisi le 23/08/2026 ; le dépôt et l'URL gardent pour l'instant l'ancien nom `veille-cardio`, un nom
+de domaine propre est prévu). Le fichier principal est **`index.html`**, publié automatiquement par
+GitHub Pages sur **https://hacuubo.github.io/veille-cardio/**. C'est un tableau de bord de veille
+scientifique en cardiologie.
+
+Ambition à moyen terme : devenir une source reconnue de la cardiologie française, collecter des
+inscriptions au bulletin, et servir la visibilité du centre de Rodez. La feuille de route en cinq phases
+(site → audience → application web installable → stores) a été établie le 23/08/2026 ; l'app native n'est
+pas la première étape.
 
 ## À qui ça sert
 
@@ -16,9 +24,11 @@ Structure : sections par **surspécialité** → sous-groupes par **année** (an
 → articles triés par **niveau d'impact**.
 
 - Surspécialités (`data-spec`) : `rythmo` (Rythmologie), `interv` (Interventionnel & structurel),
+  `imagerie` (Imagerie cardiaque — coroscanner, IRM cardiaque, échocardiographie et ETT de stress),
   `ic` (Insuffisance cardiaque), `cmh` (Cardiomyopathies & myocardites), `prev` (Prévention),
-  `sport` (Cardiologie du sport · CFX/VO₂ max). En créer une nouvelle si besoin (imagerie, valvulopathies,
-  SCA) avec sa couleur, sa section et sa puce de filtre.
+  `sport` (Cardiologie du sport · CFX/VO₂ max). En créer une nouvelle si besoin (valvulopathies, SCA)
+  avec sa couleur (`--series-N`), sa section, sa puce de filtre **et son entrée dans la table `SPECS`
+  du script en bas de page** ainsi que dans `outils/bulletin.mjs`.
 - Niveaux (`data-lvl`) : `crit` = changement de pratique probable (marqué « ★ À la une », liséré rouge,
   placé en tête de son année) ; `warn` = à connaître ; `watch` = veille, à suivre.
   Ordre dans chaque année : crit → warn → watch.
@@ -46,9 +56,18 @@ automatiquement par le script en bas de `index.html`** à partir du HTML des car
 au format long habituel (`<article class="card">` avec `.top`, `<h3>`, `.meta`, `.sum`, `.actions`, `.fiche`)
 et l'accordéon se fabrique tout seul. Ne pas écrire de cartes « déjà compactes ».
 
-Autres règles de mise en page : aucun texte d'introduction entre le titre de la page et les filtres de
-surspécialité ; pas de tuiles de statistiques ; l'en-tête tient en une ligne discrète (nombre de sorties +
-date de mise à jour).
+Autres règles de mise en page :
+
+- En-tête : une ligne discrète (nombre de sorties + date de mise à jour + lien vers le dernier bulletin),
+  puis le titre **PAUSE CARDIO**, puis la seule ligne de descriptif *« Screening des sorties hebdo,
+  assisté par IA. »*. Rien d'autre entre le descriptif et les filtres, et pas de tuiles de statistiques.
+- Les puces de surspécialité sont disposées **en grille ordonnée** (`.filters .row.grid .chips`) :
+  trois colonnes sur ordinateur, deux sur téléphone, et « Toutes les surspécialités » sur toute la
+  largeur. Ne pas revenir à une simple ligne de puces qui s'enchaînent.
+- **Écran d'ouverture** : au chargement, un plein écran affiche « PAUSE CARDIO » avec un tracé ECG qui se
+  dessine, puis s'efface sur l'accueil (moins de 2 secondes). Il se saute d'un clic ou d'une touche, ne
+  rejoue pas dans la même session (`sessionStorage`), et est neutralisé si le lecteur a demandé moins
+  d'animations. Le balisage est en tête de `<body>` (`#splash`), les styles sous « écran d'ouverture ».
 
 ## Mise à jour
 
@@ -122,5 +141,9 @@ sessions Sports & Exercise Cardiology (EAPC) et Care of the Athletic Heart.
 
 - 19/08/2026 — création du tableau de bord, puis « édition zéro » : rattrapage complet 2025–2026,
   66 sorties dont 11 en changement de pratique probable.
+- 21/08/2026 — bulletin PDF hebdomadaire (`outils/faire-bulletin.sh`) et envoi par e-mail.
+- 23/08/2026 — le projet devient **Pause Cardio** : nouveau titre et descriptif, écran d'ouverture,
+  filtres de surspécialité en grille, création de la surspécialité **Imagerie cardiaque** (4 premières
+  sorties, dont SCOT-HEART à 10 ans).
 - Autres projets de Robin sur ce compte GitHub : `site-cardios` (site vitrine du cabinet, déployé sur
   Netlify) et `planning-indispo` (application d'indisponibilités des cardiologues, également sur Netlify).

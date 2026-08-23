@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -----------------------------------------------------------------------------
-# Veille Cardio — envoi du bulletin hebdomadaire par e-mail.
+# Pause Cardio — envoi du bulletin hebdomadaire par e-mail.
 #
 #   python3 outils/envoyer-bulletin.py            # envoie le dernier bulletin
 #   python3 outils/envoyer-bulletin.py --pdf bulletin/exemple.pdf
@@ -87,8 +87,8 @@ def corps_html(entrees, date_iso, nom_pdf):
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#fcfcfb;border:1px solid rgba(11,11,11,.10);border-radius:14px;padding:24px 22px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#111">
   <tr><td>
     <div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#898781;font-weight:700">Bulletin hebdomadaire &middot; Centre de Cardiologie de Rodez</div>
-    <div style="font-size:22px;font-weight:700;margin-top:4px">Veille Cardio <span style="color:#d03b3b">&#10084;</span> Nouveautés de la semaine</div>
-    <div style="font-size:14px;color:#52514e;margin-top:4px">Semaine du {en_francais(date_iso)}</div>
+    <div style="font-size:24px;font-weight:800;margin-top:4px;letter-spacing:-.01em">PAUSE CARDIO <span style="color:#d03b3b">&#10084;</span></div>
+    <div style="font-size:14px;color:#52514e;margin-top:4px">Nouveautés de la semaine du {en_francais(date_iso)}</div>
     <div style="font-size:15px;color:#333;margin:16px 0 4px">{chapeau}</div>
   </td></tr>
   <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0">{''.join(lignes)}</table></td></tr>
@@ -108,7 +108,7 @@ def corps_html(entrees, date_iso, nom_pdf):
 
 
 def corps_texte(entrees, date_iso):
-    lignes = [f"Veille Cardio — nouveautés de la semaine du {en_francais(date_iso)}", ""]
+    lignes = [f"Pause Cardio — nouveautés de la semaine du {en_francais(date_iso)}", ""]
     for e in entrees:
         lignes.append(('★ ' if e['une'] else '- ') + f"[{e['spec']} · {e['niveau']}] {e['titre']}")
         if e['meta']:
@@ -150,11 +150,11 @@ def main():
     n = len(entrees)
     nb_une = sum(1 for e in entrees if e['une'])
     if n:
-        sujet = f"Veille Cardio · {n} nouveauté{'s' if n > 1 else ''} — {en_francais(date_iso)}"
+        sujet = f"Pause Cardio · {n} nouveauté{'s' if n > 1 else ''} — {en_francais(date_iso)}"
         if nb_une:
             sujet += f" (dont {nb_une} ★ changement de pratique)"
     else:
-        sujet = f"Veille Cardio · bulletin du {en_francais(date_iso)}"
+        sujet = f"Pause Cardio · bulletin du {en_francais(date_iso)}"
 
     expediteur = os.environ.get('GMAIL_ADRESSE', '').strip()
     motdepasse = os.environ.get('GMAIL_MOT_DE_PASSE_APPLICATION', '').replace(' ', '').strip()
@@ -170,7 +170,7 @@ def main():
 
     msg = EmailMessage()
     msg['Subject'] = sujet
-    msg['From'] = f"Veille Cardio <{expediteur or 'veille@exemple.fr'}>"
+    msg['From'] = f"Pause Cardio <{expediteur or 'veille@exemple.fr'}>"
     msg['To'] = expediteur or destinataires[0]        # les autres lecteurs restent en copie cachée
     msg['Reply-To'] = expediteur or destinataires[0]
     msg.set_content(corps_texte(entrees, date_iso))

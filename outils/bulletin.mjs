@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* -----------------------------------------------------------------------------
- * Veille Cardio — fabrique du bulletin hebdomadaire
+ * Pause Cardio — fabrique du bulletin hebdomadaire
  *
  * Compare les articles présents dans index.html à ceux déjà signalés la semaine
  * précédente (mémorisés dans bulletin/etat.json). S'il y a du nouveau, écrit un
@@ -74,6 +74,7 @@ const SPECS = {
   ic:     { nom: 'Insuffisance cardiaque',            couleur: '#1baf7a' },
   cmh:    { nom: 'Cardiomyopathies & myocardites',    couleur: '#4a3aa7' },
   prev:   { nom: 'Prévention',                        couleur: '#e87ba4' },
+  imagerie: { nom: 'Imagerie cardiaque',            couleur: '#0f95a8' },
   sport:  { nom: 'Cardiologie du sport · CFX/VO₂ max',couleur: '#eda100' },
 };
 const NIVEAUX = {
@@ -84,7 +85,7 @@ const NIVEAUX = {
 
 function lireArticles(html) {
   const articles = [];
-  const re = /<article class="card"([^>]*)>([\s\S]*?)<\/article>/g;
+  const re = /<article class="card[^"]*"([^>]*)>([\s\S]*?)<\/article>/g;
   let m;
   while ((m = re.exec(html))) {
     const [, attrs, corps] = m;
@@ -155,7 +156,7 @@ function rendreBulletin(nouveaux, dateIso) {
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Veille Cardio — bulletin du ${enFrancais(dateIso)}</title>
+<title>Pause Cardio — bulletin du ${enFrancais(dateIso)}</title>
 <style>
   @page { size: A4; margin: 14mm 13mm 15mm; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -166,7 +167,7 @@ function rendreBulletin(nouveaux, dateIso) {
 
   header.tete { border-bottom: 2px solid #111; padding-bottom: 7px; margin-bottom: 4px; }
   .tete .sur { font-size: 8pt; letter-spacing: .10em; text-transform: uppercase; color: #6b6a66; font-weight: 700; }
-  .tete h1 { font-size: 17pt; font-weight: 700; margin-top: 3px; letter-spacing: -.01em; }
+  .tete h1 { font-size: 19pt; font-weight: 800; margin-top: 3px; letter-spacing: -.01em; }
   .tete h1 .c { color: #d03b3b; }
   .tete .date { font-size: 9.5pt; color: #52514e; margin-top: 3px; }
   .chapeau { margin: 12px 0 16px; font-size: 10.5pt; color: #333; }
@@ -202,13 +203,13 @@ function rendreBulletin(nouveaux, dateIso) {
 <div class="page">
   <header class="tete">
     <div class="sur">Bulletin hebdomadaire &middot; Centre de Cardiologie de Rodez</div>
-    <h1>Veille Cardio <span class="c">&#10084;</span> Nouveaut&eacute;s de la semaine</h1>
-    <div class="date">Semaine du ${enFrancais(dateIso)}</div>
+    <h1>PAUSE CARDIO <span class="c">&#10084;</span></h1>
+    <div class="date">Nouveaut&eacute;s de la semaine du ${enFrancais(dateIso)}</div>
   </header>
   <p class="chapeau">${chapeau}</p>
 ${entrees}
   <footer class="pied">
-    Tableau de bord complet (65+ sorties, recherche FR/EN, fiches de lecture) :
+    Tableau de bord complet &mdash; toutes les sorties, recherche FR/EN, fiches de lecture :
     <a href="https://hacuubo.github.io/veille-cardio/">hacuubo.github.io/veille-cardio</a><br>
     <b>Fiches r&eacute;dig&eacute;es par Claude &mdash; &agrave; valider par le lecteur avant toute application clinique.</b>
   </footer>
@@ -230,7 +231,7 @@ function rendreArchives(bulletins) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Veille Cardio — bulletins hebdomadaires</title>
+<title>Pause Cardio — bulletins hebdomadaires</title>
 <style>
   :root { color-scheme: light dark; --page:#f9f9f7; --surface:#fcfcfb; --texte:#0b0b0b;
           --doux:#52514e; --muet:#898781; --bord:rgba(11,11,11,.10); --rouge:#d03b3b; }
@@ -258,7 +259,7 @@ function rendreArchives(bulletins) {
 </head>
 <body>
 <div class="wrap">
-  <div class="eyebrow">Veille Cardio &middot; archives</div>
+  <div class="eyebrow">Pause Cardio &middot; archives</div>
   <h1>Bulletins hebdomadaires <span class="c">&#10084;</span></h1>
   <a class="retour" href="../">&#8592; Retour au tableau de bord</a>
   ${bulletins.length ? `<ul>${lignes}\n  </ul>` : '<p class="vide">Aucun bulletin pour le moment — le premier para&icirc;tra d&egrave;s qu&rsquo;une nouvelle sortie sera ajout&eacute;e au tableau de bord.<br><br>En attendant, voici <a href="exemple.pdf">un exemple de bulletin</a> pour voir &agrave; quoi il ressemblera.</p>'}

@@ -83,15 +83,17 @@ Trois attributs et un bloc à renseigner **sur chaque nouvelle carte** :
 
 Autres règles de mise en page :
 
-- En-tête (`header.site-head`) : **rien au-dessus du logo**. Dans l'ordre — le nom **PAUSE CARDIO**
-  (`h1.brand-name`) avec la marque ECG à droite (`svg.brand-mark`), la ligne discrète `.eyebrow`
-  (nombre de sorties + date de mise à jour + lien vers le dernier bulletin) juste en dessous, le liséré
-  rouge `.brand-rule`, puis la seule ligne de descriptif *« Screening transversal hebdomadaire de sorties
-  bibliographiques d'ampleur, assisté par IA. »*. Rien d'autre entre le descriptif et les filtres, et pas
-  de tuiles de statistiques.
+- En-tête (`header.site-head`) : **rien au-dessus du logo**, et tout est **centré**. Dans l'ordre — le nom
+  **PAUSE CARDIO** (`h1.brand-name`) au milieu, avec la marque ECG (`svg.brand-mark`) à sa droite sur
+  ordinateur et **sous le nom sur téléphone** (moins de 560 px) ; la ligne discrète `.eyebrow` (nombre de
+  sorties + date de mise à jour + lien vers le dernier bulletin) ; le liséré rouge `.brand-rule` ; puis la
+  seule ligne de descriptif *« Screening transversal hebdomadaire de sorties bibliographiques d'ampleur,
+  assisté par IA. »*. Rien d'autre entre le descriptif et les filtres, et pas de tuiles de statistiques.
 - Sous le descriptif vient le bandeau **« Cette semaine »** (construit par le script à partir des
-  `data-ajout` les plus récents : jusqu'à six sorties, cliquables, qui lèvent les filtres et déplient
-  l'article). **Puis** les filtres. Rien d'autre, et pas de tuiles de statistiques.
+  `data-ajout` les plus récents : jusqu'à six sorties). Il est **replié par défaut** — une seule ligne
+  « Cette semaine · N sorties ajoutées le … » avec un chevron ; un clic déplie la liste, un second la
+  replie. Les lignes dépliées sont cliquables : elles lèvent les filtres et déplient l'article. **Puis**
+  les filtres. Rien d'autre, et pas de tuiles de statistiques.
 - Les puces de surspécialité sont disposées **en grille ordonnée** (`.filters .row.grid .chips`) :
   trois colonnes sur ordinateur, deux sur téléphone, et « Toutes les surspécialités » sur toute la
   largeur. Ne pas revenir à une simple ligne de puces qui s'enchaînent.
@@ -115,7 +117,8 @@ se déroule, s'interrompt sur les deux barreaux rouges, repart. Il existe en deu
 SVG écrit à la main dans `index.html` — `svg.brand-mark` (92 × 26) en tête de page, `svg.splash-mark`
 (300 × 90) sur l'écran d'ouverture. **Ne pas redessiner ces tracés** ni déplacer le bloc `#splash`, qui
 doit rester juste après `<body>` avec son script inline (c'est ce qui évite le clignotement au retour).
-Sous 370 px de large la marque d'en-tête est masquée : comprimée, les complexes QRS deviennent illisibles.
+Sous 560 px de large la marque d'en-tête passe sous le nom, centrée : côte à côte, le tracé serait comprimé
+et les complexes QRS deviendraient illisibles.
 
 Couleurs de marque : `--brand` (#d03b3b en clair, #e2564f en sombre) et `--brand-line` pour le tracé.
 Ne pas les confondre avec `--status-critical`, réservé au niveau « changement de pratique » des fiches.

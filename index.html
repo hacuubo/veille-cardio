@@ -86,6 +86,7 @@
   .splash h1 .beat { color: var(--status-critical); display: inline-block; animation: splash-beat 1s ease-in-out .35s 2; }
   .splash .splash-tag {
     font-size: clamp(11.5px, 2.6vw, 14px); color: var(--text-muted); letter-spacing: .04em; text-align: center;
+    max-width: 30em; line-height: 1.45;
     animation: splash-rise .7s cubic-bezier(.2,.7,.2,1) .12s both;
   }
   .splash svg { width: min(320px, 62vw); height: 30px; color: var(--status-critical); }
@@ -121,6 +122,12 @@
   .chip:hover { background: var(--wash); }
   .chip[aria-pressed="true"] { border-color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--text-primary); font-weight: 600; }
   .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .chip.yr::before { content: "\2713"; font-size: 11px; color: var(--text-muted); }
+  .chip.yr[aria-pressed="true"]::before { color: var(--status-good); }
+  .filters .hint { font-size: 11.5px; color: var(--text-muted); font-style: italic; }
+  @media (max-width: 560px) { .filters .hint { display: none; } }
+  .no-year { display: none; margin: 20px 0; padding: 16px; border: 1px dashed var(--baseline); border-radius: 12px; color: var(--text-muted); font-size: 14px; text-align: center; }
+  body.no-year-on .no-year { display: block; }
 
   /* ---------- barre de recherche ---------- */
   .searchbar { position: relative; margin: 18px 0 4px; }
@@ -262,7 +269,7 @@
     <svg viewBox="0 0 320 30" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 15 H86 l6 0 l5 -11 l7 22 l5 -11 H180 l7 0 l4 -4 l5 8 l4 -4 H320"></path>
     </svg>
-    <div class="splash-tag">Screening des sorties hebdo, assist&eacute; par IA.</div>
+    <div class="splash-tag">Screening transversal hebdomadaire de sorties bibliographiques d&rsquo;ampleur, assist&eacute; par IA.</div>
   </div>
 </div>
 <script>
@@ -286,7 +293,7 @@
   <header>
     <div class="eyebrow">69 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 23 ao&ucirc;t 2026<!--BULLETIN:DEBUT--> &middot; <a class="bl" href="bulletin/bulletin-2026-08-23.pdf">&#128196; Bulletin du 23 août</a> <a class="bl bl-arch" href="bulletin/">archives</a><!--BULLETIN:FIN--></div>
     <h1>PAUSE CARDIO <span class="beat">&#10084;</span></h1>
-    <div class="sub">Screening des sorties hebdo, assist&eacute; par IA.</div>
+    <div class="sub">Screening transversal hebdomadaire de sorties bibliographiques d&rsquo;ampleur, assist&eacute; par IA.</div>
   </header>
 
   <div class="filters" id="filters">
@@ -305,9 +312,9 @@
     </div>
     <div class="row">
       <span class="lab">Ann&eacute;e</span>
-      <button class="chip" data-f="year" data-v="all" aria-pressed="true">2025 + 2026</button>
-      <button class="chip" data-f="year" data-v="2026" aria-pressed="false">2026 — en cours</button>
-      <button class="chip" data-f="year" data-v="2025" aria-pressed="false">2025</button>
+      <button class="chip yr" data-f="year" data-v="2026" aria-pressed="true">2026 — en cours</button>
+      <button class="chip yr" data-f="year" data-v="2025" aria-pressed="true">2025</button>
+      <span class="hint">les deux ann&eacute;es sont affich&eacute;es&nbsp;; cliquez pour en retirer une</span>
     </div>
     <div class="row">
       <span class="lab">Niveau</span>
@@ -325,6 +332,7 @@
   </div>
 
   <div class="res-bar" id="resbar"></div>
+  <div class="no-year">Aucune ann&eacute;e s&eacute;lectionn&eacute;e — cochez 2026 ou 2025 pour afficher les sorties.</div>
   <div class="no-res">Aucun r&eacute;sultat — essayez un synonyme (fran&ccedil;ais ou anglais) ou un acronyme (FA/AF, CMH/HCM, IC/HF&hellip;).</div>
 
   <!-- ================= RYTHMOLOGIE ================= -->
@@ -1857,20 +1865,21 @@
       row.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   });
-  const state = { spec: 'all', year: 'all', lvl: 'all', q: '' };
+  const state = { spec: 'all', annees: new Set(['2026', '2025']), lvl: 'all', q: '' };
   function applyFilters() {
     const terms = norm(state.q).split(/\s+/).filter(Boolean);
     document.body.classList.toggle('searching', terms.length > 0);
     let shown = 0;
     document.querySelectorAll('article.card[data-spec]').forEach(card => {
       const ok = (state.spec === 'all' || card.dataset.spec === state.spec)
-              && (state.year === 'all' || card.dataset.year === state.year)
+              && state.annees.has(card.dataset.year)
               && (state.lvl === 'all' || card.dataset.lvl === state.lvl)
               && terms.every(t => card.dataset.hay.includes(t));
       card.style.display = ok ? '' : 'none';
       if (ok) shown++;
     });
     document.body.classList.toggle('empty', terms.length > 0 && shown === 0);
+    document.body.classList.toggle('no-year-on', state.annees.size === 0);
     const rb = document.getElementById('resbar');
     if (terms.length > 0) rb.textContent = shown + (shown > 1 ? ' résultats' : ' résultat') + ' pour « ' + state.q.trim() + ' » — toutes surspécialités confondues';
     document.querySelectorAll('section.spec').forEach(sec => {
@@ -1890,8 +1899,15 @@
   document.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const f = chip.dataset.f;
-      state[f] = chip.dataset.v;
-      document.querySelectorAll('.chip[data-f="' + f + '"]').forEach(c => c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'));
+      if (f === 'year') {
+        // les années se cochent et se décochent indépendamment
+        const actif = chip.getAttribute('aria-pressed') === 'true';
+        chip.setAttribute('aria-pressed', actif ? 'false' : 'true');
+        if (actif) state.annees.delete(chip.dataset.v); else state.annees.add(chip.dataset.v);
+      } else {
+        state[f] = chip.dataset.v;
+        document.querySelectorAll('.chip[data-f="' + f + '"]').forEach(c => c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'));
+      }
       applyFilters();
     });
   });

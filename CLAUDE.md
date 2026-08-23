@@ -1,7 +1,7 @@
 # Pause Cardio — contexte du projet
 
-Le projet s'appelle **Pause Cardio**, descriptif : *« Screening des sorties hebdo, assisté par IA. »*
-(nom choisi le 23/08/2026 ; le dépôt et l'URL gardent pour l'instant l'ancien nom `veille-cardio`, un nom
+Le projet s'appelle **Pause Cardio**, descriptif : *« Screening transversal hebdomadaire de sorties
+bibliographiques d'ampleur, assisté par IA. »* (nom choisi le 23/08/2026 ; le dépôt et l'URL gardent pour l'instant l'ancien nom `veille-cardio`, un nom
 de domaine propre est prévu). Le fichier principal est **`index.html`**, publié automatiquement par
 GitHub Pages sur **https://hacuubo.github.io/veille-cardio/**. C'est un tableau de bord de veille
 scientifique en cardiologie.
@@ -29,6 +29,10 @@ Structure : sections par **surspécialité** → sous-groupes par **année** (an
   `sport` (Cardiologie du sport · CFX/VO₂ max). En créer une nouvelle si besoin (valvulopathies, SCA)
   avec sa couleur (`--series-N`), sa section, sa puce de filtre **et son entrée dans la table `SPECS`
   du script en bas de page** ainsi que dans `outils/bulletin.mjs`.
+- Années : deux puces, **2026 et 2025, cochées toutes les deux par défaut**, que le lecteur décoche
+  indépendamment (ce ne sont pas des boutons exclusifs). Si les deux sont décochées, la page affiche le
+  message « Aucune année sélectionnée ». Au passage à 2027, ajouter la puce de l'année en cours et
+  retirer la plus ancienne.
 - Niveaux (`data-lvl`) : `crit` = changement de pratique probable (marqué « ★ À la une », liséré rouge,
   placé en tête de son année) ; `warn` = à connaître ; `watch` = veille, à suivre.
   Ordre dans chaque année : crit → warn → watch.
@@ -59,8 +63,9 @@ et l'accordéon se fabrique tout seul. Ne pas écrire de cartes « déjà compac
 Autres règles de mise en page :
 
 - En-tête : une ligne discrète (nombre de sorties + date de mise à jour + lien vers le dernier bulletin),
-  puis le titre **PAUSE CARDIO**, puis la seule ligne de descriptif *« Screening des sorties hebdo,
-  assisté par IA. »*. Rien d'autre entre le descriptif et les filtres, et pas de tuiles de statistiques.
+  puis le titre **PAUSE CARDIO**, puis la seule ligne de descriptif
+  *« Screening transversal hebdomadaire de sorties bibliographiques d'ampleur, assisté par IA. »*.
+  Rien d'autre entre le descriptif et les filtres, et pas de tuiles de statistiques.
 - Les puces de surspécialité sont disposées **en grille ordonnée** (`.filters .row.grid .chips`) :
   trois colonnes sur ordinateur, deux sur téléphone, et « Toutes les surspécialités » sur toute la
   largeur. Ne pas revenir à une simple ligne de puces qui s'enchaînent.

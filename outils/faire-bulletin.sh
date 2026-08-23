@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # -----------------------------------------------------------------------------
-# Veille Cardio — fabrique le bulletin PDF de la semaine.
+# Pause Cardio — fabrique le bulletin PDF de la semaine.
 #
 #   bash outils/faire-bulletin.sh
 #

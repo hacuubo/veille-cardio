@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Veille Cardio — Dernières sorties</title>
+<title>Pause Cardio — Screening des sorties hebdo</title>
 <style>
   :root {
     color-scheme: light;
@@ -20,6 +20,7 @@
     --series-3: #1baf7a; /* insuffisance cardiaque */
     --series-4: #eda100; /* cardiologie du sport / CFX */
     --series-5: #e87ba4; /* prévention */
+    --series-6: #0f95a8; /* imagerie cardiaque */
     --series-7: #4a3aa7; /* cardiomyopathies & myocardites */
     --status-critical: #d03b3b;
     --status-warning:  #fab219;
@@ -42,6 +43,7 @@
       --series-3: #199e70;
       --series-4: #c98500;
       --series-5: #d55181;
+      --series-6: #35b6c9;
       --series-7: #9085e9;
       --wash: rgba(255,255,255,0.06);
     }
@@ -68,13 +70,64 @@
   .tile .k { font-size: 26px; font-weight: 700; }
   .tile .l { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; }
 
+
+  /* ---------- écran d'ouverture ---------- */
+  .splash {
+    position: fixed; inset: 0; z-index: 200; background: var(--page);
+    display: grid; place-items: center; gap: 0; cursor: pointer;
+    animation: splash-out 2s cubic-bezier(.4,0,.2,1) forwards;
+  }
+  .splash-in { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 0 22px; max-width: 100%; }
+  .splash h1 {
+    font-size: clamp(28px, 9vw, 82px); font-weight: 800; letter-spacing: -.02em;
+    line-height: 1.04; text-align: center; text-wrap: balance; max-width: 100%;
+    animation: splash-rise .7s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .splash h1 .beat { color: var(--status-critical); display: inline-block; animation: splash-beat 1s ease-in-out .35s 2; }
+  .splash .splash-tag {
+    font-size: clamp(11.5px, 2.6vw, 14px); color: var(--text-muted); letter-spacing: .04em; text-align: center;
+    max-width: 30em; line-height: 1.45;
+    animation: splash-rise .7s cubic-bezier(.2,.7,.2,1) .12s both;
+  }
+  .splash svg { width: min(320px, 62vw); height: 30px; color: var(--status-critical); }
+  .splash svg path {
+    fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 640; stroke-dashoffset: 640; animation: splash-trace 1.15s cubic-bezier(.5,0,.3,1) .18s forwards;
+  }
+  .splash.gone { animation: splash-fast .28s ease forwards; }
+  @keyframes splash-rise  { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes splash-trace { to { stroke-dashoffset: 0; } }
+  @keyframes splash-beat  { 0%,100% { transform: scale(1); } 22% { transform: scale(1.22); } 44% { transform: scale(1); } }
+  @keyframes splash-out   { 0%,68% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+  @keyframes splash-fast  { to { opacity: 0; visibility: hidden; } }
+  @media (prefers-reduced-motion: reduce) {
+    .splash { animation: splash-fast .35s ease .5s forwards; }
+    .splash h1, .splash .splash-tag, .splash svg path { animation: none; opacity: 1; transform: none; stroke-dashoffset: 0; }
+  }
+
   .filters { margin-top: 26px; }
   .filters .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .filters .row.grid { align-items: flex-start; margin-bottom: 14px; }
+  .filters .grid .chips {
+    flex: 1; display: grid; gap: 7px;
+    grid-template-columns: repeat(auto-fit, minmax(272px, 1fr));
+  }
+  .filters .grid .chips .chip {
+    justify-content: flex-start; text-align: left; line-height: 1.25;
+    padding: 8px 14px; min-height: 36px;
+  }
+  .filters .grid .chips .chip.all { grid-column: 1 / -1; }
   .filters .lab { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); font-weight: 600; width: 108px; flex: none; }
   .chip { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; font-family: inherit; }
   .chip:hover { background: var(--wash); }
   .chip[aria-pressed="true"] { border-color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--text-primary); font-weight: 600; }
   .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .chip.yr::before { content: "\2713"; font-size: 11px; color: var(--text-muted); }
+  .chip.yr[aria-pressed="true"]::before { color: var(--status-good); }
+  .filters .hint { font-size: 11.5px; color: var(--text-muted); font-style: italic; }
+  @media (max-width: 560px) { .filters .hint { display: none; } }
+  .no-year { display: none; margin: 20px 0; padding: 16px; border: 1px dashed var(--baseline); border-radius: 12px; color: var(--text-muted); font-size: 14px; text-align: center; }
+  body.no-year-on .no-year { display: block; }
 
   /* ---------- barre de recherche ---------- */
   .searchbar { position: relative; margin: 18px 0 4px; }
@@ -155,6 +208,8 @@
     .tiles { grid-template-columns: repeat(2, 1fr); }
     .radar { grid-template-columns: 1fr; }
     .filters .lab { width: 100%; }
+    .filters .grid .chips { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .filters .grid .chips .chip { font-size: 12.5px; padding: 7px 11px; min-height: 42px; align-items: center; }
   }
   /* ---------- lignes compactes (accordéon) ---------- */
   .card { padding: 0; overflow: hidden; margin-bottom: 5px; border-radius: 10px; }
@@ -207,29 +262,59 @@
 </style>
 </head>
 <body>
+
+<div class="splash" id="splash" aria-hidden="true">
+  <div class="splash-in">
+    <h1>PAUSE CARDIO <span class="beat">&#10084;</span></h1>
+    <svg viewBox="0 0 320 30" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 15 H86 l6 0 l5 -11 l7 22 l5 -11 H180 l7 0 l4 -4 l5 8 l4 -4 H320"></path>
+    </svg>
+    <div class="splash-tag">Screening transversal hebdomadaire de sorties bibliographiques d&rsquo;ampleur, assist&eacute; par IA.</div>
+  </div>
+</div>
+<script>
+  // l'ouverture se saute d'un clic, et ne rejoue pas si l'on revient sur la page
+  (function () {
+    var s = document.getElementById('splash');
+    if (!s) return;
+    var passe = false;
+    try { passe = sessionStorage.getItem('pc-ouverture') === '1'; } catch (e) {}
+    if (passe) { s.style.display = 'none'; return; }
+    try { sessionStorage.setItem('pc-ouverture', '1'); } catch (e) {}
+    var fermer = function () { s.classList.add('gone'); };
+    s.addEventListener('click', fermer);
+    window.addEventListener('keydown', fermer, { once: true });
+    setTimeout(function () { s.style.display = 'none'; }, 2400);
+  })();
+</script>
+
 <div class="wrap">
 
   <header>
-    <div class="eyebrow">Veille scientifique &middot; 74 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 22 ao&ucirc;t 2026<!--BULLETIN:DEBUT--> &middot; <a class="bl" href="bulletin/bulletin-2026-08-22.pdf">&#128196; Bulletin du 22 août</a> <a class="bl bl-arch" href="bulletin/">archives</a><!--BULLETIN:FIN--></div>
-    <h1>Veille Cardio <span class="beat">&#10084;</span> Derni&egrave;res sorties</h1>
+    <div class="eyebrow">78 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 23 ao&ucirc;t 2026<!--BULLETIN:DEBUT--> &middot; <a class="bl" href="bulletin/bulletin-2026-08-23.pdf">&#128196; Bulletin du 23 août</a> <a class="bl bl-arch" href="bulletin/">archives</a><!--BULLETIN:FIN--></div>
+    <h1>PAUSE CARDIO <span class="beat">&#10084;</span></h1>
+    <div class="sub">Screening transversal hebdomadaire de sorties bibliographiques d&rsquo;ampleur, assist&eacute; par IA.</div>
   </header>
 
   <div class="filters" id="filters">
-    <div class="row">
+    <div class="row grid">
       <span class="lab">Sursp&eacute;cialit&eacute;</span>
-      <button class="chip" data-f="spec" data-v="all" aria-pressed="true">Toutes</button>
-      <button class="chip" data-f="spec" data-v="rythmo" aria-pressed="false"><span class="dot" style="background:var(--series-1)"></span>Rythmologie</button>
-      <button class="chip" data-f="spec" data-v="interv" aria-pressed="false"><span class="dot" style="background:var(--series-2)"></span>Interventionnel &amp; structurel</button>
-      <button class="chip" data-f="spec" data-v="ic" aria-pressed="false"><span class="dot" style="background:var(--series-3)"></span>Insuffisance cardiaque</button>
-      <button class="chip" data-f="spec" data-v="cmh" aria-pressed="false"><span class="dot" style="background:var(--series-7)"></span>Cardiomyopathies &amp; myocardites</button>
-      <button class="chip" data-f="spec" data-v="prev" aria-pressed="false"><span class="dot" style="background:var(--series-5)"></span>Pr&eacute;vention</button>
-      <button class="chip" data-f="spec" data-v="sport" aria-pressed="false"><span class="dot" style="background:var(--series-4)"></span>Cardiologie du sport &middot; CFX/VO&#8322;&nbsp;max</button>
+      <div class="chips">
+        <button class="chip all" data-f="spec" data-v="all" aria-pressed="true">Toutes les sursp&eacute;cialit&eacute;s</button>
+        <button class="chip" data-f="spec" data-v="rythmo" aria-pressed="false"><span class="dot" style="background:var(--series-1)"></span>Rythmologie</button>
+        <button class="chip" data-f="spec" data-v="interv" aria-pressed="false"><span class="dot" style="background:var(--series-2)"></span>Interventionnel &amp; structurel</button>
+        <button class="chip" data-f="spec" data-v="imagerie" aria-pressed="false"><span class="dot" style="background:var(--series-6)"></span>Imagerie cardiaque</button>
+        <button class="chip" data-f="spec" data-v="ic" aria-pressed="false"><span class="dot" style="background:var(--series-3)"></span>Insuffisance cardiaque</button>
+        <button class="chip" data-f="spec" data-v="cmh" aria-pressed="false"><span class="dot" style="background:var(--series-7)"></span>Cardiomyopathies &amp; myocardites</button>
+        <button class="chip" data-f="spec" data-v="prev" aria-pressed="false"><span class="dot" style="background:var(--series-5)"></span>Pr&eacute;vention</button>
+        <button class="chip" data-f="spec" data-v="sport" aria-pressed="false"><span class="dot" style="background:var(--series-4)"></span>Cardiologie du sport &middot; CFX/VO&#8322;&nbsp;max</button>
+      </div>
     </div>
     <div class="row">
       <span class="lab">Ann&eacute;e</span>
-      <button class="chip" data-f="year" data-v="all" aria-pressed="true">2025 + 2026</button>
-      <button class="chip" data-f="year" data-v="2026" aria-pressed="false">2026 — en cours</button>
-      <button class="chip" data-f="year" data-v="2025" aria-pressed="false">2025</button>
+      <button class="chip yr" data-f="year" data-v="2026" aria-pressed="true">2026 — en cours</button>
+      <button class="chip yr" data-f="year" data-v="2025" aria-pressed="true">2025</button>
+      <span class="hint">les deux ann&eacute;es sont affich&eacute;es&nbsp;; cliquez pour en retirer une</span>
     </div>
     <div class="row">
       <span class="lab">Niveau</span>
@@ -247,6 +332,7 @@
   </div>
 
   <div class="res-bar" id="resbar"></div>
+  <div class="no-year">Aucune ann&eacute;e s&eacute;lectionn&eacute;e — cochez 2026 ou 2025 pour afficher les sorties.</div>
   <div class="no-res">Aucun r&eacute;sultat — essayez un synonyme (fran&ccedil;ais ou anglais) ou un acronyme (FA/AF, CMH/HCM, IC/HF&hellip;).</div>
 
   <!-- ================= RYTHMOLOGIE ================= -->
@@ -861,6 +947,117 @@
       <div class="actions">
         <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
         <a class="btn" href="https://www.tctmd.com/news/sirolimus-coated-balloon-meets-mark-de-novo-lesions-and-isr-selution" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= IMAGERIE CARDIAQUE ================= -->
+  <section class="spec" data-spec="imagerie">
+    <div class="spec-h"><span class="dot" style="background:var(--series-6)"></span><h2>Imagerie cardiaque</h2><span class="count">4 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
+
+    <article class="card" data-spec="imagerie" data-year="2026" data-lvl="warn" data-kw="insuffisance tricuspide IT fuite tricuspide tricuspid regurgitation TR imagerie multimodalit&eacute; multimodality imaging &eacute;chocardiographie echocardiography scanner CT IRM CMR centre valvulaire heart valve centre adressage referral TTVR annuloplastie ESC EACTS valvulopathies">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Consensus d&rsquo;experts &middot; parcours de soins</span>
+      </div>
+      <h3>Tricuspid regurgitation: standardized stepwise work-up from referral to expert heart valve centre</h3>
+      <div class="meta"><b>European Heart Journal</b> &middot; ao&ucirc;t 2026 &middot; 47(30):4055&#8211;4085</div>
+      <p class="sum">Longtemps n&eacute;glig&eacute;e, l&rsquo;insuffisance tricuspide dispose d&eacute;sormais de solutions chirurgicales et percutan&eacute;es &mdash; encore faut-il adresser les bons patients au bon moment. Ce document propose un bilan standardis&eacute;, &eacute;tape par &eacute;tape, du cabinet jusqu&rsquo;au centre valvulaire expert, en pr&eacute;cisant ce qu&rsquo;on attend de l&rsquo;&eacute;chocardiographie, du scanner et de l&rsquo;IRM &agrave; chaque niveau.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/41895721/" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Devant une insuffisance tricuspide significative, quel bilan doit &ecirc;tre fait en ville, et &agrave; partir de quand adresser &agrave; un centre valvulaire&nbsp;?</p>
+        <h4>&Agrave; retenir</h4>
+        <ul>
+          <li>Algorithmes pratiques couvrant l&rsquo;&eacute;valuation clinique et biologique, l&rsquo;imagerie multimodalit&eacute; (ETT, scanner, IRM) puis l&rsquo;&eacute;valuation h&eacute;modynamique invasive.</li>
+          <li>Le choix th&eacute;rapeutique d&eacute;pend de l&rsquo;&eacute;tiologie, du stade, des comorbidit&eacute;s, du risque op&eacute;ratoire et de la faisabilit&eacute; anatomique &mdash; d&rsquo;o&ugrave; l&rsquo;int&eacute;r&ecirc;t d&rsquo;un bilan homog&egrave;ne avant l&rsquo;adressage.</li>
+          <li>S&rsquo;aligne sur les recommandations ESC/EACTS 2025 sur les valvulopathies et insiste sur la d&eacute;cision multidisciplinaire.</li>
+        </ul>
+        <h4>Limites</h4>
+        <p>Consensus d&rsquo;experts, pas un essai randomis&eacute;&nbsp;: il harmonise les pratiques, il ne d&eacute;montre pas de b&eacute;n&eacute;fice clinique propre.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> utile comme grille de r&eacute;f&eacute;rence pour d&eacute;cider quand une IT cesse d&rsquo;&ecirc;tre &laquo;&nbsp;fonctionnelle et surveill&eacute;e&nbsp;&raquo; pour devenir une question de centre expert &mdash; et pour envoyer un dossier d&eacute;j&agrave; complet plut&ocirc;t qu&rsquo;une simple ETT.</div>
+        <div class="sig">Fiche r&eacute;dig&eacute;e par Claude &mdash; &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="imagerie" data-year="2026" data-lvl="warn" data-kw="cardiomyopathie hypertrophique CMH HCM imagerie multimodalit&eacute; multimodality imaging EACVI consensus &eacute;chocardiographie echocardiography IRM cardiaque cardiac MRI CMR scanner CT obstruction gradient fibrose rehaussement tardif late gadolinium enhancement risque rythmique sudden death">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Consensus clinique EACVI</span>
+      </div>
+      <h3>Role of multi-modality cardiac imaging in the management of patients with hypertrophic cardiomyopathy</h3>
+      <div class="meta"><b>European Heart Journal &ndash; Cardiovascular Imaging</b> &middot; f&eacute;vrier 2026 &middot; 27(3):369&#8211;399</div>
+      <p class="sum">Premi&egrave;re refonte depuis le consensus EACVI de 2015, et la premi&egrave;re depuis les recommandations ESC 2023 sur les cardiomyopathies&nbsp;: le document reprend, technique par technique, ce qu&rsquo;apportent l&rsquo;&eacute;chocardiographie, l&rsquo;IRM et le scanner au diagnostic, &agrave; l&rsquo;&eacute;valuation de l&rsquo;obstruction, &agrave; la stratification du risque et au suivi de la CMH.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/41184097/" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Chez un patient suivi pour CMH, quel examen d&rsquo;imagerie demander, &agrave; quel moment, et que peut-on en attendre de plus que l&rsquo;&eacute;chocardiographie&nbsp;?</p>
+        <h4>&Agrave; retenir</h4>
+        <ul>
+          <li>Approche explicitement multimodalit&eacute;&nbsp;: les techniques sont pr&eacute;sent&eacute;es comme compl&eacute;mentaires, pas concurrentes.</li>
+          <li>Actualise le consensus de 2015 &agrave; la lumi&egrave;re des donn&eacute;es accumul&eacute;es depuis et des recommandations ESC 2023.</li>
+          <li>Document long et didactique, con&ccedil;u comme une r&eacute;f&eacute;rence &agrave; garder sous la main plut&ocirc;t qu&rsquo;&agrave; lire d&rsquo;un trait.</li>
+        </ul>
+        <h4>Limites</h4>
+        <p>Consensus d&rsquo;experts&nbsp;: il d&eacute;crit l&rsquo;&eacute;tat de l&rsquo;art et ne remplace pas les recommandations formelles.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> la r&eacute;f&eacute;rence &agrave; ouvrir avant de prescrire une IRM chez un patient CMH, et pour savoir ce qu&rsquo;il faut demander pr&eacute;cis&eacute;ment au radiologue plut&ocirc;t qu&rsquo;un examen &laquo;&nbsp;standard&nbsp;&raquo;.</div>
+        <div class="sig">Fiche r&eacute;dig&eacute;e par Claude &mdash; &agrave; valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-spec="imagerie" data-year="2026" data-lvl="watch" data-kw="scanner coronaire coroscanner coronary CT angiography CCTA compteur de photons photon-counting detector PCD-CT calcium blooming st&eacute;nose stenosis coronarographie invasive coronary angiography m&eacute;ta-analyse meta-analysis score calcique calcium score">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille &mdash; &agrave; suivre</span>
+        <span class="type">M&eacute;ta-analyse &middot; 15 &eacute;tudes, 11 350 patients</span>
+      </div>
+      <h3>Comparison of Photon-Counting and Energy-Integrating Computed Coronary Tomography Angiography for Coronary Artery Disease</h3>
+      <div class="meta"><b>JACC: Cardiovascular Imaging</b> &middot; juillet 2026 &middot; en ligne avant impression</div>
+      <p class="sum">Les scanners &agrave; comptage de photons, qui arrivent progressivement dans les centres d&rsquo;imagerie, r&eacute;duisent l&rsquo;artefact de &laquo;&nbsp;blooming&nbsp;&raquo; calcique&nbsp;: la s&eacute;v&eacute;rit&eacute; de la st&eacute;nose est revue &agrave; la baisse pour 34,2&nbsp;% des vaisseaux (IC95&nbsp;% 27,3&#8211;41,9), avec moins de coronarographies d&rsquo;aval (OR 0,71 [0,63&#8211;0,79]) et une rentabilit&eacute; sup&eacute;rieure de celles qui sont r&eacute;alis&eacute;es (OR 1,43 [1,14&#8211;1,79]). Effet le plus net quand le score calcique est &lt;&nbsp;400.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/42479005/" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+
+<div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-spec="imagerie" data-year="2025" data-lvl="crit" data-kw="coroscanner scanner coronaire coronary CT angiography CCTA douleur thoracique stable stable chest pain angor angina SCOT-HEART pr&eacute;vention prevention statine statin infarctus myocardial infarction coronarographie invasive angiography ath&eacute;rome plaque">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Essai randomis&eacute; &middot; SCOT-HEART &agrave; 10 ans</span>
+      </div>
+      <h3>Coronary CT angiography-guided management of patients with stable chest pain: 10-year outcomes from the SCOT-HEART randomised controlled trial in Scotland</h3>
+      <div class="meta"><b>The Lancet</b> &middot; janvier 2025 &middot; 405(10475):329&#8211;337</div>
+      <p class="sum">4&nbsp;146 patients adress&eacute;s pour douleur thoracique stable, randomis&eacute;s entre prise en charge habituelle et prise en charge compl&eacute;t&eacute;e d&rsquo;un coroscanner, suivis 10 ans par registres nationaux&nbsp;: le b&eacute;n&eacute;fice observ&eacute; &agrave; 5 ans se maintient, et il passe par la pr&eacute;vention plut&ocirc;t que par la revascularisation.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/39863372/" target="_blank" rel="noopener">Article original &#8599;</a>
+        <a class="btn" href="https://doi.org/10.1016/S0140-6736(24)02679-5" target="_blank" rel="noopener">Texte int&eacute;gral (acc&egrave;s libre) &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Chez un patient explor&eacute; pour douleur thoracique stable, ajouter un coroscanner &agrave; la prise en charge habituelle change-t-il le pronostic &agrave; long terme&nbsp;?</p>
+        <h4>M&eacute;thode</h4>
+        <p>Essai ouvert, multicentrique, 12 consultations de cardiologie en &Eacute;cosse&nbsp;; 4&nbsp;146 patients de 18 &agrave; 75 ans (&acirc;ge moyen 57 ans, 44&nbsp;% de femmes) randomis&eacute;s 1:1 entre soins habituels + coroscanner et soins habituels seuls. Analyse pr&eacute;sp&eacute;cifi&eacute;e &agrave; 10 ans, en intention de traiter, sur cha&icirc;nage aux registres nationaux.</p>
+        <h4>R&eacute;sultats</h4>
+        <ul>
+          <li>Crit&egrave;re principal (d&eacute;c&egrave;s coronaire ou IDM non fatal) &agrave; 10 ans&nbsp;: <b>6,6&nbsp;% vs 8,2&nbsp;%</b> &mdash; HR 0,79 (IC95&nbsp;% 0,63&#8211;0,99), p&nbsp;=&nbsp;0,044.</li>
+          <li>IDM non fatal&nbsp;: 4,3&nbsp;% vs 6,0&nbsp;% &mdash; HR 0,72 (0,55&#8211;0,94), p&nbsp;=&nbsp;0,017. &Eacute;v&eacute;nements cardiovasculaires majeurs&nbsp;: 8,3&nbsp;% vs 10,3&nbsp;% &mdash; HR 0,80 (0,65&#8211;0,97).</li>
+          <li>Mortalit&eacute; toutes causes, mortalit&eacute; CV et AVC non fatals&nbsp;: pas de diff&eacute;rence.</li>
+          <li>Revascularisations&nbsp;: identiques (15,2&nbsp;% vs 15,3&nbsp;%). Traitements pr&eacute;ventifs prescrits&nbsp;: 55,9&nbsp;% vs 49,0&nbsp;% (OR 1,17 [1,01&#8211;1,36]).</li>
+        </ul>
+        <h4>Limites</h4>
+        <p>Essai ouvert, recrutement 2010&#8211;2014 (le &laquo;&nbsp;standard de soins&nbsp;&raquo; comparateur a vieilli), p du crit&egrave;re principal &agrave; la limite de la significativit&eacute;, population &eacute;cossaise adress&eacute;e en consultation sp&eacute;cialis&eacute;e.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> le coroscanner ne sert pas seulement &agrave; &eacute;liminer une coronaropathie&nbsp;: en montrant l&rsquo;ath&eacute;rome, il d&eacute;clenche la pr&eacute;vention, et c&rsquo;est par l&agrave; que passe le b&eacute;n&eacute;fice &mdash; les revascularisations, elles, ne changent pas. Argument solide pour privil&eacute;gier l&rsquo;imagerie anatomique en premi&egrave;re intention devant une douleur thoracique stable, et surtout pour <em>traiter</em> ce qu&rsquo;on y voit.</div>
+        <div class="sig">Fiche r&eacute;dig&eacute;e par Claude &mdash; &agrave; valider par le lecteur avant application clinique.</div>
       </div>
     </article>
   </section>
@@ -1814,6 +2011,7 @@
   const SPECS = {
     rythmo: ['--series-1', 'Rythmologie'],
     interv: ['--series-2', 'Interventionnel & structurel'],
+    imagerie: ['--series-6', 'Imagerie cardiaque'],
     ic:     ['--series-3', 'Insuffisance cardiaque'],
     cmh:    ['--series-7', 'Cardiomyopathies & myocardites'],
     prev:   ['--series-5', 'Prévention'],
@@ -1882,20 +2080,21 @@
       row.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   });
-  const state = { spec: 'all', year: 'all', lvl: 'all', q: '' };
+  const state = { spec: 'all', annees: new Set(['2026', '2025']), lvl: 'all', q: '' };
   function applyFilters() {
     const terms = norm(state.q).split(/\s+/).filter(Boolean);
     document.body.classList.toggle('searching', terms.length > 0);
     let shown = 0;
     document.querySelectorAll('article.card[data-spec]').forEach(card => {
       const ok = (state.spec === 'all' || card.dataset.spec === state.spec)
-              && (state.year === 'all' || card.dataset.year === state.year)
+              && state.annees.has(card.dataset.year)
               && (state.lvl === 'all' || card.dataset.lvl === state.lvl)
               && terms.every(t => card.dataset.hay.includes(t));
       card.style.display = ok ? '' : 'none';
       if (ok) shown++;
     });
     document.body.classList.toggle('empty', terms.length > 0 && shown === 0);
+    document.body.classList.toggle('no-year-on', state.annees.size === 0);
     const rb = document.getElementById('resbar');
     if (terms.length > 0) rb.textContent = shown + (shown > 1 ? ' résultats' : ' résultat') + ' pour « ' + state.q.trim() + ' » — toutes surspécialités confondues';
     document.querySelectorAll('section.spec').forEach(sec => {
@@ -1915,8 +2114,15 @@
   document.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const f = chip.dataset.f;
-      state[f] = chip.dataset.v;
-      document.querySelectorAll('.chip[data-f="' + f + '"]').forEach(c => c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'));
+      if (f === 'year') {
+        // les années se cochent et se décochent indépendamment
+        const actif = chip.getAttribute('aria-pressed') === 'true';
+        chip.setAttribute('aria-pressed', actif ? 'false' : 'true');
+        if (actif) state.annees.delete(chip.dataset.v); else state.annees.add(chip.dataset.v);
+      } else {
+        state[f] = chip.dataset.v;
+        document.querySelectorAll('.chip[data-f="' + f + '"]').forEach(c => c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'));
+      }
       applyFilters();
     });
   });

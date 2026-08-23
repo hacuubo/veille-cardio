@@ -72,6 +72,7 @@ const SPECS = {
   rythmo: { nom: 'Rythmologie',                       couleur: '#2a78d6' },
   interv: { nom: 'Interventionnel & structurel',      couleur: '#eb6834' },
   ic:     { nom: 'Insuffisance cardiaque',            couleur: '#1baf7a' },
+  usic:   { nom: 'USIC · Réanimation cardiologique',  couleur: '#a8348c' },
   cmh:    { nom: 'Cardiomyopathies & myocardites',    couleur: '#4a3aa7' },
   prev:   { nom: 'Prévention',                        couleur: '#e87ba4' },
   imagerie: { nom: 'Imagerie cardiaque',            couleur: '#0f95a8' },

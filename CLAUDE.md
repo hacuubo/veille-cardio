@@ -31,8 +31,9 @@ Structure : sections par **surspécialité** → sous-groupes par **année** (an
   du script en bas de page** ainsi que dans `outils/bulletin.mjs`.
 - Années : deux puces, **2026 et 2025, cochées toutes les deux par défaut**, que le lecteur décoche
   indépendamment (ce ne sont pas des boutons exclusifs). Si les deux sont décochées, la page affiche le
-  message « Aucune année sélectionnée ». Au passage à 2027, ajouter la puce de l'année en cours et
-  retirer la plus ancienne.
+  message « Aucune année sélectionnée ». Les puces et les en-têtes d'année ne portent que le millésime
+  (pas de mention « en cours »). Au passage à 2027, ajouter la puce de l'année en cours et retirer la
+  plus ancienne.
 - Niveaux (`data-lvl`) : `crit` = changement de pratique probable (marqué « ★ À la une », liséré rouge,
   placé en tête de son année) ; `warn` = à connaître ; `watch` = veille, à suivre.
   Ordre dans chaque année : crit → warn → watch.
@@ -66,8 +67,13 @@ Trois attributs et un bloc à renseigner **sur chaque nouvelle carte** :
 - `data-ajout="AAAA-MM-JJ"` — **obligatoire** : date d'ajout. C'est elle qui déclenche la pastille verte
   « nouveau » (pendant 7 jours) et qui alimente le bandeau « Cette semaine ». Sans elle, la sortie passe
   inaperçue.
-- `data-fr="…"` — accroche française de six à dix mots, obligatoire pour les niveaux `crit`, souhaitable
-  pour `warn`. Elle s'affiche sous le titre anglais et dans le bandeau « Cette semaine ».
+- `data-fr="…"` — accroche française de six à dix mots, **obligatoire sur chaque carte, quel que soit
+  le niveau** : c'est la ligne que Robin lit sous le titre anglais, et celle qui s'affiche dans le bandeau
+  « Cette semaine ». Elle doit se lire à voix haute sans buter : une phrase de français courant, verbe
+  conjugué, jamais un chiffre laissé en suspens en fin de phrase (écrire « chez le diabétique, un dépistage
+  sur quatre révèle une insuffisance cardiaque ignorée », pas « … révèle une IC ignorée sur quatre »).
+  Développer les sigles peu courants, garder ceux que tout cardiologue lit d'un coup d'œil (FA, FEVG, TAVI).
+  Espace insécable avant `:`, `?` et `%`.
 - `<div class="cle">…</div>` — **juste après `<p class="sum">`**, hors de la fiche : le chiffre clé de
   l'étude, repris mot pour mot de la fiche (HR, IC95 %, pourcentages, avec les nombres en `<b>`). Le script
   l'affiche en bandeau « Résultat principal ». À omettre pour les recommandations sans chiffre unique.

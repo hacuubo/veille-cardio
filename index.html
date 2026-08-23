@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pause Cardio — Screening des sorties hebdo</title>
+<title>PAUSE CARDIO — veille cardiologique</title>
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-title" content="Pause Cardio">
 <style>
   :root {
     color-scheme: light;
@@ -22,9 +25,12 @@
     --series-5: #e87ba4; /* prévention */
     --series-6: #0f95a8; /* imagerie cardiaque */
     --series-7: #4a3aa7; /* cardiomyopathies & myocardites */
+    --series-8: #a8348c; /* USIC · réanimation cardiologique */
     --status-critical: #d03b3b;
     --status-warning:  #fab219;
     --status-good:     #0ca30c;
+    --brand:      #d03b3b;
+    --brand-line: #c3c2b7;
     --wash: rgba(11,11,11,0.045);
   }
   @media (prefers-color-scheme: dark) {
@@ -45,6 +51,9 @@
       --series-5: #d55181;
       --series-6: #35b6c9;
       --series-7: #9085e9;
+      --series-8: #c569b0;
+      --brand:      #e2564f;
+      --brand-line: #383835;
       --wash: rgba(255,255,255,0.06);
     }
   }
@@ -55,13 +64,34 @@
   }
   .wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 64px; }
 
-  header .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
-  header .eyebrow a.bl { color: var(--status-critical); font-weight: 700; text-decoration: none;
-                         border-bottom: 1px solid currentColor; white-space: nowrap; }
-  header .eyebrow a.bl-arch { color: var(--text-muted); font-weight: 600; border-bottom-color: var(--baseline); margin-left: 6px; }
-  header h1 { font-size: 28px; font-weight: 700; margin-top: 4px; }
-  header h1 .beat { color: var(--status-critical); }
-  header .sub { color: var(--text-secondary); margin-top: 6px; font-size: 14.5px; }
+  /* ---------- marque : rien au-dessus du logo ---------- */
+  .site-head { margin-bottom: 26px; }
+  .brand-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding-bottom: 14px;
+  }
+  .brand-name {
+    font-size: clamp(21px, 5.4vw, 29px); font-weight: 700; letter-spacing: .15em;
+    line-height: 1.1; color: var(--text-primary);
+  }
+  .site-head .eyebrow { font-size: 11.5px; color: var(--text-muted); letter-spacing: .01em;
+                        margin-top: 6px; font-weight: 500; }
+  .site-head .eyebrow a.bl { color: var(--brand); font-weight: 700; text-decoration: none;
+                             border-bottom: 1px solid currentColor; white-space: nowrap; }
+  .site-head .eyebrow a.bl-arch { color: var(--text-muted); font-weight: 600; border-bottom-color: var(--baseline); margin-left: 6px; }
+  .brand-mark { flex: none; width: 92px; height: 26px; }
+  .brand-mark .trace { stroke: var(--brand-line); stroke-width: 1.6;
+    fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .brand-mark .bar { fill: var(--brand); }
+  .brand-rule { height: 6px; border-radius: 3px; background: var(--brand); }
+  .site-head .sub { color: var(--text-secondary); margin-top: 14px; font-size: 14.5px; }
+
+  @media (max-width: 520px) {
+    .brand-mark { width: 74px; height: 21px; }
+    .brand-name { letter-spacing: .12em; }
+  }
+  /* sous 370 px le trac&eacute; s'&eacute;craserait : mieux vaut ne rien montrer */
+  @media (max-width: 370px) { .brand-mark { display: none; } }
   .demo-note { margin-top: 14px; padding: 10px 14px; border: 1px dashed var(--baseline); border-radius: 10px; font-size: 13px; color: var(--text-secondary); background: var(--surface-1); }
   .demo-note strong { color: var(--text-primary); }
 
@@ -79,35 +109,43 @@
   }
   .splash-in { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 0 22px; max-width: 100%; }
   .splash h1 {
-    font-size: clamp(28px, 9vw, 82px); font-weight: 800; letter-spacing: -.02em;
-    line-height: 1.04; text-align: center; text-wrap: balance; max-width: 100%;
-    animation: splash-rise .7s cubic-bezier(.2,.7,.2,1) both;
+    font-size: clamp(20px, 5.6vw, 40px); font-weight: 700; letter-spacing: .2em;
+    line-height: 1.1; text-align: center; max-width: 100%;
+    animation: splash-rise .7s cubic-bezier(.2,.7,.2,1) 1.9s both;
   }
-  .splash h1 .beat { color: var(--status-critical); display: inline-block; animation: splash-beat 1.15s ease-in-out .35s 4; }
   .splash .splash-tag {
     font-size: clamp(11.5px, 2.6vw, 14px); color: var(--text-muted); letter-spacing: .04em; text-align: center;
     max-width: 30em; line-height: 1.45;
-    animation: splash-rise .7s cubic-bezier(.2,.7,.2,1) .12s both;
+    animation: splash-rise .7s cubic-bezier(.2,.7,.2,1) 2.15s both;
   }
   .splash-passer {
     position: absolute; left: 0; right: 0; bottom: 28px; text-align: center;
     font-size: 12px; color: var(--text-muted); letter-spacing: .05em;
     animation: splash-rise .8s ease 1.8s both;
   }
-  .splash svg { width: min(320px, 62vw); height: 30px; color: var(--status-critical); }
-  .splash svg path {
-    fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-    stroke-dasharray: 640; stroke-dashoffset: 640; animation: splash-trace 1.6s cubic-bezier(.5,0,.3,1) .18s forwards;
+  /* le logo : le trac&eacute; se d&eacute;roule, s'interrompt sur les deux barreaux, repart */
+  .splash-mark { width: min(330px, 74vw); height: auto; color: var(--text-primary); }
+  .splash-mark .trace {
+    fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
   }
+  .splash-mark .t1 { stroke-dasharray: 230; stroke-dashoffset: 230;
+    animation: splash-trace 1.15s cubic-bezier(.5,0,.3,1) .25s forwards; }
+  .splash-mark .t2 { stroke-dasharray: 220; stroke-dashoffset: 220;
+    animation: splash-trace 1.05s cubic-bezier(.5,0,.3,1) 1.6s forwards; }
+  .splash-mark .bar { fill: var(--brand); opacity: 0;
+    transform-box: fill-box; transform-origin: center; transform: scaleY(.25);
+    animation: splash-bar .42s cubic-bezier(.2,.8,.2,1) 1.35s forwards; }
+  .splash-mark .bar:nth-of-type(2) { animation-delay: 1.45s; }
   .splash.gone { animation: splash-fast .28s ease forwards; }
   @keyframes splash-rise  { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   @keyframes splash-trace { to { stroke-dashoffset: 0; } }
-  @keyframes splash-beat  { 0%,100% { transform: scale(1); } 22% { transform: scale(1.22); } 44% { transform: scale(1); } }
+  @keyframes splash-bar   { to { opacity: 1; transform: scaleY(1); } }
   @keyframes splash-out   { 0%,88% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
   @keyframes splash-fast  { to { opacity: 0; visibility: hidden; } }
   @media (prefers-reduced-motion: reduce) {
     .splash { animation: splash-fast .35s ease .5s forwards; }
-    .splash h1, .splash .splash-tag, .splash .splash-passer, .splash svg path { animation: none; opacity: 1; transform: none; stroke-dashoffset: 0; }
+    .splash h1, .splash .splash-tag, .splash .splash-passer,
+    .splash-mark .trace, .splash-mark .bar { animation: none; opacity: 1; transform: none; stroke-dashoffset: 0; }
   }
 
   .filters { margin-top: 26px; }
@@ -330,10 +368,13 @@
 
 <div class="splash" id="splash" aria-hidden="true">
   <div class="splash-in">
-    <h1>PAUSE CARDIO <span class="beat">&#10084;</span></h1>
-    <svg viewBox="0 0 320 30" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 15 H86 l6 0 l5 -11 l7 22 l5 -11 H180 l7 0 l4 -4 l5 8 l4 -4 H320"></path>
+    <svg class="splash-mark" viewBox="0 0 300 90" aria-hidden="true" focusable="false">
+      <path class="trace t1" d="M0,45 H50 l6,-6 l6,12 l6,-6 H80 l6,-22 l8,44 l7,-22 H132"/>
+      <rect class="bar" x="138" y="21" width="9" height="48" rx="3"/>
+      <rect class="bar" x="154" y="21" width="9" height="48" rx="3"/>
+      <path class="trace t2" d="M170,45 H186 l6,-22 l8,44 l7,-22 H300"/>
     </svg>
+    <h1>PAUSE CARDIO</h1>
     <div class="splash-tag">Screening transversal hebdomadaire de sorties bibliographiques d&rsquo;ampleur, assist&eacute; par IA.</div>
   </div>
   <div class="splash-passer">Touchez l&rsquo;&eacute;cran pour entrer</div>
@@ -356,9 +397,20 @@
 
 <div class="wrap">
 
-  <header>
-    <div class="eyebrow">78 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 23 ao&ucirc;t 2026<!--BULLETIN:DEBUT--> &middot; <a class="bl" href="bulletin/bulletin-2026-08-23.pdf">&#128196; Bulletin du 23 août</a> <a class="bl bl-arch" href="bulletin/">archives</a><!--BULLETIN:FIN--></div>
-    <h1>PAUSE CARDIO <span class="beat">&#10084;</span></h1>
+  <header class="site-head">
+    <div class="brand-row">
+      <div>
+        <h1 class="brand-name">PAUSE CARDIO</h1>
+        <div class="eyebrow">84 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 23 ao&ucirc;t 2026<!--BULLETIN:DEBUT--> &middot; <a class="bl" href="bulletin/bulletin-2026-08-23.pdf">&#128196; Bulletin du 23 août</a> <a class="bl bl-arch" href="bulletin/">archives</a><!--BULLETIN:FIN--></div>
+      </div>
+      <svg class="brand-mark" viewBox="0 0 92 26" aria-hidden="true" focusable="false">
+        <path class="trace" d="M0,13 H12 l2.5,-3 l3,6 l2.5,-3 H24 l3,-7 l4,15 l3,-8 H38"/>
+        <rect class="bar" x="42" y="3" width="4" height="20" rx="1.5"/>
+        <rect class="bar" x="50" y="3" width="4" height="20" rx="1.5"/>
+        <path class="trace" d="M58,13 H66 l3,-7 l4,15 l3,-8 H92"/>
+      </svg>
+    </div>
+    <div class="brand-rule"></div>
     <div class="sub">Screening transversal hebdomadaire de sorties bibliographiques d&rsquo;ampleur, assist&eacute; par IA.</div>
   </header>
 
@@ -371,6 +423,7 @@
         <button class="chip" data-f="spec" data-v="interv" aria-pressed="false"><span class="dot" style="background:var(--series-2)"></span>Interventionnel &amp; structurel</button>
         <button class="chip" data-f="spec" data-v="imagerie" aria-pressed="false"><span class="dot" style="background:var(--series-6)"></span>Imagerie cardiaque</button>
         <button class="chip" data-f="spec" data-v="ic" aria-pressed="false"><span class="dot" style="background:var(--series-3)"></span>Insuffisance cardiaque</button>
+        <button class="chip" data-f="spec" data-v="usic" aria-pressed="false"><span class="dot" style="background:var(--series-8)"></span>USIC &middot; R&eacute;animation cardiologique</button>
         <button class="chip" data-f="spec" data-v="cmh" aria-pressed="false"><span class="dot" style="background:var(--series-7)"></span>Cardiomyopathies &amp; myocardites</button>
         <button class="chip" data-f="spec" data-v="prev" aria-pressed="false"><span class="dot" style="background:var(--series-5)"></span>Pr&eacute;vention</button>
         <button class="chip" data-f="spec" data-v="sport" aria-pressed="false"><span class="dot" style="background:var(--series-4)"></span>Cardiologie du sport &middot; CFX/VO&#8322;&nbsp;max</button>
@@ -1387,6 +1440,156 @@
     </article>
   </section>
 
+  <!-- ================= USIC / RÉANIMATION CARDIOLOGIQUE ================= -->
+  <section class="spec" data-spec="usic">
+    <div class="spec-h"><span class="dot" style="background:var(--series-8)"></span><h2>USIC &middot; Réanimation cardiologique</h2><span class="count">6 sorties</span></div>
+
+    <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="line"></span></div>
+
+    <article class="card" data-ajout="2026-08-23" data-spec="usic" data-year="2026" data-lvl="warn" data-kw="arrêt cardiaque cardiac arrest oxygène oxygen hyperoxie hyperoxia SpO2 FiO2 réanimation intensive care ventilation mécanique mechanical ventilation coma neuroprotection LOGICAL devenir fonctionnel functional outcome" data-fr="Après un arrêt cardiaque, viser un oxygène bas n’apporte rien">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; LOGICAL</span>
+      </div>
+      <h3>Conservative Oxygen for Unresponsive Patients after Cardiac Arrest</h3>
+      <div class="meta"><b>NEJM</b> &middot; 6 août 2026 &middot; 395(6):571&#8211;581</div>
+      <p class="sum">1 840 adultes restés comateux et ventilés en réanimation après un arrêt cardiaque, randomisés entre oxygénation conservatrice (alarme haute de SpO&#8322; à 95 %, FiO&#8322; ramenée à 0,21 tant que la SpO&#8322; reste au-dessus de 90 %) et oxygénation libérale : la survie avec bon devenir fonctionnel à 180 jours est la même.</p>
+      <div class="cle">Survie avec devenir fonctionnel favorable à 180 jours : <b>38,2 %</b> vs <b>39,7 %</b> &mdash; RR <b>0,97</b> (IC95 % 0,87&ndash;1,09)</div>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://doi.org/10.1056/NEJMoa2513814" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Chez le patient qui reste comateux après un arrêt cardiaque, faut-il brider l’oxygène pour limiter l’hyperoxie&nbsp;?</p>
+        <h4>Méthode</h4>
+        <p>Essai randomisé dans 53 réanimations d’Australie, de Nouvelle-Zélande et d’Irlande. 882 patients en stratégie conservatrice, 958 en stratégie libérale ; même plancher de SpO&#8322; (90 %) dans les deux bras. Critère principal : survie avec un score GOS-E ≥ 5 à 180 jours.</p>
+        <h4>Résultats</h4>
+        <p>313/819 (38,2 %) contre 353/890 (39,7 %) &mdash; risque relatif 0,97 (IC95 % 0,87&ndash;1,09 ; p = 0,65). Aucun événement indésirable rapporté.</p>
+        <h4>Limites</h4>
+        <p>Les deux stratégies partagent le même seuil bas de SpO&#8322; : l’essai compare deux plafonds d’oxygénation, pas l’oxygène à son absence. Population limitée aux patients non réveillés et ventilés.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> rien ne justifie de raboter la FiO&#8322; après un arrêt cardiaque récupéré : on maintient une SpO&#8322; au-dessus de 90 % sans viser plus bas, et l’énergie se porte sur les autres paramètres du post-arrêt.</div>
+        <div class="sig">Fiche rédigée par Claude &mdash; à valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-ajout="2026-08-23" data-spec="usic" data-year="2026" data-lvl="warn" data-kw="choc cardiogénique cardiogenic shock ECMO VA-ECMO assistance circulatoire mechanical circulatory support sevrage weaning lévosimendan levosimendan inotrope arythmie ventriculaire ventricular arrhythmia LEVOECMO réanimation" data-fr="Le lévosimendan n’accélère pas le sevrage de l’ECMO">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; LEVOECMO</span>
+      </div>
+      <h3>Levosimendan to Facilitate Weaning From ECMO in Patients With Severe Cardiogenic Shock: The LEVOECMO Randomized Clinical Trial</h3>
+      <div class="meta"><b>JAMA</b> &middot; 6 janvier 2026 &middot; 335(1):60&#8211;69 &middot; essai français</div>
+      <p class="sum">205 patients en choc cardiogénique sévère, sous ECMO veino-artérielle depuis moins de 48 heures, randomisés lévosimendan précoce contre placebo dans onze réanimations françaises : le sevrage de l’ECMO n’est pas plus rapide, et les arythmies ventriculaires sont plus fréquentes sous lévosimendan.</p>
+      <div class="cle">Sevrage réussi à 30 jours : <b>68,3 %</b> vs <b>68,3 %</b> &middot; arythmies ventriculaires <b>17,8 %</b> vs <b>8,7 %</b></div>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://doi.org/10.1001/jama.2025.19843" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Le lévosimendan administré tôt raccourcit-il l’assistance chez le patient sous ECMO veino-artérielle pour choc cardiogénique potentiellement réversible&nbsp;?</p>
+        <h4>Méthode</h4>
+        <p>Essai randomisé en double aveugle contre placebo, onze réanimations françaises, 205 patients (âge médian 58 ans). Causes du choc : post-cardiotomie 38,5 %, infarctus 27,3 %, myocardite 13,7 %. Critère principal : délai jusqu’au sevrage réussi de l’ECMO à 30 jours.</p>
+        <h4>Résultats</h4>
+        <p>69/101 contre 71/104 sevrés (68,3 % dans les deux bras) ; sHR 1,02 (IC95 % 0,74&ndash;1,39 ; p = 0,92). Durée d’ECMO 5 contre 6 jours, séjour en réanimation 18 contre 19 jours, mortalité à 60 jours 27,7 % contre 25,0 % : aucune différence significative. Arythmies ventriculaires plus fréquentes sous lévosimendan (différence absolue 9,2 % ; IC95 % 0,4&ndash;18,1).</p>
+        <h4>Limites</h4>
+        <p>Effectif modéré, causes de choc hétérogènes, et un taux de sevrage déjà élevé dans le bras placebo qui laisse peu de marge à l’amélioration.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> chez un patient adressé en centre d’assistance, ne pas attendre du lévosimendan qu’il raccourcisse l’ECMO ; son usage systématique se paie d’un excès d’arythmies ventriculaires.</div>
+        <div class="sig">Fiche rédigée par Claude &mdash; à valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-ajout="2026-08-23" data-spec="usic" data-year="2026" data-lvl="warn" data-kw="infarctus antérieur anterior STEMI décharge ventriculaire left ventricular unloading pompe micro-axiale microaxial flow pump Impella taille d’infarctus infarct size IRM cardiaque CMR reperfusion angioplastie primaire primary PCI STEMI-DTU" data-fr="Décharger le ventricule avant de désobstruer ne réduit pas l’infarctus">
+      <div class="top">
+        <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
+        <span class="type">Essai randomisé &middot; STEMI-DTU</span>
+      </div>
+      <h3>Left Ventricular Unloading in Anterior ST-Segment Elevation Myocardial Infarction Without Shock: The STEMI Door to Unload Randomized Controlled Trial</h3>
+      <div class="meta"><b>JACC</b> &middot; 7 juillet 2026 &middot; 88(1):76&#8211;90</div>
+      <p class="sum">527 patients avec infarctus antérieur sans choc, randomisés entre décharge du ventricule gauche par pompe micro-axiale pendant 30 minutes avant l’angioplastie et angioplastie immédiate : la taille de l’infarctus mesurée en IRM à J3&#8211;J5 est identique, avec davantage d’hémorragies et de complications vasculaires dans le bras décharge.</p>
+      <div class="cle">Taille d’infarctus rapportée à la masse VG : <b>30,8 %</b> vs <b>31,9 %</b> &mdash; différence <b>&minus;1,1 %</b> (IC95 % &minus;4,2 à 2,0)</div>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://doi.org/10.1016/j.jacc.2026.03.071" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Retarder volontairement la reperfusion de 30 minutes pour décharger le ventricule gauche réduit-il la taille de l’infarctus&nbsp;?</p>
+        <h4>Méthode</h4>
+        <p>Essai ouvert dans 55 hôpitaux de six pays. Adultes de 18 à 85 ans, sans infarctus antérieur connu, admis pour un infarctus antérieur débutant depuis 1 à 6 heures et sans choc cardiogénique. Critère principal : taille de l’infarctus rapportée à la masse ventriculaire gauche, en IRM à 3&#8211;5 jours.</p>
+        <h4>Résultats</h4>
+        <p>30,8 % ± 16,2 contre 31,9 % ± 16,9 (différence moyenne &minus;1,1 % ; IC95 % &minus;4,2 à 2,0 ; p = 0,50). Le temps d’ischémie total a été plus long dans le bras décharge, et les hémorragies majeures ou complications vasculaires à 30 jours y ont été plus fréquentes.</p>
+        <h4>Limites</h4>
+        <p>Stratégie testée dans le seul infarctus antérieur sans choc ; ne préjuge pas de la place de l’assistance micro-axiale dans le choc cardiogénique constitué.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> l’idée de décharger avant de désobstruer ne résiste pas à l’épreuve de l’essai. Hors choc, la règle reste la reperfusion la plus rapide possible &mdash; c’est le message à tenir au patient comme au correspondant.</div>
+        <div class="sig">Fiche rédigée par Claude &mdash; à valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-ajout="2026-08-23" data-spec="usic" data-year="2026" data-lvl="watch" data-kw="arrêt cardiaque extrahospitalier out-of-hospital cardiac arrest OHCA coronarographie coronary angiography immédiate différée rythme choquable shockable sans sus-décalage non-ST elevation COACT survie à 5 ans" data-fr="Arrêt cardiaque sans sus-décalage : rien ne presse pour la coronarographie">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Suivi à long terme &middot; COACT</span>
+      </div>
+      <h3>Immediate vs Delayed Coronary Angiography After Cardiac Arrest Without ST-Segment Elevation: 5-Year Outcomes From the COACT Randomized Trial</h3>
+      <div class="meta"><b>JACC</b> &middot; 28 avril 2026 &middot; 87(16):2134&#8211;2143</div>
+      <p class="sum">Suivi à 5 ans des patients de COACT (arrêt cardiaque récupéré, rythme choquable, sans sus-décalage du segment ST) : la survie reste comparable que la coronarographie soit immédiate ou différée &mdash; 54,8 % contre 51,8 % (HR 0,95 ; IC95 % 0,74&ndash;1,23). Les auteurs attribuent au hasard le bénéfice tardif observé au-delà de 90 jours dans une analyse exploratoire.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://doi.org/10.1016/j.jacc.2025.12.018" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+
+    <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
+
+    <article class="card" data-ajout="2026-08-23" data-spec="usic" data-year="2025" data-lvl="crit" data-kw="arrêt cardiaque cardiac arrest réanimation cardiopulmonaire cardiopulmonary resuscitation RCP CPR AHA ILCOR défibrillation defibrillation double séquentielle dual sequential soins post-arrêt post-cardiac arrest care contrôle thermique temperature control neuropronostic neuroprognostication recommandations guidelines 2025" data-fr="Réanimation cardiopulmonaire : les recommandations américaines entièrement refondues">
+      <div class="top">
+        <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
+        <span class="type">Recommandations AHA</span>
+      </div>
+      <h3>2025 American Heart Association Guidelines for Cardiopulmonary Resuscitation and Emergency Cardiovascular Care</h3>
+      <div class="meta"><b>Circulation</b> &middot; 21 octobre 2025 &middot; 152(16 suppl. 2)</div>
+      <p class="sum">Refonte complète des recommandations américaines de réanimation. Le volet réanimation avancée de l’adulte couvre défibrillation et cardioversion, abord des voies aériennes, médicaments et voies d’abord vasculaire, et prend position sur la double défibrillation séquentielle, la réanimation tête surélevée et l’échographie au lit du patient. Le volet soins post-arrêt fixe les objectifs de pression artérielle, d’oxygénation, de ventilation et de glycémie, et revoit contrôle thermique, coronarographie, assistance circulatoire, détection des crises convulsives et neuropronostic.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
+        <a class="btn" href="https://doi.org/10.1161/CIR.0000000000001376" target="_blank" rel="noopener">Réanimation avancée &#8599;</a>
+        <a class="btn" href="https://doi.org/10.1161/CIR.0000000000001375" target="_blank" rel="noopener">Soins post-arrêt &#8599;</a>
+      </div>
+      <div class="fiche">
+        <h4>Question clinique</h4>
+        <p>Qu’est-ce qui change dans la prise en charge de l’arrêt cardiaque, de la réanimation initiale jusqu’au pronostic neurologique&nbsp;?</p>
+        <h4>&Agrave; retenir</h4>
+        <ul>
+          <li>Réanimation avancée : recommandations actualisées sur la défibrillation et la cardioversion, les voies aériennes, les médicaments et les voies d’abord vasculaire, ainsi que sur la fibrillation et le flutter atriaux rapides en péri-arrêt.</li>
+          <li>Trois techniques discutées explicitement : double défibrillation séquentielle, réanimation tête surélevée, échographie au lit du patient.</li>
+          <li>Les règles d’arrêt de la réanimation sont précisées et adaptées au champ d’exercice de l’équipe préhospitalière, et le texte insiste sur la distinction entre arythmie causale et arythmie secondaire.</li>
+          <li>Soins post-arrêt : objectifs de pression artérielle, d’oxygénation, de ventilation et de glycémie, contrôle thermique (cible et durée), place de la coronarographie et de l’assistance circulatoire.</li>
+          <li>Le neuropronostic distingue désormais la prédiction d’une évolution favorable de celle d’une évolution défavorable, avec des sections neuves sur le neuromonitorage avancé et le myoclonus.</li>
+          <li>Un chapitre est consacré à l’après : accompagnement des survivants, des proches et des sauveteurs, et place du don d’organes.</li>
+        </ul>
+        <h4>Limites</h4>
+        <p>Recommandations américaines : elles ne remplacent pas les recommandations européennes de l’ERC, dont le calendrier de mise à jour est distinct.</p>
+        <div class="verdict"><b>Au cabinet&nbsp;:</b> c’est le texte de référence à avoir lu avant une garde en USIC, et l’argumentaire à citer pour la formation des équipes et l’implantation des défibrillateurs automatisés dans le bassin de vie.</div>
+        <div class="sig">Fiche rédigée par Claude &mdash; à valider par le lecteur avant application clinique.</div>
+      </div>
+    </article>
+
+    <article class="card" data-ajout="2026-08-23" data-spec="usic" data-year="2025" data-lvl="watch" data-kw="choc cardiogénique cardiogenic shock ACC consensus d’experts expert consensus SCAI stades staging shock team évaluation prise en charge management concise clinical guidance" data-fr="L’ACC publie son guide court sur le choc cardiogénique">
+      <div class="top">
+        <span class="badge watch">&#9678; Veille</span>
+        <span class="type">Consensus d’experts ACC</span>
+      </div>
+      <h3>2025 Concise Clinical Guidance: An ACC Expert Consensus Statement on the Evaluation and Management of Cardiogenic Shock</h3>
+      <div class="meta"><b>JACC</b> &middot; 29 avril 2025 &middot; 85(16):1618&#8211;1641</div>
+      <p class="sum">Consensus d’experts de l’American College of Cardiology consacré à l’évaluation et à la prise en charge du choc cardiogénique, publié dans la série courte &laquo; Concise Clinical Guidance &raquo;. Fiche de lecture à venir.</p>
+      <div class="actions">
+        <button class="btn ghost">&#9203; Fiche en pr&eacute;paration</button>
+        <a class="btn" href="https://doi.org/10.1016/j.jacc.2025.02.018" target="_blank" rel="noopener">Article original &#8599;</a>
+      </div>
+    </article>
+  </section>
+
   <!-- ================= CARDIOMYOPATHIES ================= -->
   <section class="spec" data-spec="cmh">
     <div class="spec-h"><span class="dot" style="background:var(--series-7)"></span><h2>Cardiomyopathies &amp; myocardites</h2><span class="count">12 sorties</span></div>
@@ -2088,6 +2291,7 @@
     interv: ['--series-2', 'Interventionnel & structurel'],
     imagerie: ['--series-6', 'Imagerie cardiaque'],
     ic:     ['--series-3', 'Insuffisance cardiaque'],
+    usic:   ['--series-8', 'USIC · Réanimation cardiologique'],
     cmh:    ['--series-7', 'Cardiomyopathies & myocardites'],
     prev:   ['--series-5', 'Prévention'],
     sport:  ['--series-4', 'Cardiologie du sport · CFX/VO₂ max']
@@ -2259,6 +2463,7 @@
       applyFilters();
     });
   });
+  applyFilters();
   const qInput = document.getElementById('q');
   qInput.addEventListener('input', () => { state.q = qInput.value; applyFilters(); });
   document.getElementById('qclear').addEventListener('click', () => { qInput.value = ''; state.q = ''; applyFilters(); qInput.focus(); });

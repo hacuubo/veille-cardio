@@ -25,8 +25,9 @@ Structure : sections par **surspécialité** → sous-groupes par **année** (an
 
 - Surspécialités (`data-spec`) : `rythmo` (Rythmologie), `interv` (Interventionnel & structurel),
   `imagerie` (Imagerie cardiaque — coroscanner, IRM cardiaque, échocardiographie et ETT de stress),
-  `ic` (Insuffisance cardiaque), `cmh` (Cardiomyopathies & myocardites), `prev` (Prévention),
-  `sport` (Cardiologie du sport · CFX/VO₂ max). En créer une nouvelle si besoin (valvulopathies, SCA)
+  `ic` (Insuffisance cardiaque), `usic` (USIC · Réanimation cardiologique — arrêt cardiaque, choc
+  cardiogénique, assistance circulatoire, soins critiques), `cmh` (Cardiomyopathies & myocardites),
+  `prev` (Prévention), `sport` (Cardiologie du sport · CFX/VO₂ max). En créer une nouvelle si besoin (valvulopathies, SCA)
   avec sa couleur (`--series-N`), sa section, sa puce de filtre **et son entrée dans la table `SPECS`
   du script en bas de page** ainsi que dans `outils/bulletin.mjs`.
 - Années : deux puces, **2026 et 2025, cochées toutes les deux par défaut**, que le lecteur décoche
@@ -82,10 +83,12 @@ Trois attributs et un bloc à renseigner **sur chaque nouvelle carte** :
 
 Autres règles de mise en page :
 
-- En-tête : une ligne discrète (nombre de sorties + date de mise à jour + lien vers le dernier bulletin),
-  puis le titre **PAUSE CARDIO**, puis la seule ligne de descriptif
-  *« Screening transversal hebdomadaire de sorties bibliographiques d'ampleur, assisté par IA. »*.
-  Rien d'autre entre le descriptif et les filtres, et pas de tuiles de statistiques.
+- En-tête (`header.site-head`) : **rien au-dessus du logo**. Dans l'ordre — le nom **PAUSE CARDIO**
+  (`h1.brand-name`) avec la marque ECG à droite (`svg.brand-mark`), la ligne discrète `.eyebrow`
+  (nombre de sorties + date de mise à jour + lien vers le dernier bulletin) juste en dessous, le liséré
+  rouge `.brand-rule`, puis la seule ligne de descriptif *« Screening transversal hebdomadaire de sorties
+  bibliographiques d'ampleur, assisté par IA. »*. Rien d'autre entre le descriptif et les filtres, et pas
+  de tuiles de statistiques.
 - Sous le descriptif vient le bandeau **« Cette semaine »** (construit par le script à partir des
   `data-ajout` les plus récents : jusqu'à six sorties, cliquables, qui lèvent les filtres et déplient
   l'article). **Puis** les filtres. Rien d'autre, et pas de tuiles de statistiques.
@@ -97,12 +100,28 @@ Autres règles de mise en page :
   rosé pour les `crit`. Ne pas remettre de grosse pastille de couleur par article.
 - **Confort de lecture** : le texte des fiches est limité à 68 caractères de large, les lignes d'articles
   font au moins 44 px de haut, et l'en-tête de surspécialité reste collé en haut pendant le défilement.
-- **Écran d'ouverture** : au chargement, un plein écran affiche « PAUSE CARDIO » avec un tracé ECG qui se
-  dessine, le cœur qui bat, puis s'efface sur l'accueil — **durée totale 5 secondes** (maintien puis fondu).
+- **Écran d'ouverture** : au chargement, un plein écran dessine le logo — un tracé ECG qui se déroule,
+  s'interrompt sur les deux barreaux rouges du symbole pause, puis repart — suivi du nom « PAUSE CARDIO »
+  et du descriptif, avant de s'effacer sur l'accueil — **durée totale 5 secondes** (maintien puis fondu).
   Une ligne discrète « Touchez l'écran pour entrer » apparaît au bout de 2 secondes : l'écran se saute d'un
   clic ou d'une touche. Il ne rejoue pas dans la même session (`sessionStorage`) et se réduit à un bref
   fondu si le lecteur a demandé moins d'animations. Le balisage est en tête de `<body>` (`#splash`), les
   styles sous « écran d'ouverture ».
+
+## Identité
+
+Le site s'appelle **PAUSE CARDIO**. Le logo est le symbole pause (⏸) dessiné dans un tracé ECG : la ligne
+se déroule, s'interrompt sur les deux barreaux rouges, repart. Il existe en deux tailles, toutes deux en
+SVG écrit à la main dans `index.html` — `svg.brand-mark` (92 × 26) en tête de page, `svg.splash-mark`
+(300 × 90) sur l'écran d'ouverture. **Ne pas redessiner ces tracés** ni déplacer le bloc `#splash`, qui
+doit rester juste après `<body>` avec son script inline (c'est ce qui évite le clignotement au retour).
+Sous 370 px de large la marque d'en-tête est masquée : comprimée, les complexes QRS deviennent illisibles.
+
+Couleurs de marque : `--brand` (#d03b3b en clair, #e2564f en sombre) et `--brand-line` pour le tracé.
+Ne pas les confondre avec `--status-critical`, réservé au niveau « changement de pratique » des fiches.
+
+Pas de `favicon` ni d'`apple-touch-icon` tant que l'icône d'écran d'accueil n'est pas tranchée : iOS
+génère une capture de la page, ce qui convient en attendant.
 
 ## Mise à jour
 
@@ -180,5 +199,8 @@ sessions Sports & Exercise Cardiology (EAPC) et Care of the Athletic Heart.
 - 23/08/2026 — le projet devient **Pause Cardio** : nouveau titre et descriptif, écran d'ouverture,
   filtres de surspécialité en grille, création de la surspécialité **Imagerie cardiaque** (4 premières
   sorties, dont SCOT-HEART à 10 ans).
+- 23/08/2026 — identité visuelle : logo « pause dans l'ECG » en tête de page et sur l'écran d'ouverture,
+  accroche française sur les 84 sorties, et création de la surspécialité **USIC · Réanimation
+  cardiologique** (6 premières sorties, dont les recommandations AHA 2025 de réanimation).
 - Autres projets de Robin sur ce compte GitHub : `site-cardios` (site vitrine du cabinet, déployé sur
   Netlify) et `planning-indispo` (application d'indisponibilités des cardiologues, également sur Netlify).

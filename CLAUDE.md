@@ -54,11 +54,25 @@ Structure : sections par **surspécialité** → sous-groupes par **année** (an
 
 ## Présentation (ne pas casser)
 
-La page affiche chaque article sur **une seule ligne** (pastille de couleur + titre + badge de niveau).
-Un clic déplie la fiche complète, un second clic replie. **Cette mise en forme est construite
-automatiquement par le script en bas de `index.html`** à partir du HTML des cartes : écris donc les cartes
-au format long habituel (`<article class="card">` avec `.top`, `<h3>`, `.meta`, `.sum`, `.actions`, `.fiche`)
-et l'accordéon se fabrique tout seul. Ne pas écrire de cartes « déjà compactes ».
+La page affiche chaque article sur **une ligne repliée** : titre d'origine, accroche française en dessous,
+puis une ligne de repère *revue · date · type d'étude*. Un clic déplie la fiche complète, un second replie
+(le dépliage est animé). **Cette mise en forme est construite automatiquement par le script en bas de
+`index.html`** à partir du HTML des cartes : écris donc les cartes au format long habituel
+(`<article class="card">` avec `.top`, `<h3>`, `.meta`, `.sum`, `.actions`, `.fiche`) et l'accordéon se
+fabrique tout seul. Ne pas écrire de cartes « déjà compactes ».
+
+Trois attributs et un bloc à renseigner **sur chaque nouvelle carte** :
+
+- `data-ajout="AAAA-MM-JJ"` — **obligatoire** : date d'ajout. C'est elle qui déclenche la pastille verte
+  « nouveau » (pendant 7 jours) et qui alimente le bandeau « Cette semaine ». Sans elle, la sortie passe
+  inaperçue.
+- `data-fr="…"` — accroche française de six à dix mots, obligatoire pour les niveaux `crit`, souhaitable
+  pour `warn`. Elle s'affiche sous le titre anglais et dans le bandeau « Cette semaine ».
+- `<div class="cle">…</div>` — **juste après `<p class="sum">`**, hors de la fiche : le chiffre clé de
+  l'étude, repris mot pour mot de la fiche (HR, IC95 %, pourcentages, avec les nombres en `<b>`). Le script
+  l'affiche en bandeau « Résultat principal ». À omettre pour les recommandations sans chiffre unique.
+- Le bloc `.verdict` (« Au cabinet ») reste écrit à sa place habituelle dans la fiche : **le script le
+  remonte tout seul** juste sous le résumé, avec un libellé en capitales. Ne pas le déplacer à la main.
 
 Autres règles de mise en page :
 
@@ -66,9 +80,17 @@ Autres règles de mise en page :
   puis le titre **PAUSE CARDIO**, puis la seule ligne de descriptif
   *« Screening transversal hebdomadaire de sorties bibliographiques d'ampleur, assisté par IA. »*.
   Rien d'autre entre le descriptif et les filtres, et pas de tuiles de statistiques.
+- Sous le descriptif vient le bandeau **« Cette semaine »** (construit par le script à partir des
+  `data-ajout` les plus récents : jusqu'à six sorties, cliquables, qui lèvent les filtres et déplient
+  l'article). **Puis** les filtres. Rien d'autre, et pas de tuiles de statistiques.
 - Les puces de surspécialité sont disposées **en grille ordonnée** (`.filters .row.grid .chips`) :
   trois colonnes sur ordinateur, deux sur téléphone, et « Toutes les surspécialités » sur toute la
   largeur. Ne pas revenir à une simple ligne de puces qui s'enchaînent.
+- **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
+  libellé « Au cabinet ») ; c'est le **niveau** qui porte la couleur forte — badge, et fond légèrement
+  rosé pour les `crit`. Ne pas remettre de grosse pastille de couleur par article.
+- **Confort de lecture** : le texte des fiches est limité à 68 caractères de large, les lignes d'articles
+  font au moins 44 px de haut, et l'en-tête de surspécialité reste collé en haut pendant le défilement.
 - **Écran d'ouverture** : au chargement, un plein écran affiche « PAUSE CARDIO » avec un tracé ECG qui se
   dessine, le cœur qui bat, puis s'efface sur l'accueil — **durée totale 5 secondes** (maintien puis fondu).
   Une ligne discrète « Touchez l'écran pour entrer » apparaît au bout de 2 secondes : l'écran se saute d'un

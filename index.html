@@ -154,9 +154,37 @@
 
   .spec-tag { display: none; }
 
+  /* ---------- bandeau « cette semaine » ---------- */
+  .recent { margin: 20px 0 6px; border: 1px solid var(--border); border-radius: 14px;
+            background: var(--surface-1); overflow: hidden; }
+  body.searching .recent { display: none; }
+  .recent-h { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; padding: 12px 15px 10px; }
+  .recent-h b { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .recent-h .d { font-size: 12px; color: var(--text-muted); }
+  .recent button {
+    width: 100%; display: flex; gap: 10px; align-items: baseline; text-align: left;
+    padding: 10px 15px; min-height: 44px; border: none; border-top: 1px solid var(--grid);
+    background: none; font: inherit; color: inherit; cursor: pointer;
+  }
+  .recent button:hover { background: var(--wash); }
+  .recent button:focus-visible { outline: 2px solid var(--text-primary); outline-offset: -2px; }
+  .recent .r-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; transform: translateY(-1px); }
+  .recent .r-txt { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; line-height: 1.35; }
+  .recent .r-fr { display: block; font-size: 12px; font-weight: 400; color: var(--text-secondary); margin-top: 1px; }
+  .recent .r-lvl { flex: none; font-size: 11px; color: var(--text-muted); display: flex; gap: 4px; }
+  .recent .r-lvl.crit { color: var(--status-critical); font-weight: 700; }
+  @media (max-width: 620px) {
+    .recent .r-word { display: none; }
+    .recent .r-lvl { font-size: 12px; }
+  }
+
   /* ---------- sections par surspécialité ---------- */
   section.spec { margin-top: 34px; }
-  .spec-h { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--text-primary); }
+  .spec-h {
+    display: flex; align-items: center; gap: 10px; padding: 10px 0 8px;
+    border-bottom: 2px solid var(--text-primary);
+    position: sticky; top: 0; z-index: 5; background: var(--page);
+  }
   .spec-h .dot { width: 12px; height: 12px; }
   .spec-h h2 { font-size: 17px; }
   .spec-h .count { font-size: 12.5px; color: var(--text-muted); margin-left: auto; }
@@ -167,7 +195,8 @@
   .year-h .line { flex: 1; border-top: 1px solid var(--grid); }
 
   .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
-  article.card[data-lvl="crit"] { border-left: 4px solid var(--status-critical); }
+  article.card[data-spec] { border-left: 3px solid var(--spec-couleur, var(--baseline)); }
+  article.card[data-lvl="crit"] { background: color-mix(in srgb, var(--status-critical) 5%, var(--surface-1)); }
   .une { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: var(--status-critical); letter-spacing: .03em; }
   .card .top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
   .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; letter-spacing: .02em; }
@@ -192,9 +221,27 @@
   .card.open .fiche { display: block; }
   .fiche h4 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin: 12px 0 3px; }
   .fiche h4:first-child { margin-top: 0; }
-  .fiche p, .fiche li { font-size: 13.5px; color: var(--text-secondary); }
+  .fiche p, .fiche li { font-size: 13.5px; color: var(--text-secondary); max-width: 68ch; }
   .fiche ul { padding-left: 18px; }
-  .fiche .verdict { margin-top: 14px; padding: 11px 14px; border-radius: 10px; background: var(--wash); border-left: 3px solid var(--status-good); font-size: 13.5px; color: var(--text-primary); }
+  .verdict {
+    margin: 12px 0 0; padding: 11px 14px; border-radius: 0 10px 10px 0; background: var(--wash);
+    border-left: 3px solid var(--spec-couleur, var(--text-primary)); font-size: 14px; color: var(--text-primary);
+  }
+  .verdict b:first-child {
+    display: block; font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--spec-couleur, var(--text-secondary)); margin-bottom: 4px;
+  }
+  .cle {
+    margin-top: 10px; padding: 9px 13px; border-radius: 10px;
+    background: var(--wash); border: 1px solid var(--border);
+    font-size: 13.5px; color: var(--text-secondary); line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+  }
+  .cle::before {
+    content: "R\00E9sultat principal"; display: block; font-size: 10.5px; font-weight: 700;
+    letter-spacing: .09em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px;
+  }
+  .cle b { color: var(--text-primary); font-weight: 700; }
   .fiche .sig { font-size: 11.5px; color: var(--text-muted); margin-top: 10px; font-style: italic; }
 
   .radar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -219,19 +266,28 @@
   /* ---------- lignes compactes (accordéon) ---------- */
   .card { padding: 0; overflow: hidden; margin-bottom: 5px; border-radius: 10px; }
   .artrow {
-    width: 100%; display: flex; gap: 9px; align-items: center;
-    padding: 6px 11px; background: none; border: none; cursor: pointer;
+    width: 100%; display: flex; gap: 9px; align-items: flex-start;
+    padding: 9px 13px; min-height: 44px; background: none; border: none; cursor: pointer;
     font: inherit; color: inherit; text-align: left;
   }
   .artrow:hover { background: var(--wash); }
   .artrow:focus-visible { outline: 2px solid var(--text-primary); outline-offset: -2px; }
   .artrow > .dot { width: 8px; height: 8px; }
-  .art-main { flex: 1; min-width: 0; display: flex; gap: 8px; align-items: center; }
+  .art-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .art-head { display: flex; gap: 9px; align-items: flex-start; }
+  .art-head .art-title { flex: 1; min-width: 0; }
+  .art-fr { font-size: 12.5px; color: var(--text-secondary); line-height: 1.35; }
+  .art-sub { font-size: 11.5px; color: var(--text-muted); line-height: 1.35; }
+  .card.exp .art-fr, .card.exp .art-sub { display: none; }
+  .art-new {
+    flex: none; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: #fff; background: var(--status-good); border-radius: 999px; padding: 2px 7px;
+  }
   .art-title {
     flex: 1; min-width: 0; font-size: 13px; font-weight: 600; line-height: 1.32;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
-  .art-tags { flex: none; display: flex; gap: 5px; align-items: center; margin-left: 0; }
+  .art-tags { flex: none; display: flex; gap: 5px; align-items: center; margin-left: 0; padding-top: 1px; }
   .art-tags .badge { font-size: 10px; padding: 1px 7px; letter-spacing: 0; }
   .art-tags .une { font-size: 11px; }
   .art-year { display: none; font-size: 10.5px; font-weight: 600; color: var(--text-muted); }
@@ -240,20 +296,24 @@
   body.searching .art-spec { display: inline; }
   .chev { flex: none; color: var(--text-muted); font-size: 11px; transition: transform .15s; }
   .card.exp .chev { transform: rotate(90deg); }
-  .card .body { display: none; padding: 2px 16px 16px 28px; }
+  .card .body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .26s ease; }
+  .card .bodyin { overflow: hidden; min-height: 0; padding: 0 16px 0 20px; }
+  .card.exp .bodyin { padding-bottom: 16px; }
+  @media (prefers-reduced-motion: reduce) { .card .body { transition: none; } }
   /* déplié = fiche de lecture complète, comme la version longue */
   .card.exp .fiche { display: block; }
   .card .body .btn.primary { display: none; }
   .card.exp .art-title { font-size: 15px; font-weight: 700; -webkit-line-clamp: unset; }
   .card.exp .artrow { padding-bottom: 4px; }
-  .card.exp .body .sum { font-size: 14px; line-height: 1.5; }
+  .card.exp .body .sum { font-size: 14px; line-height: 1.55; max-width: 68ch; }
   .card.exp .body .fiche { margin-top: 12px; }
-  .card.exp .body { display: block; }
+  .card.exp .body { grid-template-rows: 1fr; }
   .card .body h3 { display: none; }
   .card .body .top { margin-bottom: 5px; }
   .card .body .meta { margin-top: 0; }
   .card .body .sum { font-size: 13.5px; margin-top: 6px; }
   article.card[data-lvl="crit"] { border-left-width: 3px; }
+  .artrow > .dot { display: none; }
   .year-h { margin: 12px 0 7px; }
   section.spec { margin-top: 26px; }
   .art-tags .b-txt { margin-left: 4px; }
@@ -347,7 +407,7 @@
 
     <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
 
-<article class="card" data-spec="rythmo" data-year="2026" data-lvl="crit" data-kw="fibrillation atriale persistante FA ablation champ pulse premiere intention rythme antiarythmique atrial fibrillation AF pulsed field ablation PFA first line antiarrhythmic rhythm AVANT-GUARD">
+<article class="card" data-fr="L&rsquo;ablation d&rsquo;embl&eacute;e l&rsquo;emporte sur l&rsquo;anti-arythmique en FA persistante" data-spec="rythmo" data-year="2026" data-lvl="crit" data-kw="fibrillation atriale persistante FA ablation champ pulse premiere intention rythme antiarythmique atrial fibrillation AF pulsed field ablation PFA first line antiarrhythmic rhythm AVANT-GUARD">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Essai randomis&eacute; &middot; AVANT-GUARD</span>
@@ -373,7 +433,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="rythmo" data-year="2026" data-lvl="crit" data-kw="fibrillation atriale FA fermeture auricule gauche Watchman FLX left atrial appendage closure LAAC LAAO CHAMPION-AF anticoagulation AOD DOAC NOAC AVC stroke hémorragie">
+    <article class="card" data-fr="Fermer l&rsquo;auricule&nbsp;: moins de saignements, mais plus d&rsquo;AVC isch&eacute;miques" data-spec="rythmo" data-year="2026" data-lvl="crit" data-kw="fibrillation atriale FA fermeture auricule gauche Watchman FLX left atrial appendage closure LAAC LAAO CHAMPION-AF anticoagulation AOD DOAC NOAC AVC stroke hémorragie">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Essai randomisé &middot; CHAMPION-AF</span>
@@ -381,6 +441,7 @@
       <h3>Left Atrial Appendage Closure or Anticoagulation for Atrial Fibrillation</h3>
       <div class="meta"><b>NEJM</b> &middot; mars 2026 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ACC.26</div>
       <p class="sum">3 000 patients en FA éligibles aux AOD randomisés fermeture d'auricule (Watchman FLX) vs AOD, suivis 3 ans. Non-infériorité atteinte sur le critère décès CV/AVC/embolie (5,7 % vs 4,8 %) et hémorragies non procédurales réduites (10,9 % vs 19,0 %), mais davantage d'AVC ischémiques dans le bras dispositif (3,2 % vs 2,2 %).</p>
+      <div class="cle">D&eacute;c&egrave;s CV/AVC/embolie <b>5,7&nbsp;% vs 4,8&nbsp;%</b> &middot; h&eacute;morragies <b>10,9&nbsp;% vs 19,0&nbsp;%</b> &middot; AVC isch&eacute;miques <b>3,2&nbsp;% vs 2,2&nbsp;%</b></div>
       <div class="actions">
         <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
         <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2517213" target="_blank" rel="noopener">Article original &#8599;</a>
@@ -456,7 +517,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="rythmo" data-year="2026" data-lvl="warn" data-kw="fibrillation atriale FA atrial fibrillation AF mesures de qualité performance measures quality measures AHA ACC bilan initial échocardiographie TSH CHA2DS2-VASc anticoagulation AOD DOAC facteurs de risque risk factor modification décision partagée shared decision making ablation">
+    <article class="card" data-ajout="2026-08-22" data-spec="rythmo" data-year="2026" data-lvl="warn" data-kw="fibrillation atriale FA atrial fibrillation AF mesures de qualité performance measures quality measures AHA ACC bilan initial échocardiographie TSH CHA2DS2-VASc anticoagulation AOD DOAC facteurs de risque risk factor modification décision partagée shared decision making ablation">
       <div class="top">
         <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
         <span class="type">Mesures de qualité AHA/ACC</span>
@@ -490,7 +551,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="rythmo" data-year="2026" data-lvl="warn" data-kw="prolapsus valvulaire mitral PVM mitral valve prolapse MVP maladie de Barlow fibrose myocardique myocardial fibrosis LGE rehaussement tardif IRM cardiaque CMR IRM arythmie ventriculaire ventricular arrhythmia mort subite sudden cardiac death femme female sex disjonction de l'anneau mitral annular disjunction MAD">
+    <article class="card" data-ajout="2026-08-22" data-spec="rythmo" data-year="2026" data-lvl="warn" data-kw="prolapsus valvulaire mitral PVM mitral valve prolapse MVP maladie de Barlow fibrose myocardique myocardial fibrosis LGE rehaussement tardif IRM cardiaque CMR IRM arythmie ventriculaire ventricular arrhythmia mort subite sudden cardiac death femme female sex disjonction de l'anneau mitral annular disjunction MAD">
       <div class="top">
         <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
         <span class="type">Cohorte prospective IRM &middot; 550 patients</span>
@@ -537,7 +598,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="rythmo" data-year="2026" data-lvl="watch" data-kw="fibrillation atriale FA atrial fibrillation AF fermeture auricule gauche left atrial appendage closure LAAC LAAO Watchman CHAMPION-AF CLOSURE-AF anticoagulation AOD DOAC interprétation des essais trial interpretation registre registry">
+    <article class="card" data-ajout="2026-08-22" data-spec="rythmo" data-year="2026" data-lvl="watch" data-kw="fibrillation atriale FA atrial fibrillation AF fermeture auricule gauche left atrial appendage closure LAAC LAAO Watchman CHAMPION-AF CLOSURE-AF anticoagulation AOD DOAC interprétation des essais trial interpretation registre registry">
       <div class="top">
         <span class="badge watch">&#9678; Veille</span>
         <span class="type">Point de vue &middot; European Heart Journal</span>
@@ -552,7 +613,7 @@
     </article>
 <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
 
-    <article class="card" data-spec="rythmo" data-year="2025" data-lvl="crit" data-kw="fibrillation atriale FA ablation atrial fibrillation AF anticoagulation AOD DOAC arrêt discontinuation ALONE-AF AVC stroke hémorragie bleeding">
+    <article class="card" data-fr="Arr&ecirc;ter l&rsquo;anticoagulant apr&egrave;s une ablation r&eacute;ussie devient discutable" data-spec="rythmo" data-year="2025" data-lvl="crit" data-kw="fibrillation atriale FA ablation atrial fibrillation AF anticoagulation AOD DOAC arrêt discontinuation ALONE-AF AVC stroke hémorragie bleeding">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Essai randomisé &middot; ALONE-AF</span>
@@ -560,6 +621,7 @@
       <h3>Long-Term Anticoagulation Discontinuation After Catheter Ablation for Atrial Fibrillation: The ALONE-AF Randomized Clinical Trial</h3>
       <div class="meta"><b>JAMA</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
       <p class="sum">Premier essai randomisé sur l'arrêt de l'anticoagulation après ablation de FA réussie : 840 patients avec ≥1 facteur de risque et sans récidive ≥1 an, randomisés arrêt de l'AOD vs poursuite. À 2 ans, critère composite (AVC, embolie systémique, hémorragie majeure) : 0,3 % (arrêt) vs 2,2 % (poursuite), porté par l'absence d'hémorragie majeure dans le groupe arrêt.</p>
+      <div class="cle">Crit&egrave;re composite &agrave; 2 ans&nbsp;: <b>0,3&nbsp;%</b> (arr&ecirc;t) <b>vs 2,2&nbsp;%</b> (poursuite)</div>
       <div class="actions">
         <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
         <a class="btn" href="https://jamanetwork.com/journals/jama/article-abstract/2838294" target="_blank" rel="noopener">Article original &#8599;</a>
@@ -741,7 +803,7 @@
       </div>
     </article>
 
-<article class="card" data-spec="interv" data-year="2026" data-lvl="warn" data-kw="pontage coronarien pontages CABG chirurgie cardiaque mini-invasive minimally invasive MICS thoracotomie thoracotomy sternotomie sternotomy multitronculaire multivessel coronary artery bypass grafting MIST récupération recovery SF-36 revascularisation revascularization">
+<article class="card" data-ajout="2026-08-22" data-spec="interv" data-year="2026" data-lvl="warn" data-kw="pontage coronarien pontages CABG chirurgie cardiaque mini-invasive minimally invasive MICS thoracotomie thoracotomy sternotomie sternotomy multitronculaire multivessel coronary artery bypass grafting MIST récupération recovery SF-36 revascularisation revascularization">
       <div class="top">
         <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
         <span class="type">Essai randomisé &middot; MIST</span>
@@ -822,7 +884,7 @@
     </article>
 <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
 
-    <article class="card" data-spec="interv" data-year="2025" data-lvl="crit" data-kw="bêtabloquant beta-blocker infarctus myocardial infarction post-IDM post-MI REBOOT BETAMI DANBLOCK FEVG préservée preserved ejection fraction SCA ACS déprescription">
+    <article class="card" data-fr="Pas de b&eacute;n&eacute;fice du b&ecirc;tabloquant apr&egrave;s infarctus si FEVG &gt; 40&nbsp;%" data-spec="interv" data-year="2025" data-lvl="crit" data-kw="bêtabloquant beta-blocker infarctus myocardial infarction post-IDM post-MI REBOOT BETAMI DANBLOCK FEVG préservée preserved ejection fraction SCA ACS déprescription">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Essai randomisé &middot; REBOOT</span>
@@ -830,6 +892,7 @@
       <h3>Beta-Blockers after Myocardial Infarction without Reduced Ejection Fraction</h3>
       <div class="meta"><b>NEJM</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
       <p class="sum">8 438 patients post-infarctus avec FEVG > 40 % : le bêtabloquant n'a pas réduit le critère décès/réinfarctus/hospitalisation pour IC (HR 1,04 ; IC95 % 0,89–1,22) à ~4 ans. Le programme BETAMI-DANBLOCK (FEVG ≥ 40 %), présenté au même congrès, retrouvait au contraire un bénéfice modeste (HR 0,85), concentré sur les FEVG 40–49 %.</p>
+      <div class="cle"><b>HR 1,04</b> (IC95&nbsp;% 0,89&ndash;1,22) &middot; BETAMI-DANBLOCK&nbsp;: HR 0,85, surtout FEVG 40&ndash;49&nbsp;%</div>
       <div class="actions">
         <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
         <a class="btn" href="https://www.nejm.org/doi/abs/10.1056/NEJMoa2504735" target="_blank" rel="noopener">Article original &#8599;</a>
@@ -843,7 +906,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="interv" data-year="2025" data-lvl="crit" data-kw="valvulopathies valvular heart disease recommandations guidelines ESC EACTS TAVI TAVR rétrécissement aortique aortic stenosis insuffisance mitrale mitral regurgitation tricuspide tricuspid TEER MitraClip Heart Team">
+    <article class="card" data-fr="TAVI &eacute;largi et intervention plus pr&eacute;coce dans le r&eacute;tr&eacute;cissement aortique" data-spec="interv" data-year="2025" data-lvl="crit" data-kw="valvulopathies valvular heart disease recommandations guidelines ESC EACTS TAVI TAVR rétrécissement aortique aortic stenosis insuffisance mitrale mitral regurgitation tricuspide tricuspid TEER MitraClip Heart Team">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Recommandations</span>
@@ -963,7 +1026,7 @@
 
     <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
 
-    <article class="card" data-spec="imagerie" data-year="2026" data-lvl="warn" data-kw="insuffisance tricuspide IT fuite tricuspide tricuspid regurgitation TR imagerie multimodalit&eacute; multimodality imaging &eacute;chocardiographie echocardiography scanner CT IRM CMR centre valvulaire heart valve centre adressage referral TTVR annuloplastie ESC EACTS valvulopathies">
+    <article class="card" data-ajout="2026-08-23" data-spec="imagerie" data-year="2026" data-lvl="warn" data-kw="insuffisance tricuspide IT fuite tricuspide tricuspid regurgitation TR imagerie multimodalit&eacute; multimodality imaging &eacute;chocardiographie echocardiography scanner CT IRM CMR centre valvulaire heart valve centre adressage referral TTVR annuloplastie ESC EACTS valvulopathies">
       <div class="top">
         <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
         <span class="type">Consensus d&rsquo;experts &middot; parcours de soins</span>
@@ -991,7 +1054,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="imagerie" data-year="2026" data-lvl="warn" data-kw="cardiomyopathie hypertrophique CMH HCM imagerie multimodalit&eacute; multimodality imaging EACVI consensus &eacute;chocardiographie echocardiography IRM cardiaque cardiac MRI CMR scanner CT obstruction gradient fibrose rehaussement tardif late gadolinium enhancement risque rythmique sudden death">
+    <article class="card" data-ajout="2026-08-23" data-spec="imagerie" data-year="2026" data-lvl="warn" data-kw="cardiomyopathie hypertrophique CMH HCM imagerie multimodalit&eacute; multimodality imaging EACVI consensus &eacute;chocardiographie echocardiography IRM cardiaque cardiac MRI CMR scanner CT obstruction gradient fibrose rehaussement tardif late gadolinium enhancement risque rythmique sudden death">
       <div class="top">
         <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
         <span class="type">Consensus clinique EACVI</span>
@@ -1019,7 +1082,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="imagerie" data-year="2026" data-lvl="watch" data-kw="scanner coronaire coroscanner coronary CT angiography CCTA compteur de photons photon-counting detector PCD-CT calcium blooming st&eacute;nose stenosis coronarographie invasive coronary angiography m&eacute;ta-analyse meta-analysis score calcique calcium score">
+    <article class="card" data-ajout="2026-08-23" data-spec="imagerie" data-year="2026" data-lvl="watch" data-kw="scanner coronaire coroscanner coronary CT angiography CCTA compteur de photons photon-counting detector PCD-CT calcium blooming st&eacute;nose stenosis coronarographie invasive coronary angiography m&eacute;ta-analyse meta-analysis score calcique calcium score">
       <div class="top">
         <span class="badge watch">&#9678; Veille &mdash; &agrave; suivre</span>
         <span class="type">M&eacute;ta-analyse &middot; 15 &eacute;tudes, 11 350 patients</span>
@@ -1035,7 +1098,7 @@
 
 <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
 
-    <article class="card" data-spec="imagerie" data-year="2025" data-lvl="crit" data-kw="coroscanner scanner coronaire coronary CT angiography CCTA douleur thoracique stable stable chest pain angor angina SCOT-HEART pr&eacute;vention prevention statine statin infarctus myocardial infarction coronarographie invasive angiography ath&eacute;rome plaque">
+    <article class="card" data-ajout="2026-08-23" data-fr="Le coroscanner fait baisser les infarctus &agrave; 10 ans" data-spec="imagerie" data-year="2025" data-lvl="crit" data-kw="coroscanner scanner coronaire coronary CT angiography CCTA douleur thoracique stable stable chest pain angor angina SCOT-HEART pr&eacute;vention prevention statine statin infarctus myocardial infarction coronarographie invasive angiography ath&eacute;rome plaque">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Essai randomis&eacute; &middot; SCOT-HEART &agrave; 10 ans</span>
@@ -1043,6 +1106,7 @@
       <h3>Coronary CT angiography-guided management of patients with stable chest pain: 10-year outcomes from the SCOT-HEART randomised controlled trial in Scotland</h3>
       <div class="meta"><b>The Lancet</b> &middot; janvier 2025 &middot; 405(10475):329&#8211;337</div>
       <p class="sum">4&nbsp;146 patients adress&eacute;s pour douleur thoracique stable, randomis&eacute;s entre prise en charge habituelle et prise en charge compl&eacute;t&eacute;e d&rsquo;un coroscanner, suivis 10 ans par registres nationaux&nbsp;: le b&eacute;n&eacute;fice observ&eacute; &agrave; 5 ans se maintient, et il passe par la pr&eacute;vention plut&ocirc;t que par la revascularisation.</p>
+      <div class="cle">D&eacute;c&egrave;s coronaire ou IDM non fatal&nbsp;: <b>6,6&nbsp;% vs 8,2&nbsp;%</b> &mdash; <b>HR 0,79</b> (IC95&nbsp;% 0,63&ndash;0,99)</div>
       <div class="actions">
         <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
         <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/39863372/" target="_blank" rel="noopener">Article original &#8599;</a>
@@ -1074,7 +1138,7 @@
 
     <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
 
-<article class="card" data-spec="ic" data-year="2026" data-lvl="crit" data-kw="insuffisance cardiaque IC ICFEp dépistage screening NT-proBNP BNP peptides natriurétiques natriuretic peptides diabète diabetes type 2 échocardiographie echocardiography TARTAN-HF heart failure HFpEF undiagnosed unrecognized iSGLT2 SGLT2 inhibitor gliflozines dapagliflozine">
+<article class="card" data-ajout="2026-08-22" data-fr="Un NT-proBNP chez le diab&eacute;tique r&eacute;v&egrave;le une IC ignor&eacute;e sur quatre" data-spec="ic" data-year="2026" data-lvl="crit" data-kw="insuffisance cardiaque IC ICFEp dépistage screening NT-proBNP BNP peptides natriurétiques natriuretic peptides diabète diabetes type 2 échocardiographie echocardiography TARTAN-HF heart failure HFpEF undiagnosed unrecognized iSGLT2 SGLT2 inhibitor gliflozines dapagliflozine">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Essai randomisé &middot; TARTAN-HF</span>
@@ -1082,6 +1146,7 @@
       <h3>Targeted Assessment in High-Risk Patients With Diabetes to Identify Undiagnosed Heart Failure (TARTAN-HF)</h3>
       <div class="meta"><b>JACC</b> &middot; 11 ao&ucirc;t 2026</div>
       <p class="sum">Chez 706 diabétiques suivis en ville et sans insuffisance cardiaque connue, un dépistage par NT-proBNP (puis échocardiographie si &ge;&nbsp;125&nbsp;pg/mL) a débouché sur un diagnostic d&rsquo;IC chez près d&rsquo;un patient sur quatre à 6 mois, contre 1&nbsp;% en soins courants — presque toujours une IC à FEVG préservée.</p>
+      <div class="cle">Diagnostic d&rsquo;IC &agrave; 6 mois&nbsp;: <b>pr&egrave;s d&rsquo;un patient sur quatre</b> contre <b>1&nbsp;%</b> en soins courants</div>
       <div class="actions">
         <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
         <a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/42615958/" target="_blank" rel="noopener">Article original &#8599;</a>
@@ -1391,7 +1456,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="cmh" data-year="2026" data-lvl="watch" data-kw="cardiomyopathie hypertrophique non obstructive CMH HCM nonobstructive sacubitril valsartan LCZ696 Entresto ARNI VO2 pic peak VO2 CFX CPET épreuve d'effort cardiopulmonaire remodelage remodeling masse VG LV mass septum phase II">
+    <article class="card" data-ajout="2026-08-22" data-spec="cmh" data-year="2026" data-lvl="watch" data-kw="cardiomyopathie hypertrophique non obstructive CMH HCM nonobstructive sacubitril valsartan LCZ696 Entresto ARNI VO2 pic peak VO2 CFX CPET épreuve d'effort cardiopulmonaire remodelage remodeling masse VG LV mass septum phase II">
       <div class="top">
         <span class="badge watch">&#9678; Veille</span>
         <span class="type">Essai randomisé phase II &middot; LCZ in nHCM</span>
@@ -1405,7 +1470,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="cmh" data-year="2026" data-lvl="watch" data-kw="amylose cardiaque cardiac amyloidosis ATTR-CM transthyrétine transthyretin vutrisiran HELIOS-B oreillette gauche left atrial strain déformation myopathie atriale atrial myopathy fibrillation atriale atrial fibrillation FA pronostic prognosis échocardiographie echocardiography">
+    <article class="card" data-ajout="2026-08-22" data-spec="cmh" data-year="2026" data-lvl="watch" data-kw="amylose cardiaque cardiac amyloidosis ATTR-CM transthyrétine transthyretin vutrisiran HELIOS-B oreillette gauche left atrial strain déformation myopathie atriale atrial myopathy fibrillation atriale atrial fibrillation FA pronostic prognosis échocardiographie echocardiography">
       <div class="top">
         <span class="badge watch">&#9678; Veille</span>
         <span class="type">Analyse secondaire &middot; HELIOS-B</span>
@@ -1420,7 +1485,7 @@
     </article>
 <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
 
-<article class="card" data-spec="cmh" data-year="2025" data-lvl="crit" data-kw="myocardite pericardite recommandations reco IRM inflammation myocarditis pericarditis guidelines ESC MRI return to play sport">
+<article class="card" data-fr="Premier texte ESC d&eacute;di&eacute;, avec l&rsquo;IRM en pivot diagnostique" data-spec="cmh" data-year="2025" data-lvl="crit" data-kw="myocardite pericardite recommandations reco IRM inflammation myocarditis pericarditis guidelines ESC MRI return to play sport">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Recommandations ESC 2025</span>
@@ -1434,7 +1499,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="cmh" data-year="2025" data-lvl="crit" data-kw="cardiomyopathie hypertrophique obstructive CMH hypertrophic cardiomyopathy HCM aficamten métoprolol metoprolol inhibiteur de myosine cardiac myosin inhibitor MAPLE-HCM première ligne first-line VO2">
+    <article class="card" data-fr="L&rsquo;aficamten seul fait mieux que le m&eacute;toprolol dans la CMH obstructive" data-spec="cmh" data-year="2025" data-lvl="crit" data-kw="cardiomyopathie hypertrophique obstructive CMH hypertrophic cardiomyopathy HCM aficamten métoprolol metoprolol inhibiteur de myosine cardiac myosin inhibitor MAPLE-HCM première ligne first-line VO2">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Essai randomisé &middot; MAPLE-HCM</span>
@@ -1442,6 +1507,7 @@
       <h3>Aficamten or Metoprolol Monotherapy for Obstructive Hypertrophic Cardiomyopathy</h3>
       <div class="meta"><b>NEJM</b> &middot; août 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2025</div>
       <p class="sum">Essai de phase 3 (n=175) : l'aficamten en monothérapie est supérieur au métoprolol dans la CMH obstructive symptomatique sur le pic de VO2 à 24 semaines (+1,1 vs −1,2 mL/kg/min ; p<0,001), avec amélioration de la classe NYHA (51 % vs 26 %), du KCCQ et du gradient intra-VG, sans excès d'événements graves.</p>
+      <div class="cle">Pic de VO&#8322; &agrave; 24 semaines&nbsp;: <b>+1,1 vs &minus;1,2 mL/kg/min</b> (p&nbsp;&lt;&nbsp;0,001) &middot; NYHA am&eacute;lior&eacute;e <b>51&nbsp;% vs 26&nbsp;%</b></div>
       <div class="actions">
         <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
         <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2504654" target="_blank" rel="noopener">Article original &#8599;</a>
@@ -1455,7 +1521,7 @@
       </div>
     </article>
 
-    <article class="card" data-spec="cmh" data-year="2025" data-lvl="crit" data-kw="amylose cardiaque cardiac amyloidosis ATTR-CM transthyrétine transthyretin vutrisiran siRNA silencer tafamidis insuffisance cardiaque heart failure HELIOS-B">
+    <article class="card" data-fr="Le vutrisiran r&eacute;duit d&eacute;c&egrave;s et &eacute;v&eacute;nements CV dans l&rsquo;amylose &agrave; TTR" data-spec="cmh" data-year="2025" data-lvl="crit" data-kw="amylose cardiaque cardiac amyloidosis ATTR-CM transthyrétine transthyretin vutrisiran siRNA silencer tafamidis insuffisance cardiaque heart failure HELIOS-B">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Essai randomisé &middot; HELIOS-B</span>
@@ -1463,6 +1529,7 @@
       <h3>Vutrisiran in Patients with Transthyretin Amyloidosis with Cardiomyopathy</h3>
       <div class="meta"><b>NEJM</b> &middot; janvier 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;ESC 2024</div>
       <p class="sum">Essai de phase 3 chez 655 patients avec cardiomyopathie amyloïde à transthyrétine (ATTR-CM) : le vutrisiran trimestriel (ARN interférent « silencer » de la TTR) réduit le critère décès toutes causes + événements CV récurrents (HR 0,72 ; p=0,01), y compris chez les patients sans tafamidis (HR 0,67). Fondement de l'extension d'indication 2025.</p>
+      <div class="cle">D&eacute;c&egrave;s toutes causes + &eacute;v&eacute;nements CV r&eacute;currents&nbsp;: <b>HR 0,72</b> (p&nbsp;=&nbsp;0,01) &middot; sans tafamidis&nbsp;: <b>HR 0,67</b></div>
       <div class="actions">
         <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
         <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2409134" target="_blank" rel="noopener">Article original &#8599;</a>
@@ -1544,7 +1611,7 @@
 
     <div class="year-h current" data-year="2026"><span class="y">2026</span><span class="yl">ann&eacute;e en cours</span><span class="line"></span></div>
 
-    <article class="card" data-spec="prev" data-year="2026" data-lvl="crit" data-kw="dyslipidémie dyslipidemia LDL cholestérol cholesterol recommandations guidelines ACC AHA 2026 Lp(a) statine statin ézétimibe ezetimibe acide bempédoïque bempedoic acid PCSK9 inclisiran PREVENT">
+    <article class="card" data-fr="Objectifs LDL chiffr&eacute;s et Lp(a) au moins une fois dans la vie" data-spec="prev" data-year="2026" data-lvl="crit" data-kw="dyslipidémie dyslipidemia LDL cholestérol cholesterol recommandations guidelines ACC AHA 2026 Lp(a) statine statin ézétimibe ezetimibe acide bempédoïque bempedoic acid PCSK9 inclisiran PREVENT">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Recommandations</span>
@@ -1552,6 +1619,7 @@
       <h3>2026 ACC/AHA Guideline on the Management of Dyslipidemia</h3>
       <div class="meta"><b>Circulation / JACC</b> &middot; mars 2026</div>
       <p class="sum">Nouvelles recommandations américaines lipides (remplacent 2018) : objectifs LDL-C chiffrés par niveau de risque (<70 mg/dL haut risque, <55 mg/dL très haut risque en prévention secondaire), dosage de la Lp(a) au moins une fois dans la vie adulte, calculateur PREVENT, et place codifiée des non-statines (ézétimibe, acide bempédoïque, anti-PCSK9, inclisiran).</p>
+      <div class="cle">Cibles LDL-C&nbsp;: <b>&lt;&nbsp;70&nbsp;mg/dL</b> (haut risque) &middot; <b>&lt;&nbsp;55&nbsp;mg/dL</b> (tr&egrave;s haut risque)</div>
       <div class="actions">
         <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
         <a class="btn" href="https://www.ahajournals.org/doi/10.1161/CIR.0000000000001423" target="_blank" rel="noopener">Article original &#8599;</a>
@@ -1565,7 +1633,7 @@
       </div>
     </article>
 
-<article class="card" data-spec="prev" data-year="2026" data-lvl="warn" data-kw="acide bempédoïque bempedoic acid intolérance aux statines statin intolerance LDL cholestérol cholesterol artériopathie oblitérante des membres inférieurs AOMI peripheral artery disease PAD claudication revascularisation amputation major adverse limb events MALE CLEAR Outcomes prévention secondaire secondary prevention">
+<article class="card" data-ajout="2026-08-22" data-spec="prev" data-year="2026" data-lvl="warn" data-kw="acide bempédoïque bempedoic acid intolérance aux statines statin intolerance LDL cholestérol cholesterol artériopathie oblitérante des membres inférieurs AOMI peripheral artery disease PAD claudication revascularisation amputation major adverse limb events MALE CLEAR Outcomes prévention secondaire secondary prevention">
       <div class="top">
         <span class="badge warn">&#9650; &Agrave; conna&icirc;tre</span>
         <span class="type">Analyse d'essai randomisé &middot; CLEAR Outcomes</span>
@@ -1642,7 +1710,7 @@
     </article>
 <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
 
-    <article class="card" data-spec="prev" data-year="2025" data-lvl="crit" data-kw="évolocumab evolocumab PCSK9 LDL cholestérol cholesterol prévention primaire primary prevention VESALIUS-CV statine statin MACE">
+    <article class="card" data-fr="Un anti-PCSK9 pr&eacute;vient le premier infarctus chez le patient &agrave; haut risque" data-spec="prev" data-year="2025" data-lvl="crit" data-kw="évolocumab evolocumab PCSK9 LDL cholestérol cholesterol prévention primaire primary prevention VESALIUS-CV statine statin MACE">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Essai randomisé &middot; VESALIUS-CV</span>
@@ -1650,6 +1718,7 @@
       <h3>Evolocumab in Patients without a Previous Myocardial Infarction or Stroke</h3>
       <div class="meta"><b>NEJM</b> &middot; novembre 2025 &middot; pr&eacute;sent&eacute; &agrave; l&rsquo;AHA 2025</div>
       <p class="sum">12 257 patients à haut risque (athérosclérose ou diabète, LDL ≥90 mg/dL) SANS antécédent d'IDM ni d'AVC : l'évolocumab réduit le MACE-3 (HR 0,75 ; IC95 % 0,65–0,86) et le MACE-4 (HR 0,81) sur 4,6 ans. Première démonstration qu'un anti-PCSK9 prévient le premier événement chez ces patients.</p>
+      <div class="cle">MACE-3&nbsp;: <b>HR 0,75</b> (IC95&nbsp;% 0,65&ndash;0,86) &middot; MACE-4&nbsp;: <b>HR 0,81</b> &middot; suivi 4,6 ans</div>
       <div class="actions">
         <button class="btn primary" onclick="toggle(this)">&#128196; Fiche de lecture</button>
         <a class="btn" href="https://www.nejm.org/doi/full/10.1056/NEJMoa2514428" target="_blank" rel="noopener">Article original &#8599;</a>
@@ -1870,7 +1939,7 @@
     </article>
 <div class="year-h" data-year="2025"><span class="y">2025</span><span class="line"></span></div>
 
-<article class="card" data-spec="sport" data-year="2025" data-lvl="crit" data-kw="sport aptitude certificat competition athlete decision partagee CMH QT long DAI sports participation eligibility shared decision HCM ICD competitive athletes CFX">
+<article class="card" data-fr="D&eacute;cision partag&eacute;e plut&ocirc;t que contre-indications syst&eacute;matiques" data-spec="sport" data-year="2025" data-lvl="crit" data-kw="sport aptitude certificat competition athlete decision partagee CMH QT long DAI sports participation eligibility shared decision HCM ICD competitive athletes CFX">
       <div class="top">
         <span class="une">&#9733; &Agrave; la une</span> <span class="badge crit">&#9679; Changement de pratique</span>
         <span class="type">Recommandations ACC/AHA 2025</span>
@@ -2023,6 +2092,13 @@
     prev:   ['--series-5', 'Prévention'],
     sport:  ['--series-4', 'Cardiologie du sport · CFX/VO₂ max']
   };
+  // une sortie est « nouvelle » pendant une semaine après son ajout
+  function estRecent(iso) {
+    if (!iso) return false;
+    const jours = (Date.now() - new Date(iso + 'T12:00:00').getTime()) / 86400000;
+    return jours >= -1 && jours <= 7;
+  }
+
   document.querySelectorAll('article.card[data-spec]').forEach(card => {
     const pick = sel => { const el = card.querySelector(sel); return el ? el.textContent : ''; };
     card.dataset.hay = norm([pick('h3'), pick('.sum'), pick('.meta'), pick('.type'), card.getAttribute('data-kw') || ''].join(' '));
@@ -2035,7 +2111,28 @@
 
     const body = document.createElement('div');
     body.className = 'body';
-    while (card.firstChild) body.appendChild(card.firstChild);
+    const bodyin = document.createElement('div');
+    bodyin.className = 'bodyin';
+    while (card.firstChild) bodyin.appendChild(card.firstChild);
+    body.appendChild(bodyin);
+
+    // la couleur de la surspécialité devient le liséré de la carte
+    card.style.setProperty('--spec-couleur', 'var(' + sp[0] + ')');
+
+    // « Au cabinet » remonte juste sous le résumé : c'est ce qui sert en consultation
+    const verdict = bodyin.querySelector('.verdict');
+    const repere = bodyin.querySelector('.cle') || bodyin.querySelector('.sum');
+    if (verdict && repere) {
+      repere.after(verdict);
+      const lab = verdict.querySelector('b');
+      if (lab) {
+        lab.textContent = lab.textContent.replace(/\s*:\s*$/, '');
+        const suite = lab.nextSibling;
+        if (suite && suite.nodeType === 3) {
+          suite.textContent = suite.textContent.replace(/^(\s*)(\p{Ll})/u, (m, e, c) => e + c.toUpperCase());
+        }
+      }
+    }
 
     const row = document.createElement('button');
     row.type = 'button';
@@ -2048,11 +2145,19 @@
 
     const main = document.createElement('span');
     main.className = 'art-main';
+    const head = document.createElement('span');
+    head.className = 'art-head';
     const title = document.createElement('span');
     title.className = 'art-title';
     title.textContent = h3 ? h3.textContent : '';
     const tags = document.createElement('span');
     tags.className = 'art-tags';
+    if (estRecent(card.dataset.ajout)) {
+      const nv = document.createElement('span');
+      nv.className = 'art-new';
+      nv.textContent = 'nouveau';
+      tags.appendChild(nv);
+    }
     badges.forEach(b => {
       if (b.classList.contains('une')) { b.title = 'À la une'; b.textContent = '\u2605'; }
       else {
@@ -2071,8 +2176,30 @@
     yr.className = 'art-year';
     yr.textContent = card.dataset.year;
     tags.appendChild(yr);
-    main.appendChild(title);
-    main.appendChild(tags);
+    head.appendChild(title);
+    head.appendChild(tags);
+    main.appendChild(head);
+
+    // accroche française sous le titre d'origine, quand elle existe
+    if (card.dataset.fr) {
+      const fr = document.createElement('span');
+      fr.className = 'art-fr';
+      fr.innerHTML = card.dataset.fr;
+      main.appendChild(fr);
+    }
+
+    // revue · date · type d'étude : de quoi trier sans ouvrir
+    const bouts = [];
+    const metaEl = bodyin.querySelector('.meta');
+    if (metaEl) metaEl.textContent.split('\u00b7').map(x => x.trim()).filter(Boolean).slice(0, 2).forEach(x => bouts.push(x));
+    const typeEl = bodyin.querySelector('.type');
+    if (typeEl) bouts.push(typeEl.textContent.split('\u00b7')[0].trim());
+    if (bouts.length) {
+      const sub = document.createElement('span');
+      sub.className = 'art-sub';
+      sub.textContent = bouts.join(' \u00b7 ');
+      main.appendChild(sub);
+    }
 
     const chev = document.createElement('span');
     chev.className = 'chev';
@@ -2135,6 +2262,84 @@
   const qInput = document.getElementById('q');
   qInput.addEventListener('input', () => { state.q = qInput.value; applyFilters(); });
   document.getElementById('qclear').addEventListener('click', () => { qInput.value = ''; state.q = ''; applyFilters(); qInput.focus(); });
+
+  // ---------- bandeau « cette semaine » : le dernier lot de sorties ----------
+  (function () {
+    const MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août',
+                  'septembre','octobre','novembre','décembre'];
+    const RANG = { crit: 0, warn: 1, watch: 2 };
+    const NOM  = { crit: ['\u2605', 'Changement de pratique'],
+                   warn: ['\u25B2', 'À connaître'],
+                   watch: ['\u25CE', 'Veille'] };
+
+    const cartes = [...document.querySelectorAll('article.card[data-ajout]')];
+    if (!cartes.length) return;
+    const derniere = cartes.map(c => c.dataset.ajout).sort().pop();
+    const lot = cartes.filter(c => c.dataset.ajout === derniere)
+                      .sort((a, b) => (RANG[a.dataset.lvl] ?? 9) - (RANG[b.dataset.lvl] ?? 9))
+                      .slice(0, 6);
+    if (!lot.length) return;
+
+    const [an, mo, jo] = derniere.split('-').map(Number);
+    const bloc = document.createElement('div');
+    bloc.className = 'recent';
+    const tete = document.createElement('div');
+    tete.className = 'recent-h';
+    tete.innerHTML = '<b>' + (estRecent(derniere) ? 'Cette semaine' : 'Derniers ajouts') + '</b>'
+      + '<span class="d">' + lot.length + (lot.length > 1 ? ' sorties ajoutées le ' : ' sortie ajoutée le ')
+      + jo + ' ' + MOIS[mo - 1] + ' ' + an + '</span>';
+    bloc.appendChild(tete);
+
+    lot.forEach(carte => {
+      const sp = SPECS[carte.dataset.spec] || ['--text-muted', ''];
+      const b = document.createElement('button');
+      b.type = 'button';
+
+      const pastille = document.createElement('span');
+      pastille.className = 'r-dot';
+      pastille.style.background = 'var(' + sp[0] + ')';
+
+      const txt = document.createElement('span');
+      txt.className = 'r-txt';
+      const t = carte.querySelector('.art-title');
+      txt.textContent = t ? t.textContent : '';
+      if (carte.dataset.fr) {
+        const fr = document.createElement('span');
+        fr.className = 'r-fr';
+        fr.innerHTML = carte.dataset.fr;
+        txt.appendChild(fr);
+      }
+
+      const niv = document.createElement('span');
+      niv.className = 'r-lvl ' + carte.dataset.lvl;
+      const n = NOM[carte.dataset.lvl] || ['', ''];
+      const sym = document.createElement('span');
+      sym.className = 'r-sym'; sym.textContent = n[0];
+      const mot = document.createElement('span');
+      mot.className = 'r-word'; mot.textContent = n[1];
+      niv.appendChild(sym); niv.appendChild(mot);
+
+      b.appendChild(pastille); b.appendChild(txt); b.appendChild(niv);
+      b.addEventListener('click', () => {
+        // on lève les filtres qui pourraient masquer l'article, puis on l'ouvre
+        state.spec = 'all'; state.lvl = 'all'; state.q = '';
+        qInput.value = '';
+        state.annees.add(carte.dataset.year);
+        document.querySelectorAll('.chip[data-f="spec"], .chip[data-f="lvl"]').forEach(c =>
+          c.setAttribute('aria-pressed', c.dataset.v === 'all' ? 'true' : 'false'));
+        document.querySelectorAll('.chip[data-f="year"]').forEach(c =>
+          c.setAttribute('aria-pressed', state.annees.has(c.dataset.v) ? 'true' : 'false'));
+        applyFilters();
+        if (!carte.classList.contains('exp')) carte.querySelector('.artrow').click();
+        carte.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      bloc.appendChild(b);
+    });
+
+    // juste sous le descriptif : le lecteur voit les nouveautés avant les filtres
+    const filtres = document.getElementById('filters');
+    if (filtres) filtres.parentNode.insertBefore(bloc, filtres);
+  })();
 </script>
 </body>
 </html>

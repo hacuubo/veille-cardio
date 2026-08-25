@@ -164,6 +164,11 @@
     padding: 8px 14px; min-height: 36px;
   }
   .filters .grid .chips .chip.all { grid-column: 1 / -1; }
+  .filters .grid .chips .hint-spec { grid-column: 1 / -1; margin: 2px 0 0 2px; }
+  /* une surspécialité retenue se coche, comme les années : on peut en cumuler */
+  .filters .grid .chips .chip[data-f="spec"]:not(.all)[aria-pressed="true"]::before {
+    content: "\2713"; font-size: 11px; color: var(--status-good); margin-right: -2px;
+  }
   .filters .lab { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); font-weight: 600; width: 108px; flex: none; }
   .chip { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; font-family: inherit; }
   .chip:hover { background: var(--wash); }
@@ -172,7 +177,10 @@
   .chip.yr::before { content: "\2713"; font-size: 11px; color: var(--text-muted); }
   .chip.yr[aria-pressed="true"]::before { color: var(--status-good); }
   .filters .hint { font-size: 11.5px; color: var(--text-muted); font-style: italic; }
-  @media (max-width: 560px) { .filters .hint { display: none; } }
+  @media (max-width: 560px) {
+    .filters .hint { display: none; }
+    .filters .hint.hint-spec { display: block; font-size: 11px; }
+  }
   .no-year { display: none; margin: 20px 0; padding: 16px; border: 1px dashed var(--baseline); border-radius: 12px; color: var(--text-muted); font-size: 14px; text-align: center; }
   body.no-year-on .no-year { display: block; }
 
@@ -439,6 +447,7 @@
         <button class="chip" data-f="spec" data-v="cmh" aria-pressed="false"><span class="dot" style="background:var(--series-7)"></span>Cardiomyopathies &amp; myocardites</button>
         <button class="chip" data-f="spec" data-v="prev" aria-pressed="false"><span class="dot" style="background:var(--series-5)"></span>Pr&eacute;vention</button>
         <button class="chip" data-f="spec" data-v="sport" aria-pressed="false"><span class="dot" style="background:var(--series-4)"></span>Cardiologie du sport &middot; CFX/VO&#8322;&nbsp;max</button>
+        <span class="hint hint-spec">cliquez pour en choisir une, ou plusieurs &agrave; la suite</span>
       </div>
     </div>
     <div class="row">
@@ -2429,13 +2438,20 @@
       row.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   });
-  const state = { spec: 'all', annees: new Set(['2026', '2025']), lvl: 'all', q: '' };
+  // surspécialités et années : on peut en cocher plusieurs ; un ensemble vide = tout
+  const state = { specs: new Set(), annees: new Set(['2026', '2025']), lvl: 'all', q: '' };
+  function majPuceSpec() {
+    document.querySelectorAll('.chip[data-f="spec"]').forEach(c => {
+      const actif = c.dataset.v === 'all' ? state.specs.size === 0 : state.specs.has(c.dataset.v);
+      c.setAttribute('aria-pressed', actif ? 'true' : 'false');
+    });
+  }
   function applyFilters() {
     const terms = norm(state.q).split(/\s+/).filter(Boolean);
     document.body.classList.toggle('searching', terms.length > 0);
     let shown = 0;
     document.querySelectorAll('article.card[data-spec]').forEach(card => {
-      const ok = (state.spec === 'all' || card.dataset.spec === state.spec)
+      const ok = (state.specs.size === 0 || state.specs.has(card.dataset.spec))
               && state.annees.has(card.dataset.year)
               && (state.lvl === 'all' || card.dataset.lvl === state.lvl)
               && terms.every(t => card.dataset.hay.includes(t));
@@ -2463,7 +2479,13 @@
   document.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const f = chip.dataset.f;
-      if (f === 'year') {
+      if (f === 'spec') {
+        // « Toutes » remet à zéro ; les autres se cochent et se décochent librement
+        if (chip.dataset.v === 'all') state.specs.clear();
+        else if (state.specs.has(chip.dataset.v)) state.specs.delete(chip.dataset.v);
+        else state.specs.add(chip.dataset.v);
+        majPuceSpec();
+      } else if (f === 'year') {
         // les années se cochent et se décochent indépendamment
         const actif = chip.getAttribute('aria-pressed') === 'true';
         chip.setAttribute('aria-pressed', actif ? 'false' : 'true');
@@ -2547,10 +2569,11 @@
       b.appendChild(pastille); b.appendChild(txt); b.appendChild(niv);
       b.addEventListener('click', () => {
         // on lève les filtres qui pourraient masquer l'article, puis on l'ouvre
-        state.spec = 'all'; state.lvl = 'all'; state.q = '';
+        state.specs.clear(); state.lvl = 'all'; state.q = '';
         qInput.value = '';
         state.annees.add(carte.dataset.year);
-        document.querySelectorAll('.chip[data-f="spec"], .chip[data-f="lvl"]').forEach(c =>
+        majPuceSpec();
+        document.querySelectorAll('.chip[data-f="lvl"]').forEach(c =>
           c.setAttribute('aria-pressed', c.dataset.v === 'all' ? 'true' : 'false'));
         document.querySelectorAll('.chip[data-f="year"]').forEach(c =>
           c.setAttribute('aria-pressed', state.annees.has(c.dataset.v) ? 'true' : 'false'));

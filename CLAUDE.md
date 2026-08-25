@@ -96,7 +96,9 @@ Autres règles de mise en page :
   les filtres. Rien d'autre, et pas de tuiles de statistiques.
 - Les puces de surspécialité sont disposées **en grille ordonnée** (`.filters .row.grid .chips`) :
   trois colonnes sur ordinateur, deux sur téléphone, et « Toutes les surspécialités » sur toute la
-  largeur. Ne pas revenir à une simple ligne de puces qui s'enchaînent.
+  largeur. Ne pas revenir à une simple ligne de puces qui s'enchaînent. Elles se **cumulent** comme
+  les années : chaque puce se coche et se décoche indépendamment (une coche verte apparaît),
+  « Toutes les surspécialités » remet à zéro, et aucune puce cochée revient à tout afficher.
 - **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
   libellé « Au cabinet ») ; c'est le **niveau** qui porte la couleur forte — badge, et fond légèrement
   rosé pour les `crit`. Ne pas remettre de grosse pastille de couleur par article.

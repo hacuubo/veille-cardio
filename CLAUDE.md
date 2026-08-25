@@ -30,8 +30,11 @@ ses articles (années comprises), un second le referme, et plusieurs tiroirs peu
   `ic` (Insuffisance cardiaque), `usic` (USIC · Réanimation cardiologique — arrêt cardiaque, choc
   cardiogénique, assistance circulatoire, soins critiques), `cmh` (Cardiomyopathies & myocardites),
   `prev` (Prévention), `sport` (Cardiologie du sport · CFX/VO₂ max). En créer une nouvelle si besoin (valvulopathies, SCA)
-  avec sa couleur (`--series-N`), sa section, sa puce de filtre **et son entrée dans la table `SPECS`
-  du script en bas de page** ainsi que dans `outils/bulletin.mjs`.
+  avec sa couleur (`--series-N`), sa section **et son entrée dans la table `SPECS` du script en bas de
+  page** ainsi que dans `outils/bulletin.mjs`.
+- Il ne reste **que deux filtres** : les années et la recherche. Les puces de surspécialité et de niveau
+  ont été retirées le 24/08/2026 — le sommaire replié fait le tri, et le niveau se lit sur chaque ligne.
+  Ne pas les réintroduire sans demande explicite.
 - Années : deux puces, **2026 et 2025, cochées toutes les deux par défaut**, que le lecteur décoche
   indépendamment (ce ne sont pas des boutons exclusifs). Si les deux sont décochées, la page affiche le
   message « Aucune année sélectionnée ». Les puces et les en-têtes d'année ne portent que le millésime
@@ -94,22 +97,17 @@ Autres règles de mise en page :
 - Sous le descriptif vient le bandeau **« Cette semaine »** (construit par le script à partir des
   `data-ajout` les plus récents : jusqu'à six sorties). Il est **replié par défaut** — une seule ligne
   « Cette semaine · N sorties ajoutées le … » avec un chevron ; un clic déplie la liste, un second la
-  replie. Les lignes dépliées sont cliquables : elles lèvent les filtres et déplient l'article. **Puis**
-  les filtres. Rien d'autre, et pas de tuiles de statistiques.
-- Les puces de surspécialité sont disposées **en grille ordonnée** (`.filters .row.grid .chips`) :
-  trois colonnes sur ordinateur, deux sur téléphone, et « Toutes les surspécialités » sur toute la
-  largeur. Ne pas revenir à une simple ligne de puces qui s'enchaînent. Elles se **cumulent** comme
-  les années : chaque puce se coche et se décoche indépendamment (une coche verte apparaît),
-  « Toutes les surspécialités » remet à zéro, et aucune puce cochée revient à tout afficher.
+  replie. Les lignes dépliées sont cliquables : elles ouvrent le tiroir de l'article et le déplient.
+  **Puis** les filtres — années et recherche. Rien d'autre, et pas de tuiles de statistiques.
 - **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
   libellé « Au cabinet ») ; c'est le **niveau** qui porte la couleur forte — badge, et fond légèrement
   rosé pour les `crit`. Ne pas remettre de grosse pastille de couleur par article.
 - **Tiroirs de surspécialité** : la tête de section (`.spec-h`) est cliquable (chevron à droite, `role`
   et `aria-expanded` posés par le script) ; l'état ouvert est porté par `section.spec.ouvert` et par
-  l'ensemble `ouverts` du script. Trois règles à ne pas casser : cocher une puce de surspécialité ouvre
-  le tiroir correspondant (et « Toutes » les referme tous), une **recherche ouvre tout** — sinon le
-  lecteur ne verrait pas ses propres résultats —, et le compteur de la tête (`.count`) est recalculé à
-  chaque filtrage, il ne doit plus être écrit en dur dans le HTML.
+  l'ensemble `ouverts` du script. Trois règles à ne pas casser : les tiroirs ouverts sont **mémorisés
+  d'une visite à l'autre** (`localStorage`, clé `pc-ouverts`) et rouverts au chargement, une
+  **recherche ouvre tout** — sinon le lecteur ne verrait pas ses propres résultats —, et le compteur de
+  la tête (`.count`) est recalculé à chaque filtrage, il ne doit plus être écrit en dur dans le HTML.
 - **Confort de lecture** : le texte des fiches est limité à 68 caractères de large, les lignes d'articles
   font au moins 44 px de haut, et l'en-tête de surspécialité reste collé en haut pendant le défilement.
 - **Écran d'ouverture** : au chargement, un plein écran dessine le logo — un tracé ECG qui se déroule,

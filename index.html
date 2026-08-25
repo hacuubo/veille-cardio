@@ -245,9 +245,16 @@
     border-bottom: 2px solid var(--text-primary);
     position: sticky; top: 0; z-index: 5; background: var(--page);
   }
+  .spec-h { cursor: pointer; -webkit-user-select: none; user-select: none; }
+  .spec-h:hover { background: var(--surface-1); }
+  .spec-h:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
   .spec-h .dot { width: 12px; height: 12px; }
   .spec-h h2 { font-size: 17px; }
   .spec-h .count { font-size: 12.5px; color: var(--text-muted); margin-left: auto; }
+  .spec-chev { font-size: 13px; color: var(--text-muted); margin-left: 10px;
+               display: inline-block; transition: transform .2s ease; }
+  section.spec.ouvert .spec-chev { transform: rotate(90deg); }
+  @media (prefers-reduced-motion: reduce) { .spec-chev { transition: none; } }
   .year-h { display: flex; align-items: center; gap: 10px; margin: 16px 0 10px; }
   .year-h .y { font-size: 13px; font-weight: 700; letter-spacing: .04em; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--text-primary); }
   .year-h.current .y { background: var(--text-primary); color: var(--surface-1); }
@@ -2446,23 +2453,25 @@
       c.setAttribute('aria-pressed', actif ? 'true' : 'false');
     });
   }
+  // chaque surspécialité est un tiroir : repliée au départ, elle s'ouvre d'un clic sur son titre
+  const ouverts = new Set();
   function applyFilters() {
     const terms = norm(state.q).split(/\s+/).filter(Boolean);
-    document.body.classList.toggle('searching', terms.length > 0);
+    const cherche = terms.length > 0;
+    document.body.classList.toggle('searching', cherche);
     let shown = 0;
-    document.querySelectorAll('article.card[data-spec]').forEach(card => {
-      const ok = (state.specs.size === 0 || state.specs.has(card.dataset.spec))
-              && state.annees.has(card.dataset.year)
-              && (state.lvl === 'all' || card.dataset.lvl === state.lvl)
-              && terms.every(t => card.dataset.hay.includes(t));
-      card.style.display = ok ? '' : 'none';
-      if (ok) shown++;
-    });
-    document.body.classList.toggle('empty', terms.length > 0 && shown === 0);
-    document.body.classList.toggle('no-year-on', state.annees.size === 0);
-    const rb = document.getElementById('resbar');
-    if (terms.length > 0) rb.textContent = shown + (shown > 1 ? ' résultats' : ' résultat') + ' pour « ' + state.q.trim() + ' » — toutes surspécialités confondues';
     document.querySelectorAll('section.spec').forEach(sec => {
+      // une recherche ouvre tout : sinon on ne verrait pas ses propres résultats
+      const deplie = cherche || ouverts.has(sec.dataset.spec);
+      let retenues = 0;
+      sec.querySelectorAll('article.card[data-spec]').forEach(card => {
+        const ok = (state.specs.size === 0 || state.specs.has(card.dataset.spec))
+                && state.annees.has(card.dataset.year)
+                && (state.lvl === 'all' || card.dataset.lvl === state.lvl)
+                && terms.every(t => card.dataset.hay.includes(t));
+        if (ok) { retenues++; shown++; }
+        card.style.display = (ok && deplie) ? '' : 'none';
+      });
       // année : masque les sous-titres d'année sans carte visible
       sec.querySelectorAll('.year-h').forEach(yh => {
         let el = yh.nextElementSibling, any = false;
@@ -2472,10 +2481,46 @@
         }
         yh.style.display = any ? '' : 'none';
       });
-      const anyCard = [...sec.querySelectorAll('article.card')].some(c => c.style.display !== 'none');
-      sec.style.display = anyCard ? '' : 'none';
+      // la surspécialité reste visible tant qu'elle a des sorties : c'est le menu
+      sec.style.display = retenues ? '' : 'none';
+      const ouvert = deplie && retenues > 0;
+      sec.classList.toggle('ouvert', ouvert);
+      const tete = sec.querySelector('.spec-h');
+      if (tete) {
+        tete.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+        const compte = tete.querySelector('.count');
+        if (compte) compte.textContent = retenues + (retenues > 1 ? ' sorties' : ' sortie');
+      }
     });
+    document.body.classList.toggle('empty', cherche && shown === 0);
+    document.body.classList.toggle('no-year-on', state.annees.size === 0);
+    const rb = document.getElementById('resbar');
+    if (cherche) rb.textContent = shown + (shown > 1 ? ' résultats' : ' résultat') + ' pour « ' + state.q.trim() + ' » — toutes surspécialités confondues';
   }
+  // ouverture / fermeture d'une surspécialité
+  const douceur = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('section.spec').forEach(sec => {
+    const tete = sec.querySelector('.spec-h');
+    if (!tete) return;
+    const chev = document.createElement('span');
+    chev.className = 'spec-chev';
+    chev.textContent = '\u25B8';
+    tete.appendChild(chev);
+    tete.setAttribute('role', 'button');
+    tete.setAttribute('tabindex', '0');
+    tete.setAttribute('aria-expanded', 'false');
+    const basculer = () => {
+      const spec = sec.dataset.spec;
+      const ouvrir = !ouverts.has(spec);
+      if (ouvrir) ouverts.add(spec); else ouverts.delete(spec);
+      applyFilters();
+      if (ouvrir) sec.scrollIntoView({ behavior: douceur ? 'smooth' : 'auto', block: 'start' });
+    };
+    tete.addEventListener('click', basculer);
+    tete.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); basculer(); }
+    });
+  });
   document.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const f = chip.dataset.f;
@@ -2484,6 +2529,9 @@
         if (chip.dataset.v === 'all') state.specs.clear();
         else if (state.specs.has(chip.dataset.v)) state.specs.delete(chip.dataset.v);
         else state.specs.add(chip.dataset.v);
+        // ce qu'on sélectionne s'ouvre ; « Toutes » referme tout
+        ouverts.clear();
+        state.specs.forEach(v => ouverts.add(v));
         majPuceSpec();
       } else if (f === 'year') {
         // les années se cochent et se décochent indépendamment
@@ -2572,6 +2620,7 @@
         state.specs.clear(); state.lvl = 'all'; state.q = '';
         qInput.value = '';
         state.annees.add(carte.dataset.year);
+        ouverts.clear(); ouverts.add(carte.dataset.spec);
         majPuceSpec();
         document.querySelectorAll('.chip[data-f="lvl"]').forEach(c =>
           c.setAttribute('aria-pressed', c.dataset.v === 'all' ? 'true' : 'false'));

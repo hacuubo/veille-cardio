@@ -21,7 +21,9 @@ Interlocuteur non développeur : explique les choses simplement, et évite le ja
 ## Ce que contient la page
 
 Structure : sections par **surspécialité** → sous-groupes par **année** (année en cours d'abord, puis N−1)
-→ articles triés par **niveau d'impact**.
+→ articles triés par **niveau d'impact**. Chaque surspécialité est un **tiroir replié** : au chargement,
+la page n'affiche que la liste des huit titres avec leur nombre de sorties ; un clic sur un titre ouvre
+ses articles (années comprises), un second le referme, et plusieurs tiroirs peuvent rester ouverts.
 
 - Surspécialités (`data-spec`) : `rythmo` (Rythmologie), `interv` (Interventionnel & structurel),
   `imagerie` (Imagerie cardiaque — coroscanner, IRM cardiaque, échocardiographie et ETT de stress),
@@ -102,6 +104,12 @@ Autres règles de mise en page :
 - **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
   libellé « Au cabinet ») ; c'est le **niveau** qui porte la couleur forte — badge, et fond légèrement
   rosé pour les `crit`. Ne pas remettre de grosse pastille de couleur par article.
+- **Tiroirs de surspécialité** : la tête de section (`.spec-h`) est cliquable (chevron à droite, `role`
+  et `aria-expanded` posés par le script) ; l'état ouvert est porté par `section.spec.ouvert` et par
+  l'ensemble `ouverts` du script. Trois règles à ne pas casser : cocher une puce de surspécialité ouvre
+  le tiroir correspondant (et « Toutes » les referme tous), une **recherche ouvre tout** — sinon le
+  lecteur ne verrait pas ses propres résultats —, et le compteur de la tête (`.count`) est recalculé à
+  chaque filtrage, il ne doit plus être écrit en dur dans le HTML.
 - **Confort de lecture** : le texte des fiches est limité à 68 caractères de large, les lignes d'articles
   font au moins 44 px de haut, et l'en-tête de surspécialité reste collé en haut pendant le défilement.
 - **Écran d'ouverture** : au chargement, un plein écran dessine le logo — un tracé ECG qui se déroule,

@@ -134,6 +134,32 @@ Ne pas les confondre avec `--status-critical`, réservé au niveau « changement
 Pas de `favicon` ni d'`apple-touch-icon` tant que l'icône d'écran d'accueil n'est pas tranchée : iOS
 génère une capture de la page, ce qui convient en attendant.
 
+## Méthode de veille — ne rien laisser passer
+
+La sélection ne part **jamais de la mémoire** : elle part d'une récolte systématique. Avant toute mise
+à jour d'`index.html` :
+
+1. `node outils/moisson.mjs` (options : `--jours=N`, `--depuis=AAAA-MM-JJ`, `--spec=rythmo`, `--tout`
+   pour voir aussi ce qui est déjà en ligne, `--brut` pour ne rien filtrer). Le script interroge PubMed
+   surspécialité par surspécialité — d'abord les dix grandes revues tous types confondus, puis les revues
+   de surspécialité pour les seuls essais randomisés, recommandations et méta-analyses — et marque d'un
+   `★` ce qui relève de ces trois catégories. Il signale ce qui est déjà sur le site (comparaison sur le
+   titre, préfixe compris, pour rattraper les recommandations à sous-titre à rallonge).
+2. **Passer en revue chaque ligne `NOUVEAU`**, pas seulement les `★`. Un article écarté doit l'être en
+   connaissance de cause, pas par omission.
+3. Compléter par ce que PubMed ne voit pas encore : Hot Lines de congrès (ESC, ACC, AHA, TCT, EuroPCR,
+   HFA, HRS, EHRA), communiqués topline, relais TCTMD / ACC.org / Cardio-online.
+4. Dire dans le compte rendu combien de candidats ont été examinés et combien retenus.
+
+Règles de classement qui évitent les oublis constatés :
+
+- Un **suivi à long terme d'un essai pivot** (5 ans, 10 ans, extension ouverte) n'est jamais « veille » :
+  au minimum « à connaître ». Exemple : HOST-EXAM à 10 ans, d'abord classé « veille » à tort en 2026.
+- Un **essai négatif** sur un traitement en vogue vaut un essai positif : c'est ce qui évite de prescrire.
+- Une **méta-analyse sur données individuelles** dans une grande revue est au moins « à connaître ».
+- Dans le doute entre deux niveaux, prendre le plus haut : mieux vaut une ligne de trop qu'une sortie
+  qui échappe au lecteur.
+
 ## Mise à jour
 
 - Automatique : une **routine Claude Code** s'exécute chaque lundi 07:00 et met à jour `index.html`
@@ -142,6 +168,7 @@ génère une capture de la page, ce qui convient en attendant.
   Hot Lines via « Run now ».
 - **Une fois `index.html` à jour, toujours lancer `bash outils/faire-bulletin.sh`** (voir la section
   suivante) : c'est ce qui fabrique le bulletin PDF de la semaine.
+- **Avant** d'écrire quoi que ce soit : `node outils/moisson.mjs` (voir la section précédente).
 - Après modification : commit + push sur `main` (index.html **et** le dossier `bulletin/`).
   GitHub Pages republie tout seul en 1–2 minutes.
 - Toujours vérifier avant de pousser : HTML valide, liens qui fonctionnent, filtres et recherche opérants.

@@ -140,8 +140,14 @@ et les complexes QRS deviendraient illisibles.
 Couleurs de marque : `--brand` (#d03b3b en clair, #e2564f en sombre) et `--brand-line` pour le tracé.
 Ne pas les confondre avec `--status-critical`, réservé au niveau « changement de pratique » des fiches.
 
-Pas de `favicon` ni d'`apple-touch-icon` tant que l'icône d'écran d'accueil n'est pas tranchée : iOS
-génère une capture de la page, ce qui convient en attendant.
+**Icône d'application** (choisie le 26/08/2026) : fond encre `#141412`, tracé ECG crème et deux barreaux
+rouges `#e2564f` — c'est le logo réduit à ce qui reste lisible à 60 px. Les fichiers sont dans `icone/`
+et se refabriquent depuis `icone/icone.svg` (version aux coins arrondis, pour le favicon) :
+`pausecardio-180.png` est **pleine page, sans coins arrondis** — iOS applique son propre masque —, tandis
+que `pausecardio-192.png` et `-512.png` sont des icônes *maskable* Android, dont le dessin est réduit à
+74 % pour rester dans la zone que le système peut rogner. `manifest.webmanifest` à la racine donne le nom
+« Pause Cardio » à l'icône posée sur l'écran d'accueil. Ne pas mettre l'icône arrondie dans
+l'`apple-touch-icon` : les coins apparaîtraient deux fois.
 
 ## Méthode de veille — ne rien laisser passer
 

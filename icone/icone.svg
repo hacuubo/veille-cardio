@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="Pause Cardio">
+  <rect width="180" height="180" rx="40" fill="#141412"/>
+  <path d="M0,92 H42 l11,-30 l14,60 l11,-30 H180" fill="none" stroke="#f2f1ea" stroke-width="10"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="82" y="44" width="17" height="92" rx="7" fill="#e2564f"/>
+  <rect x="109" y="44" width="17" height="92" rx="7" fill="#e2564f"/>
+</svg>

@@ -73,7 +73,7 @@
   .brand-row .brand-name { grid-column: 2; text-align: center; }
   .brand-row .brand-mark { grid-column: 3; justify-self: end; }
   .brand-name {
-    font-size: clamp(21px, 5.4vw, 29px); font-weight: 700; letter-spacing: .15em;
+    font-size: clamp(27px, 7.2vw, 40px); font-weight: 700; letter-spacing: .15em;
     line-height: 1.1; color: var(--text-primary);
   }
   .site-head .eyebrow { font-size: 11.5px; color: var(--text-muted); letter-spacing: .01em;
@@ -82,8 +82,8 @@
   .site-head .eyebrow a.bl { color: var(--brand); font-weight: 700; text-decoration: none;
                              border-bottom: 1px solid currentColor; white-space: nowrap; }
   .site-head .eyebrow a.bl-arch { color: var(--text-muted); font-weight: 600; border-bottom-color: var(--baseline); margin-left: 6px; }
-  .brand-mark { flex: none; width: 92px; height: 26px; }
-  .brand-mark .trace { stroke: var(--brand-line); stroke-width: 1.6;
+  .brand-mark { flex: none; width: 124px; height: 35px; }
+  .brand-mark .trace { stroke: var(--brand-line); stroke-width: 1.9;
     fill: none; stroke-linecap: round; stroke-linejoin: round; }
   .brand-mark .bar { fill: var(--brand); }
   .brand-rule { height: 6px; border-radius: 3px; background: var(--brand); }
@@ -93,7 +93,7 @@
   @media (max-width: 560px) {
     .brand-row { grid-template-columns: minmax(0, 1fr); gap: 9px; }
     .brand-row .brand-name { grid-column: 1; }
-    .brand-row .brand-mark { grid-column: 1; justify-self: center; width: 78px; height: 22px; }
+    .brand-row .brand-mark { grid-column: 1; justify-self: center; width: 106px; height: 30px; }
     .brand-name { letter-spacing: .12em; }
   }
   .demo-note { margin-top: 14px; padding: 10px 14px; border: 1px dashed var(--baseline); border-radius: 10px; font-size: 13px; color: var(--text-secondary); background: var(--surface-1); }
@@ -227,13 +227,13 @@
          background: var(--surface-1); overflow: hidden; }
   body.searching .abo { display: none; }
   .abo-h {
-    width: 100%; display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+    width: 100%; display: flex; align-items: center; gap: 9px;
     padding: 12px 15px; min-height: 44px; border: none; background: none;
     font: inherit; color: inherit; text-align: left; cursor: pointer;
   }
-  .abo-h b { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-  .abo-h .d { font-size: 12px; color: var(--text-muted); }
-  .abo-h .chev { margin-left: auto; font-size: 12px; color: var(--text-muted);
+  .abo-h b { flex: 1; min-width: 0; }
+  .abo-h b { font-size: 13.5px; font-weight: 600; color: var(--text-secondary); }
+  .abo-h .chev { flex: none; font-size: 12px; color: var(--text-muted);
                  transition: transform .2s ease; }
   .abo.ouvert .abo-h .chev { transform: rotate(90deg); }
   .abo:not(.ouvert) .abo-c { display: none; }
@@ -244,7 +244,7 @@
   /* la version dépliée en pied de page n'a pas de tête cliquable */
   .abo.plein { margin: 40px 0 0; }
   .abo.plein .abo-c { display: block; border-top: none; }
-  .abo-t { font-size: 15px; font-weight: 700; margin: 0 0 2px; }
+  .abo-t { font-size: 15px; font-weight: 600; margin: 0 0 2px; }
 
   .abo-c { padding: 13px 15px 15px; border-top: 1px solid var(--grid); }
   .abo-l { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
@@ -2703,8 +2703,7 @@
         tete.type = 'button';
         tete.className = 'abo-h';
         tete.setAttribute('aria-expanded', 'false');
-        tete.innerHTML = '<b>✉ Recevoir le bulletin</b>'
-          + '<span class="d">le bulletin du lundi, à lire en deux minutes</span>'
+        tete.innerHTML = '<b>Recevoir les dernières sorties toutes les semaines</b>'
           + '<span class="chev">▸</span>';
         tete.addEventListener('click', () => {
           const ouvert = bloc.classList.toggle('ouvert');
@@ -2717,9 +2716,7 @@
       const corps = document.createElement('div');
       corps.className = 'abo-c';
       corps.innerHTML =
-        (plein ? '<p class="abo-t">Recevoir les sorties de la semaine</p>'
-               + '<p class="abo-p" style="margin-top:4px">Le bulletin du lundi&nbsp;: les nouvelles sorties '
-               + 'de la semaine en une page, avec le « Au cabinet » de chaque fiche, en PDF.</p>' : '')
+        (plein ? '<p class="abo-t">Recevoir les dernières sorties toutes les semaines</p>' : '')
         + '<form class="abo-f" method="post" target="pc-abo-cadre">'
         +   '<label class="abo-sr" for="' + id + '">Votre adresse e-mail</label>'
         +   '<div class="abo-l">'
@@ -2733,11 +2730,9 @@
         +     '<input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off">'
         +   '</label>'
         +   '<label class="abo-ok"><input type="checkbox" required>'
-        +     '<span>J’accepte de recevoir le bulletin hebdomadaire de Pause Cardio à cette adresse.</span>'
+        +     '<span>J’accepte de recevoir le bulletin par e-mail.</span>'
         +   '</label>'
-        +   '<p class="abo-p">Un envoi par semaine, le lundi. Votre adresse ne sert qu’à cet envoi, '
-        +     'n’est jamais transmise à un tiers, et se retire en un clic depuis le lien de '
-        +     'désinscription présent en bas de chaque message.</p>'
+        +   '<p class="abo-p">Un envoi par semaine, le lundi.</p>'
         +   '<p class="abo-m" role="status"></p>'
         + '</form>';
       bloc.appendChild(corps);
@@ -2749,8 +2744,8 @@
         // Brevo répond dans la fenêtre invisible : on ne peut pas lire son verdict,
         // c'est le mail de confirmation qui fait foi.
         mot.className = 'abo-m ok';
-        mot.textContent = 'Merci — un message de confirmation vient de partir vers cette adresse. '
-          + 'Cliquez sur le lien qu’il contient pour valider l’inscription.';
+        mot.textContent = 'Merci — cliquez sur le lien du message de confirmation '
+          + 'qui vient de partir vers cette adresse.';
         form.querySelector('.abo-mail').value = '';
         form.querySelector('.abo-ok input').checked = false;
       });

@@ -222,6 +222,57 @@
     .recent .r-lvl { font-size: 12px; }
   }
 
+  /* ---------- encart d'inscription au bulletin ---------- */
+  .abo { margin: 14px 0 6px; border: 1px solid var(--border); border-radius: 14px;
+         background: var(--surface-1); overflow: hidden; }
+  body.searching .abo { display: none; }
+  .abo-h {
+    width: 100%; display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+    padding: 12px 15px; min-height: 44px; border: none; background: none;
+    font: inherit; color: inherit; text-align: left; cursor: pointer;
+  }
+  .abo-h b { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .abo-h .d { font-size: 12px; color: var(--text-muted); }
+  .abo-h .chev { margin-left: auto; font-size: 12px; color: var(--text-muted);
+                 transition: transform .2s ease; }
+  .abo.ouvert .abo-h .chev { transform: rotate(90deg); }
+  .abo:not(.ouvert) .abo-c { display: none; }
+  .abo-h:hover { background: var(--wash); }
+  .abo-h:focus-visible { outline: 2px solid var(--text-primary); outline-offset: -2px; }
+  @media (prefers-reduced-motion: reduce) { .abo-h .chev { transition: none; } }
+
+  /* la version dépliée en pied de page n'a pas de tête cliquable */
+  .abo.plein { margin: 40px 0 0; }
+  .abo.plein .abo-c { display: block; border-top: none; }
+  .abo-t { font-size: 15px; font-weight: 700; margin: 0 0 2px; }
+
+  .abo-c { padding: 13px 15px 15px; border-top: 1px solid var(--grid); }
+  .abo-l { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .abo-mail {
+    flex: 1 1 220px; min-width: 0; min-height: 44px; padding: 10px 13px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--page); color: var(--text-primary); font: inherit; font-size: 15px;
+  }
+  .abo-mail:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+  .abo-b {
+    flex: none; min-height: 44px; padding: 10px 18px; border: 1px solid var(--brand);
+    border-radius: 10px; background: var(--brand); color: #fff;
+    font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  .abo-b:hover { filter: brightness(1.08); }
+  .abo-b:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+  .abo-ok {
+    display: flex; gap: 9px; align-items: flex-start; margin-top: 12px;
+    font-size: 12.5px; color: var(--text-secondary); line-height: 1.45; cursor: pointer;
+  }
+  .abo-ok input { margin: 2px 0 0; flex: none; width: 16px; height: 16px; accent-color: var(--brand); }
+  .abo-p { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin: 10px 0 0; max-width: 62ch; }
+  .abo-m { font-size: 13.5px; line-height: 1.5; margin: 12px 0 0; max-width: 62ch; }
+  .abo-m.ok { color: var(--brand); font-weight: 600; }
+  .abo-m.err { color: var(--status-critical); font-weight: 600; }
+  .abo-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .abo-sr { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
   /* ---------- sections par surspécialité ---------- */
   section.spec { margin-top: 34px; }
   .spec-h {
@@ -2622,6 +2673,98 @@
     // juste sous le descriptif : le lecteur voit les nouveautés avant les filtres
     const filtres = document.getElementById('filters');
     if (filtres) filtres.parentNode.insertBefore(bloc, filtres);
+  })();
+
+  // ---------- encart « recevoir les sorties de la semaine » ----------
+  // L'adresse du formulaire Brevo se colle ici, et nulle part ailleurs.
+  // Tant qu'elle est vide, l'encart n'est pas affiché : pas de champ qui ne mène nulle part.
+  const ABO_FORM = '';
+
+  (function () {
+    if (!ABO_FORM) return;
+
+    // une seule fenêtre invisible reçoit la réponse de Brevo : le lecteur ne quitte pas la page
+    const cadre = document.createElement('iframe');
+    cadre.name = 'pc-abo-cadre';
+    cadre.title = 'Traitement de l’inscription';
+    cadre.setAttribute('aria-hidden', 'true');
+    cadre.style.display = 'none';
+    document.body.appendChild(cadre);
+
+    let n = 0;
+    function batir(plein) {
+      n++;
+      const id = 'abo-mail-' + n;
+      const bloc = document.createElement('section');
+      bloc.className = 'abo' + (plein ? ' plein ouvert' : '');
+
+      if (!plein) {
+        const tete = document.createElement('button');
+        tete.type = 'button';
+        tete.className = 'abo-h';
+        tete.setAttribute('aria-expanded', 'false');
+        tete.innerHTML = '<b>✉ Recevoir le bulletin</b>'
+          + '<span class="d">le bulletin du lundi, à lire en deux minutes</span>'
+          + '<span class="chev">▸</span>';
+        tete.addEventListener('click', () => {
+          const ouvert = bloc.classList.toggle('ouvert');
+          tete.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+          if (ouvert) bloc.querySelector('.abo-mail').focus();
+        });
+        bloc.appendChild(tete);
+      }
+
+      const corps = document.createElement('div');
+      corps.className = 'abo-c';
+      corps.innerHTML =
+        (plein ? '<p class="abo-t">Recevoir les sorties de la semaine</p>'
+               + '<p class="abo-p" style="margin-top:4px">Le bulletin du lundi&nbsp;: les nouvelles sorties '
+               + 'de la semaine en une page, avec le « Au cabinet » de chaque fiche, en PDF.</p>' : '')
+        + '<form class="abo-f" method="post" target="pc-abo-cadre">'
+        +   '<label class="abo-sr" for="' + id + '">Votre adresse e-mail</label>'
+        +   '<div class="abo-l">'
+        +     '<input id="' + id + '" class="abo-mail" type="email" name="EMAIL" required '
+        +            'autocomplete="email" inputmode="email" placeholder="prenom.nom@exemple.fr">'
+        +     '<button class="abo-b" type="submit">Je m’inscris</button>'
+        +   '</div>'
+        +   '<input type="hidden" name="locale" value="fr">'
+        +   '<input type="hidden" name="html_type" value="simple">'
+        +   '<label class="abo-hp" aria-hidden="true">Ne rien saisir ici'
+        +     '<input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off">'
+        +   '</label>'
+        +   '<label class="abo-ok"><input type="checkbox" required>'
+        +     '<span>J’accepte de recevoir le bulletin hebdomadaire de Pause Cardio à cette adresse.</span>'
+        +   '</label>'
+        +   '<p class="abo-p">Un envoi par semaine, le lundi. Votre adresse ne sert qu’à cet envoi, '
+        +     'n’est jamais transmise à un tiers, et se retire en un clic depuis le lien de '
+        +     'désinscription présent en bas de chaque message.</p>'
+        +   '<p class="abo-m" role="status"></p>'
+        + '</form>';
+      bloc.appendChild(corps);
+
+      const form = corps.querySelector('.abo-f');
+      form.action = ABO_FORM;
+      const mot = corps.querySelector('.abo-m');
+      form.addEventListener('submit', () => {
+        // Brevo répond dans la fenêtre invisible : on ne peut pas lire son verdict,
+        // c'est le mail de confirmation qui fait foi.
+        mot.className = 'abo-m ok';
+        mot.textContent = 'Merci — un message de confirmation vient de partir vers cette adresse. '
+          + 'Cliquez sur le lien qu’il contient pour valider l’inscription.';
+        form.querySelector('.abo-mail').value = '';
+        form.querySelector('.abo-ok input').checked = false;
+      });
+
+      return bloc;
+    }
+
+    // en haut : une ligne repliée, juste sous « cette semaine »
+    const filtres = document.getElementById('filters');
+    if (filtres) filtres.parentNode.insertBefore(batir(false), filtres);
+
+    // en bas : la version dépliée, pour celui qui a lu jusqu'au bout
+    const pied = document.querySelector('footer');
+    if (pied) pied.parentNode.insertBefore(batir(true), pied);
   })();
 </script>
 </body>

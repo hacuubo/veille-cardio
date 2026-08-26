@@ -93,12 +93,21 @@ Autres règles de mise en page :
   ordinateur et **sous le nom sur téléphone** (moins de 560 px) ; la ligne discrète `.eyebrow` (nombre de
   sorties + date de mise à jour + lien vers le dernier bulletin) ; le liséré rouge `.brand-rule` ; puis la
   seule ligne de descriptif *« Screening transversal hebdomadaire de sorties bibliographiques d'ampleur,
-  assisté par IA. »*. Rien d'autre entre le descriptif et les filtres, et pas de tuiles de statistiques.
+  assisté par IA. »*. Pas de tuiles de statistiques.
 - Sous le descriptif vient le bandeau **« Cette semaine »** (construit par le script à partir des
   `data-ajout` les plus récents : jusqu'à six sorties). Il est **replié par défaut** — une seule ligne
   « Cette semaine · N sorties ajoutées le … » avec un chevron ; un clic déplie la liste, un second la
   replie. Les lignes dépliées sont cliquables : elles ouvrent le tiroir de l'article et le déplient.
-  **Puis** les filtres — années et recherche. Rien d'autre, et pas de tuiles de statistiques.
+  **Puis** l'encart d'inscription (ci-dessous), **puis** les filtres — années et recherche.
+  Rien d'autre, et pas de tuiles de statistiques.
+- **Encart d'inscription au bulletin** : construit par le script, en deux exemplaires bâtis par la même
+  fonction — une ligne repliée « ✉ Recevoir le bulletin » sous le bandeau « Cette semaine », et la version
+  dépliée `.abo.plein` juste avant le pied de page. Trois règles : l'adresse du formulaire Brevo se met
+  **uniquement** dans la constante `ABO_FORM` en bas du script ; **tant qu'elle est vide, l'encart n'est
+  pas affiché du tout** (pas de champ qui ne mène nulle part) ; l'envoi vise une fenêtre invisible
+  (`iframe[name=pc-abo-cadre]`) pour que le lecteur ne quitte pas la page. On ne peut donc pas lire le
+  verdict de Brevo : c'est le mail de confirmation (double opt-in) qui fait foi, et le message affiché
+  le dit ainsi. Ne pas retirer la case à cocher de consentement ni la mention sur l'usage de l'adresse.
 - **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
   libellé « Au cabinet ») ; c'est le **niveau** qui porte la couleur forte — badge, et fond légèrement
   rosé pour les `crit`. Ne pas remettre de grosse pastille de couleur par article.

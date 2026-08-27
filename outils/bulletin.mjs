@@ -233,6 +233,8 @@ function rendreArchives(bulletins) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pause Cardio — bulletins hebdomadaires</title>
+<meta name="description" content="Tous les bulletins hebdomadaires Pause Cardio en PDF : les nouvelles sorties bibliographiques en cardiologie de chaque semaine, résumées en français.">
+<link rel="canonical" href="https://pausecardio.fr/bulletin/">
 <link rel="icon" href="../icone/icone.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="../icone/pausecardio-180.png">
 <style>

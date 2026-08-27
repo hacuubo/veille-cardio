@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PAUSE CARDIO — veille cardiologique</title>
+<title>Pause Cardio — veille bibliographique en cardiologie</title>
+<meta name="description" content="Veille bibliographique hebdomadaire en cardiologie : essais randomisés pivots, recommandations ESC et ACC/AHA, méta-analyses majeures, résumés en français avec fiches de lecture. Bulletin PDF gratuit chaque lundi.">
+<link rel="canonical" href="https://pausecardio.fr/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pause Cardio">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Pause Cardio — veille bibliographique en cardiologie">
+<meta property="og:description" content="Chaque semaine, les sorties qui comptent en cardiologie : essais pivots, recommandations, méta-analyses — résumés en français, fiches de lecture, bulletin PDF gratuit.">
+<meta property="og:url" content="https://pausecardio.fr/">
+<meta property="og:image" content="https://pausecardio.fr/icone/partage.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pause Cardio — veille bibliographique en cardiologie">
+<meta name="twitter:description" content="Les sorties qui comptent en cardiologie, résumées en français chaque semaine. Bulletin PDF gratuit le lundi.">
+<meta name="twitter:image" content="https://pausecardio.fr/icone/partage.png">
 <meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-title" content="Pause Cardio">
@@ -122,7 +137,7 @@
     animation: splash-out 5s cubic-bezier(.4,0,.2,1) forwards;
   }
   .splash-in { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 0 22px; max-width: 100%; }
-  .splash h1 {
+  .splash .splash-nom {
     font-size: clamp(20px, 5.6vw, 40px); font-weight: 700; letter-spacing: .2em;
     line-height: 1.1; text-align: center; max-width: 100%;
     animation: splash-rise .7s cubic-bezier(.2,.7,.2,1) 1.9s both;
@@ -158,7 +173,7 @@
   @keyframes splash-fast  { to { opacity: 0; visibility: hidden; } }
   @media (prefers-reduced-motion: reduce) {
     .splash { animation: splash-fast .35s ease .5s forwards; }
-    .splash h1, .splash .splash-tag, .splash .splash-passer,
+    .splash .splash-nom, .splash .splash-tag, .splash .splash-passer,
     .splash-mark .trace, .splash-mark .bar { animation: none; opacity: 1; transform: none; stroke-dashoffset: 0; }
   }
 
@@ -438,6 +453,38 @@
     .art-tags .badge { padding: 1px 5px; font-size: 10px; }
   }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://pausecardio.fr/#site",
+      "url": "https://pausecardio.fr/",
+      "name": "Pause Cardio",
+      "description": "Veille bibliographique hebdomadaire en cardiologie, assistée par IA : essais randomisés pivots, recommandations ESC et ACC/AHA, méta-analyses majeures, résumées en français avec fiches de lecture.",
+      "inLanguage": "fr",
+      "publisher": { "@id": "https://pausecardio.fr/#org" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://pausecardio.fr/#org",
+      "name": "Pause Cardio",
+      "url": "https://pausecardio.fr/",
+      "logo": "https://pausecardio.fr/icone/pausecardio-apple.png",
+      "email": "contact@pausecardio.fr"
+    },
+    {
+      "@type": "Periodical",
+      "name": "Bulletin Pause Cardio",
+      "url": "https://pausecardio.fr/bulletin/",
+      "inLanguage": "fr",
+      "about": "Les nouvelles sorties bibliographiques de la semaine en cardiologie, en une à trois pages PDF, chaque lundi.",
+      "publisher": { "@id": "https://pausecardio.fr/#org" }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -449,7 +496,7 @@
       <rect class="bar" x="154" y="21" width="9" height="48" rx="3"/>
       <path class="trace t2" d="M170,45 H186 l6,-22 l8,44 l7,-22 H300"/>
     </svg>
-    <h1>PAUSE CARDIO</h1>
+    <div class="splash-nom">PAUSE CARDIO</div>
     <div class="splash-tag">Screening transversal hebdomadaire de sorties bibliographiques d&rsquo;ampleur, assist&eacute; par IA.</div>
   </div>
   <div class="splash-passer">Touchez l&rsquo;&eacute;cran pour entrer</div>
@@ -2367,6 +2414,7 @@
   </div>
 
   <footer>
+    <b>Pause Cardio</b> est une veille bibliographique hebdomadaire et gratuite en cardiologie&nbsp;: essais randomis&eacute;s pivots, recommandations ESC et ACC/AHA, m&eacute;ta-analyses majeures, r&eacute;sum&eacute;s en fran&ccedil;ais avec fiches de lecture.<br>
     &Eacute;dition z&eacute;ro du 19/08/2026 — mise &agrave; jour automatique hebdomadaire &middot; Sources&nbsp;: NEJM, JAMA, JACC, EHJ, escardio.org, ACC.org, TCTMD, Cardio-online, HCPLive &middot; Contenus g&eacute;n&eacute;r&eacute;s par recherche documentaire assist&eacute;e : les fiches sont des synth&egrave;ses d&rsquo;aide &agrave; la veille, elles ne remplacent pas la lecture de l&rsquo;article original ni le jugement clinique.
   </footer>
 </div>

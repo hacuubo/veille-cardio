@@ -8,8 +8,7 @@
 <meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-title" content="Pause Cardio">
 <link rel="icon" href="icone/icone.svg" type="image/svg+xml">
-<link rel="icon" href="icone/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="icone/pausecardio-180.png">
+<link rel="apple-touch-icon" href="icone/pausecardio-apple.png">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
   :root {
@@ -35,6 +34,9 @@
     --status-good:     #0ca30c;
     --brand:      #d03b3b;
     --brand-line: #c3c2b7;
+    --brand-doux:  rgba(208, 59, 59, .055);
+    --brand-doux2: rgba(208, 59, 59, .11);
+    --brand-trait: rgba(208, 59, 59, .22);
     --wash: rgba(11,11,11,0.045);
   }
   @media (prefers-color-scheme: dark) {
@@ -58,6 +60,9 @@
       --series-8: #c569b0;
       --brand:      #e2564f;
       --brand-line: #383835;
+      --brand-doux:  rgba(226, 86, 79, .10);
+      --brand-doux2: rgba(226, 86, 79, .17);
+      --brand-trait: rgba(226, 86, 79, .28);
       --wash: rgba(255,255,255,0.06);
     }
   }
@@ -227,8 +232,9 @@
   }
 
   /* ---------- encart d'inscription au bulletin ---------- */
-  .abo { margin: 14px 0 6px; border: 1px solid var(--border); border-radius: 14px;
-         background: var(--surface-1); overflow: hidden; }
+  .abo { margin: 14px 0 6px; border: 1px solid var(--brand); border-radius: 14px;
+         background: var(--brand-doux); overflow: hidden;
+         border-left: 4px solid var(--brand); }
   body.searching .abo { display: none; }
   .abo-h {
     width: 100%; display: flex; align-items: center; gap: 9px;
@@ -236,21 +242,22 @@
     font: inherit; color: inherit; text-align: left; cursor: pointer;
   }
   .abo-h b { flex: 1; min-width: 0; }
-  .abo-h b { font-size: 13.5px; font-weight: 600; color: var(--text-secondary); }
-  .abo-h .chev { flex: none; font-size: 12px; color: var(--text-muted);
+  .abo-h b { font-size: 14px; font-weight: 700; color: var(--brand); }
+  .abo-h .env { flex: none; font-size: 15px; color: var(--brand); }
+  .abo-h .chev { flex: none; font-size: 12px; color: var(--brand);
                  transition: transform .2s ease; }
   .abo.ouvert .abo-h .chev { transform: rotate(90deg); }
   .abo:not(.ouvert) .abo-c { display: none; }
-  .abo-h:hover { background: var(--wash); }
+  .abo-h:hover { background: var(--brand-doux2); }
   .abo-h:focus-visible { outline: 2px solid var(--text-primary); outline-offset: -2px; }
   @media (prefers-reduced-motion: reduce) { .abo-h .chev { transition: none; } }
 
   /* la version dépliée en pied de page n'a pas de tête cliquable */
   .abo.plein { margin: 40px 0 0; }
   .abo.plein .abo-c { display: block; border-top: none; }
-  .abo-t { font-size: 15px; font-weight: 600; margin: 0 0 2px; }
+  .abo-t { font-size: 15.5px; font-weight: 700; margin: 0 0 2px; color: var(--brand); }
 
-  .abo-c { padding: 13px 15px 15px; border-top: 1px solid var(--grid); }
+  .abo-c { padding: 13px 15px 15px; border-top: 1px solid var(--brand-trait); }
   .abo-l { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
   .abo-mail {
     flex: 1 1 220px; min-width: 0; min-height: 44px; padding: 10px 13px;
@@ -2707,7 +2714,8 @@
         tete.type = 'button';
         tete.className = 'abo-h';
         tete.setAttribute('aria-expanded', 'false');
-        tete.innerHTML = '<b>Recevoir les dernières sorties toutes les semaines</b>'
+        tete.innerHTML = '<span class="env">✉</span>'
+          + '<b>Recevoir les dernières sorties toutes les semaines</b>'
           + '<span class="chev">▸</span>';
         tete.addEventListener('click', () => {
           const ouvert = bloc.classList.toggle('ouvert');

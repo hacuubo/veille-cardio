@@ -143,9 +143,11 @@ Ne pas les confondre avec `--status-critical`, réservé au niveau « changement
 **Icône d'application** (choisie le 26/08/2026) : fond encre `#141412`, tracé ECG crème et deux barreaux
 rouges `#e2564f` — c'est le logo réduit à ce qui reste lisible à 60 px. Les fichiers sont dans `icone/`
 et se refabriquent depuis `icone/icone.svg` (version aux coins arrondis, pour le favicon) :
-`pausecardio-180.png` est **pleine page, sans coins arrondis** — iOS applique son propre masque —, tandis
-que `pausecardio-192.png` et `-512.png` sont des icônes *maskable* Android, dont le dessin est réduit à
-74 % pour rester dans la zone que le système peut rogner. `manifest.webmanifest` à la racine donne le nom
+`pausecardio-apple.png` est **pleine page, sans coins arrondis** — iOS applique son propre masque —,
+tandis que `pausecardio-512.png` est l'icône *maskable* Android, dont le dessin est réduit à 74 % pour
+rester dans la zone que le système peut rogner. **Toujours produire ces PNG en 512 × 512** : Chromium
+sans interface impose une hauteur de fenêtre minimale, si bien qu'une capture demandée en 180 ou 192 px
+sort comprimée vers le haut, moitié basse vide. Le vérifier avec `outils/png.py` avant de publier. `manifest.webmanifest` à la racine donne le nom
 « Pause Cardio » à l'icône posée sur l'écran d'accueil. Ne pas mettre l'icône arrondie dans
 l'`apple-touch-icon` : les coins apparaîtraient deux fois.
 

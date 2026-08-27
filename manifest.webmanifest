@@ -10,10 +10,10 @@
   "theme_color": "#141412",
   "icons": [
     {
-      "src": "/icone/pausecardio-512.png",
-      "sizes": "512x512",
+      "src": "/icone/pausecardio-180.png",
+      "sizes": "180x180",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     },
     {
       "src": "/icone/pausecardio-apple.png",
@@ -22,10 +22,10 @@
       "purpose": "any"
     },
     {
-      "src": "/icone/icone.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
+      "src": "/icone/pausecardio-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

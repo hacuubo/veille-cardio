@@ -147,7 +147,7 @@ et se refabriquent depuis `icone/icone.svg` (version aux coins arrondis, pour le
 tandis que `pausecardio-512.png` est l'icône *maskable* Android, dont le dessin est réduit à 74 % pour
 rester dans la zone que le système peut rogner. **Toujours produire ces PNG en 512 × 512** : Chromium
 sans interface impose une hauteur de fenêtre minimale, si bien qu'une capture demandée en 180 ou 192 px
-sort comprimée vers le haut, moitié basse vide. Le vérifier avec `outils/png.py` avant de publier. `manifest.webmanifest` à la racine donne le nom
+sort comprimée vers le haut, moitié basse vide. Le vérifier avec `outils/png.py` avant de publier ; pour obtenir une taille plus petite sans le défaut, rendre dans une fenêtre de 360 px avec `--force-device-scale-factor=0.5`. iOS réclame un `apple-touch-icon` de **180 × 180** et va le chercher aussi à la racine : garder `apple-touch-icon.png` et `apple-touch-icon-precomposed.png` à côté d'`index.html`, sans quoi le raccourci d'écran d'accueil affiche la vignette de secours d'iOS (fond noir, lettre blanche). `manifest.webmanifest` à la racine donne le nom
 « Pause Cardio » à l'icône posée sur l'écran d'accueil. Ne pas mettre l'icône arrondie dans
 l'`apple-touch-icon` : les coins apparaîtraient deux fois.
 

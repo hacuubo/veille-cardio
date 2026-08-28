@@ -99,6 +99,8 @@ function lireArticles(html) {
       .map(([, href, texte]) => ({ href, texte: brut(texte).replace(/\s*↗\s*$/, '').replace(/\s*&#8599;\s*$/, '').trim() }));
     articles.push({
       cle:     cle(titre),
+      accroche: attr('data-fr'),
+      chiffre: bloc(/<div class="cle">([\s\S]*?)<\/div>/),
       spec:    attr('data-spec'),
       annee:   attr('data-year'),
       niveau:  attr('data-lvl') || 'watch',
@@ -110,7 +112,23 @@ function lireArticles(html) {
       liens,
     });
   }
+  poserAncres(articles);
   return articles;
+}
+
+/** même règle de nommage que dans le script d'index.html : ne changer ni l'une
+ *  ni l'autre isolément, les liens des bulletins déjà envoyés en dépendent. */
+function poserAncres(articles) {
+  const pris = new Set();
+  for (const a of articles) {
+    let base = brut(a.titre).toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64).replace(/-+$/, '');
+    let libre = base, n = 2;
+    while (pris.has(libre)) libre = base + '-' + n++;
+    pris.add(libre);
+    a.ancre = libre;
+  }
 }
 
 /* --------------------------------------------------------- rendu du bulletin */
@@ -211,10 +229,97 @@ function rendreBulletin(nouveaux, dateIso) {
 ${entrees}
   <footer class="pied">
     Tableau de bord complet &mdash; toutes les sorties, recherche FR/EN, fiches de lecture :
-    <a href="https://hacuubo.github.io/veille-cardio/">hacuubo.github.io/veille-cardio</a><br>
+    <a href="https://pausecardio.fr/">pausecardio.fr</a><br>
     <b>Fiches r&eacute;dig&eacute;es par Claude &mdash; &agrave; valider par le lecteur avant toute application clinique.</b>
   </footer>
 </div>
+</body>
+</html>`;
+}
+
+/* ------------------------------------------------------------- courriel */
+
+/** Le bulletin en version e-mail : léger, cliquable, chaque titre mène à sa
+ *  fiche sur pausecardio.fr. HTML « à l'ancienne » (tableaux, styles en ligne),
+ *  seule forme que Gmail, Outlook et Apple Mail affichent tous correctement. */
+function rendreCourriel(nouveaux, dateIso) {
+  const SITE_URL = 'https://pausecardio.fr/';
+  const tri = [...nouveaux].sort((a, b) =>
+    (NIVEAUX[a.niveau]?.rang ?? 9) - (NIVEAUX[b.niveau]?.rang ?? 9)
+    || a.spec.localeCompare(b.spec));
+  const n = tri.length;
+  const nbCrit = tri.filter(a => a.niveau === 'crit').length;
+  const chapeau = nbCrit
+    ? `${n} nouveaut${n > 1 ? 'és' : 'é'} cette semaine, dont ${nbCrit} susceptible${nbCrit > 1 ? 's' : ''} de changer votre pratique.`
+    : `${n} nouveaut${n > 1 ? 'és' : 'é'} cette semaine — aucune ne modifie la pratique dans l’immédiat.`;
+
+  const entrees = tri.map(a => {
+    const spec   = SPECS[a.spec] || { nom: a.spec, couleur: '#898781' };
+    const niveau = NIVEAUX[a.niveau];
+    const lien   = SITE_URL + '#' + a.ancre;
+    const fond   = a.niveau === 'crit' ? '#fdf6f6' : '#ffffff';
+    return `
+    <tr><td style="padding:0 24px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-bottom:1px solid #e4e3dc;background:${fond};border-radius:6px;">
+        <tr>
+          <td width="4" style="background:${spec.couleur};border-radius:2px;font-size:0;line-height:0;">&nbsp;</td>
+          <td style="padding:14px 12px 15px;">
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:.4px;">
+              <span style="color:${spec.couleur};font-weight:bold;text-transform:uppercase;">${spec.nom}</span>
+              &nbsp;&nbsp;<span style="background:${niveau.couleur};color:#ffffff;font-weight:bold;border-radius:99px;padding:2px 9px;font-size:10.5px;">${niveau.court}</span>
+              ${a.type ? `&nbsp;&nbsp;<span style="color:#7a7975;font-weight:bold;">${a.type}</span>` : ''}
+            </div>
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:1.35;font-weight:bold;margin-top:7px;">
+              <a href="${lien}" style="color:#111111;text-decoration:none;">${a.titre}</a>
+            </div>
+            ${a.accroche ? `<div style="font-family:Helvetica,Arial,sans-serif;font-size:13.5px;color:#52514e;margin-top:4px;">${a.accroche}</div>` : ''}
+            ${a.meta ? `<div style="font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#898781;margin-top:4px;">${a.meta}</div>` : ''}
+            ${a.chiffre ? `<div style="font-family:Helvetica,Arial,sans-serif;font-size:12.5px;color:#2c2c2a;background:#f4f4f0;border-radius:5px;padding:7px 10px;margin-top:8px;"><span style="color:#898781;font-size:10.5px;font-weight:bold;letter-spacing:.4px;">RÉSULTAT PRINCIPAL</span><br>${a.chiffre}</div>` : ''}
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;margin-top:9px;">
+              <a href="${lien}" style="color:#d03b3b;font-weight:bold;text-decoration:none;">Lire la fiche sur Pause Cardio &rarr;</a>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <div style="font-size:10px;line-height:10px;">&nbsp;</div>
+    </td></tr>`;
+  }).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pause Cardio — les sorties du ${enFrancais(dateIso)}</title>
+</head>
+<body style="margin:0;padding:0;background:#f0efe9;">
+<div style="display:none;max-height:0;overflow:hidden;">${chapeau}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0efe9;">
+  <tr><td align="center" style="padding:22px 10px;">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;">
+      <tr><td align="center" style="background:#141412;padding:26px 24px 22px;">
+        <img src="https://pausecardio.fr/icone/pausecardio-apple.png" width="52" height="52" alt="" style="display:block;margin:0 auto 10px;border-radius:12px;">
+        <div style="font-family:Helvetica,Arial,sans-serif;font-size:24px;font-weight:bold;letter-spacing:5px;color:#f2f1ea;">PAUSE&nbsp;CARDIO</div>
+        <div style="font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#928f88;margin-top:6px;">Les sorties de la semaine du ${enFrancais(dateIso)}</div>
+      </td></tr>
+      <tr><td style="padding:20px 24px 14px;">
+        <div style="font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#333333;">${chapeau}</div>
+      </td></tr>
+${entrees}
+      <tr><td align="center" style="padding:8px 24px 26px;">
+        <a href="${SITE_URL}" style="font-family:Helvetica,Arial,sans-serif;font-size:13.5px;font-weight:bold;color:#ffffff;background:#d03b3b;border-radius:8px;padding:11px 22px;text-decoration:none;display:inline-block;">Ouvrir le tableau de bord complet</a>
+      </td></tr>
+      <tr><td style="background:#f7f7f4;padding:16px 24px 18px;border-top:1px solid #e4e3dc;">
+        <div style="font-family:Helvetica,Arial,sans-serif;font-size:11px;color:#898781;line-height:1.55;">
+          <b style="color:#52514e;">Pause Cardio</b> — veille bibliographique hebdomadaire en cardiologie.
+          Fiches r&eacute;dig&eacute;es par Claude, &agrave; valider par le lecteur avant toute application clinique.<br>
+          Vous recevez ce message parce que vous vous &ecirc;tes inscrit sur <a href="${SITE_URL}" style="color:#898781;">pausecardio.fr</a>.
+          <a href="{{ unsubscribe }}" style="color:#898781;">Se d&eacute;sinscrire</a>
+        </div>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
 </body>
 </html>`;
 }
@@ -310,7 +415,8 @@ if (opt('apercu')) {
   const echantillon = articles.filter(a => a.annee === '2026').slice(0, 5);
   const fichier = join(DOSSIER, 'apercu.html');
   writeFileSync(fichier, rendreBulletin(echantillon, dateIso));
-  console.log('APERCU ' + fichier);
+  writeFileSync(join(DOSSIER, 'courriel-apercu.html'), rendreCourriel(echantillon, dateIso));
+  console.log('APERCU ' + fichier + ' (+ courriel-apercu.html)');
   process.exit(0);
 }
 
@@ -327,6 +433,7 @@ if (!nouveaux.length) {
 const nomHtml = `bulletin-${dateIso}.html`;
 const nomPdf  = `bulletin-${dateIso}.pdf`;
 writeFileSync(join(DOSSIER, nomHtml), rendreBulletin(nouveaux, dateIso));
+writeFileSync(join(DOSSIER, `courriel-${dateIso}.html`), rendreCourriel(nouveaux, dateIso));
 
 /* on garde aussi les clés des articles retirés du site : un article un jour supprimé
    puis remis ne doit pas être re-signalé comme une nouveauté. */

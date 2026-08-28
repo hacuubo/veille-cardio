@@ -2735,6 +2735,40 @@
     if (filtres) filtres.parentNode.insertBefore(bloc, filtres);
   })();
 
+  // ---------- ancres : chaque article a une adresse, pour les liens du courriel ----------
+  // La même règle de nommage vit dans outils/bulletin.mjs (fonction ancre) : ne changer
+  // ni l'une ni l'autre isolément, les liens des bulletins déjà envoyés en dépendent.
+  (function () {
+    const pris = new Set();
+    document.querySelectorAll('article.card[data-spec]').forEach(carte => {
+      const t = carte.querySelector('.art-title, h3');
+      if (!t) return;
+      let a = norm(t.textContent).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64).replace(/-+$/, '');
+      if (!a) return;
+      let libre = a, n = 2;
+      while (pris.has(libre)) libre = a + '-' + n++;
+      pris.add(libre);
+      carte.id = libre;
+    });
+
+    function allerA() {
+      const cible = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (!cible || !cible.classList.contains('card')) return;
+      state.q = '';
+      qInput.value = '';
+      if (cible.dataset.year) state.annees.add(cible.dataset.year);
+      document.querySelectorAll('.chip[data-f="year"]').forEach(c =>
+        c.setAttribute('aria-pressed', state.annees.has(c.dataset.v) ? 'true' : 'false'));
+      ouverts.add(cible.dataset.spec);
+      memoriser();
+      applyFilters();
+      if (!cible.classList.contains('exp')) cible.querySelector('.artrow')?.click();
+      setTimeout(() => cible.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
+    }
+    window.addEventListener('hashchange', allerA);
+    allerA();
+  })();
+
   // ---------- encart « recevoir les sorties de la semaine » ----------
   // L'adresse du formulaire Brevo se colle ici, et nulle part ailleurs.
   // Tant qu'elle est vide, l'encart n'est pas affiché : pas de champ qui ne mène nulle part.

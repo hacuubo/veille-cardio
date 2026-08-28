@@ -196,6 +196,19 @@ Après chaque mise à jour, un **bulletin d'une à trois pages** récapitule uni
 ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues du groupe.
 
 - Une seule commande, à lancer depuis la racine du dépôt : `bash outils/faire-bulletin.sh`
+- La même commande écrit aussi **`bulletin/courriel-AAAA-MM-JJ.html`** : le bulletin en version
+  e-mail (tableaux, styles en ligne), où chaque titre renvoie vers sa fiche sur
+  `https://pausecardio.fr/#ancre-de-l-article`. C'est **la voie principale d'envoi** : le workflow
+  `.github/workflows/bulletin-inscrits.yml` l'expédie à la liste Brevo n° 3 (« Bulletin Pause
+  Cardio ») dès qu'il arrive sur `main`, via `outils/envoyer-courriel.mjs`. Il faut pour cela le
+  secret `BREVO_CLE_API` (Settings → Secrets → Actions) ; sans lui l'envoi est ignoré sans erreur.
+  Le pied du courriel doit garder le lien `{{ unsubscribe }}`, que Brevo remplace chez chaque
+  destinataire. `--apercu` produit aussi `courriel-apercu.html`, jamais envoyé.
+- **Ancres des articles** : le script d'`index.html` donne à chaque carte un `id` tiré de son titre
+  (minuscules sans accents, tirets, 64 caractères max, suffixe `-2` en cas de doublon) et ouvre
+  tiroir + fiche à l'arrivée sur `#ancre`. La **même règle vit dans `outils/bulletin.mjs`**
+  (fonction `poserAncres`) : ne jamais changer l'une sans l'autre, les liens des bulletins déjà
+  envoyés en dépendent.
 - Elle compare les articles de `index.html` à ceux déjà signalés (mémorisés dans `bulletin/etat.json`,
   la comparaison se fait sur le titre) :
   - **s'il y a du nouveau** → écrit `bulletin/bulletin-AAAA-MM-JJ.html`, l'imprime en PDF avec Chromium,

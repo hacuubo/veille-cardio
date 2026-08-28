@@ -2801,14 +2801,37 @@
       const form = corps.querySelector('.abo-f');
       form.action = ABO_FORM;
       const mot = corps.querySelector('.abo-m');
-      form.addEventListener('submit', () => {
-        // Brevo répond dans la fenêtre invisible : on ne peut pas lire son verdict,
-        // c'est le mail de confirmation qui fait foi.
-        mot.className = 'abo-m ok';
-        mot.textContent = 'Merci — cliquez sur le lien du message de confirmation '
-          + 'qui vient de partir vers cette adresse.';
-        form.querySelector('.abo-mail').value = '';
-        form.querySelector('.abo-ok input').checked = false;
+      const bouton = corps.querySelector('.abo-b');
+      form.addEventListener('submit', (ev) => {
+        // on envoie nous-mêmes pour pouvoir lire le verdict de Brevo ;
+        // la fenêtre invisible ne sert plus que de secours si le réseau flanche
+        ev.preventDefault();
+        bouton.disabled = true;
+        mot.className = 'abo-m';
+        mot.textContent = 'Inscription en cours…';
+        fetch(ABO_FORM + '?isAjax=1', { method: 'POST', body: new FormData(form) })
+          .then(r => r.json())
+          .then(rep => {
+            if (rep && rep.success) {
+              mot.className = 'abo-m ok';
+              mot.textContent = 'Merci — cliquez sur le lien du message de confirmation '
+                + 'qui vient de partir vers cette adresse. Pensez aux indésirables.';
+              form.querySelector('.abo-mail').value = '';
+              form.querySelector('.abo-ok input').checked = false;
+            } else {
+              mot.className = 'abo-m err';
+              mot.textContent = (rep && (rep.message || rep.error))
+                || 'L’inscription n’a pas été acceptée — vérifiez l’adresse et réessayez.';
+            }
+          })
+          .catch(() => {
+            // réseau coupé ou réponse illisible : on retombe sur l'envoi classique
+            mot.className = 'abo-m ok';
+            mot.textContent = 'Merci — si un message de confirmation n’arrive pas d’ici '
+              + 'quelques minutes, réessayez.';
+            form.submit();
+          })
+          .finally(() => { bouton.disabled = false; });
       });
 
       return bloc;

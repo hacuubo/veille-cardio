@@ -40,8 +40,9 @@ if (!fichier) {
   console.log('Aucun courriel de bulletin trouvé — rien à envoyer.');
   process.exit(0);
 }
-if (/courriel-apercu/.test(fichier) && !essai) {
-  console.error('Refus : courriel-apercu.html est un brouillon, il ne s\'envoie qu\'avec --essai.');
+if (/courriel-apercu/.test(fichier) && !donne && !essai) {
+  // en mode automatique l'aperçu ne part jamais ; nommé explicitement, c'est un envoi voulu
+  console.error('Refus : courriel-apercu.html ne part pas en mode automatique.');
   process.exit(1);
 }
 

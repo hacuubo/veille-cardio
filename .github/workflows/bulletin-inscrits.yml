@@ -26,6 +26,10 @@ on:
         description: "Essai à blanc (true = ne rien envoyer)"
         required: false
         default: 'false'
+      diagnostic:
+        description: "Diagnostic seul (true = consulter l'état Brevo, rien envoyer)"
+        required: false
+        default: 'false'
 
 permissions:
   contents: read
@@ -37,7 +41,15 @@ jobs:
       - name: Récupérer le dépôt
         uses: actions/checkout@v4
 
+      - name: Diagnostic Brevo
+        if: ${{ github.event.inputs.diagnostic == 'true' }}
+        env:
+          BREVO_CLE_API: ${{ secrets.BREVO_CLE_API }}
+          BREVO_LISTE_ID: ${{ secrets.BREVO_LISTE_ID }}
+        run: node outils/etat-brevo.mjs
+
       - name: Envoyer aux inscrits
+        if: ${{ github.event.inputs.diagnostic != 'true' }}
         env:
           BREVO_CLE_API: ${{ secrets.BREVO_CLE_API }}
           BREVO_LISTE_ID: ${{ secrets.BREVO_LISTE_ID }}

@@ -70,13 +70,32 @@ const api = async (chemin, corps) => {
   return texte ? JSON.parse(texte) : {};
 };
 
+// Le bulletin part à 09:00, heure de Paris. Si on fabrique avant l'heure
+// (la routine tourne au petit matin), la campagne est programmée pour 09:00 ;
+// après l'heure (test à la main dans la journée), elle part immédiatement.
+function programmation() {
+  const CIBLE = 9 * 60;                            // 09:00
+  const f = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit', hour12: false });
+  const [h, m] = f.format(new Date()).split(':').map(Number);
+  const ecart = CIBLE - (h * 60 + m);
+  if (ecart <= 0) return null;                     // l'heure est passée : envoi immédiat
+  return new Date(Date.now() + ecart * 60000).toISOString();
+}
+
+const quand = programmation();
 const campagne = await api('/emailCampaigns', {
   name: sujet,
   subject: sujet,
   sender: { name: 'Pause Cardio', email: 'contact@pausecardio.fr' },
   htmlContent: html,
   recipients: { listIds: [liste] },
+  ...(quand ? { scheduledAt: quand } : {}),
 });
-console.log(`Campagne créée (id ${campagne.id}), envoi…`);
-await api(`/emailCampaigns/${campagne.id}/sendNow`);
-console.log('ENVOYÉ.');
+if (quand) {
+  console.log(`Campagne créée (id ${campagne.id}), programmée pour 09:00 heure de Paris (${quand}).`);
+  console.log('PROGRAMMÉ.');
+} else {
+  console.log(`Campagne créée (id ${campagne.id}), envoi immédiat…`);
+  await api(`/emailCampaigns/${campagne.id}/sendNow`);
+  console.log('ENVOYÉ.');
+}

@@ -184,10 +184,13 @@ Règles de classement qui évitent les oublis constatés :
 
 ## Mise à jour
 
-- Automatique : une **routine Claude Code** s'exécute chaque lundi 07:00 et met à jour `index.html`
-  (son prompt de référence est repris dans ce dépôt et dans le projet Claude de Robin).
-- Pendant les grands congrès (ESC, ACC, AHA, TCT, EuroPCR, HFA), passer en couverture quotidienne des
-  Hot Lines via « Run now ».
+- Automatique : la **routine Claude Code « Veille cardio hebdo »** s'exécute **tous les jours à
+  05:00 UTC** et décide elle-même du mode : congrès d'ampleur mondiale en cours (ESC, ACC, AHA
+  principalement) → couverture quotidienne des Hot Lines ; samedi → veille hebdomadaire complète ;
+  autre jour sans congrès → elle termine sans rien modifier.
+- **L'envoi aux inscrits part à 09:00, heure de Paris** : `outils/envoyer-courriel.mjs` programme la
+  campagne Brevo pour 09:00 quand le bulletin est poussé avant l'heure, et l'envoie immédiatement
+  sinon (cas des tests à la main).
 - **Une fois `index.html` à jour, toujours lancer `bash outils/faire-bulletin.sh`** (voir la section
   suivante) : c'est ce qui fabrique le bulletin PDF de la semaine.
 - **Avant** d'écrire quoi que ce soit : `node outils/moisson.mjs` (voir la section précédente).

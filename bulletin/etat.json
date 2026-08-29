@@ -77,7 +77,30 @@
     "tricuspidregurgitationstandardizedstepwiseworkupfromreferraltoexpertheartvalvecentre",
     "roleofmultimodalitycardiacimaginginthemanagementofpatientswithhypertrophiccardiomyopathy",
     "comparisonofphotoncountingandenergyintegratingcomputedcoronarytomographyangiographyforcoronaryarterydisease",
-    "coronaryctangiographyguidedmanagementofpatientswithstablechestpain10yearoutcomesfromthescotheartrandomisedcontrolledtrialinscotland"
+    "coronaryctangiographyguidedmanagementofpatientswithstablechestpain10yearoutcomesfromthescotheartrandomisedcontrolledtrialinscotland",
+    "anticoagulationforatrialfibrillationwithintermediatestrokerisk",
+    "cardiovascularmagneticresonancetoguidedefibrillatorimplantationforlvefof36to50thecmrguiderandomizedclinicaltrial",
+    "riskofstrokeandtiawithpulsedfieldcomparedwithradiofrequencyablationforatrialfibrillation",
+    "fifthuniversaldefinitionofmyocardialinfarction2026",
+    "transcatheteraorticvalvereplacementormedicaltreatmentforparadoxicallowflowlowgradientaorticvalvestenosisrebootparadox",
+    "predictiveutilityofcoronaryarterycalciumscoreaddedtothepreventatheroscleroticcardiovasculardiseaseequations",
+    "artificialintelligenceenabledacquisitionandinterpretationforscreeningaorticstenosis",
+    "electrocardiogrambaseddeeplearningtoprioritizetestingfortransthyretinamyloidcardiomyopathy",
+    "2026escguidelinesforthemanagementofheartfailure",
+    "2026escguidelinesforthemanagementofcardiovasculardiseaseandchronickidneydisease",
+    "responsetailoredantibiotictreatmentdurationinleftsidedinfectiveendocarditispoetii",
+    "conservativeoxygenforunresponsivepatientsaftercardiacarrest",
+    "durationoftherapeutichypothermiaafteroutofhospitalcardiacarresttheicecaprandomizedclinicaltrial",
+    "levosimendantofacilitateweaningfromecmoinpatientswithseverecardiogenicshockthelevoecmorandomizedclinicaltrial",
+    "leftventricularunloadinginanteriorstsegmentelevationmyocardialinfarctionwithoutshockthestemidoortounloadrandomizedcontrolledtrial",
+    "immediatevsdelayedcoronaryangiographyaftercardiacarrestwithoutstsegmentelevation5yearoutcomesfromthecoactrandomizedtrial",
+    "2025americanheartassociationguidelinesforcardiopulmonaryresuscitationandemergencycardiovascularcare",
+    "2025conciseclinicalguidanceanaccexpertconsensusstatementontheevaluationandmanagementofcardiogenicshock",
+    "aficamtenforsymptomaticnonobstructivehypertrophiccardiomyopathy",
+    "eplontersenfortransthyretinamyloidcardiomyopathy",
+    "2026escguidelinesoncardiacrehabilitation",
+    "vitaminkanddsupplementationinpatientswithseverecoronaryarterycalcificationthedancodetrial",
+    "safetyandlipoproteinaloweringeffectsofkylo11anoncanonicallongdurationsmallinterferingrnatargetinglipoproteina"
   ],
   "bulletins": [
     {
@@ -91,7 +114,13 @@
       "fichier": "bulletin-2026-08-23.pdf",
       "nb": 4,
       "crit": 1
+    },
+    {
+      "date": "2026-08-29",
+      "fichier": "bulletin-2026-08-29.pdf",
+      "nb": 23,
+      "crit": 5
     }
   ],
-  "derniere_execution": "2026-08-23"
+  "derniere_execution": "2026-08-29"
 }

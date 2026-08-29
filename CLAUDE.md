@@ -21,7 +21,9 @@ Interlocuteur non développeur : explique les choses simplement, et évite le ja
 ## Ce que contient la page
 
 Structure : sections par **surspécialité** → sous-groupes par **année** (année en cours d'abord, puis N−1)
-→ articles triés par **niveau d'impact**. Chaque surspécialité est un **tiroir replié** : au chargement,
+→ articles triés par **date de parution, les derniers parus en tête** (décision du 29/08/2026) : insérer
+toute nouvelle carte en haut de son année, et lire la date dans la ligne `.meta` (jour facultatif, mois en
+toutes lettres, année). Les cartes sans mois lisible restent en fin d'année. Chaque surspécialité est un **tiroir replié** : au chargement,
 la page n'affiche que la liste des huit titres avec leur nombre de sorties ; un clic sur un titre ouvre
 ses articles (années comprises), un second le referme, et plusieurs tiroirs peuvent rester ouverts.
 
@@ -40,9 +42,12 @@ ses articles (années comprises), un second le referme, et plusieurs tiroirs peu
   message « Aucune année sélectionnée ». Les puces et les en-têtes d'année ne portent que le millésime
   (pas de mention « en cours »). Au passage à 2027, ajouter la puce de l'année en cours et retirer la
   plus ancienne.
-- Niveaux (`data-lvl`) : `crit` = changement de pratique probable (marqué « ★ À la une », liséré rouge,
-  placé en tête de son année) ; `warn` = à connaître ; `watch` = veille, à suivre.
-  Ordre dans chaque année : crit → warn → watch.
+- Niveaux (`data-lvl`) : `crit` / `warn` / `watch`. Depuis le 29/08/2026 ils **ne s'affichent plus sur la
+  plateforme** (badges masqués en CSS) mais restent obligatoires sur chaque carte : le bulletin et le
+  courriel s'en servent pour leur tri, et ils gardent le classement éditorial. La seule mise en avant
+  visuelle est réservée aux **recommandations** : le script pose la classe `reco` (fond rosé) sur toute
+  carte dont le `span.type` contient « Recommandation ». La pastille verte « nouveau » (7 jours après
+  `data-ajout`) est conservée.
 - Chaque carte porte `data-kw` : mots-clés **bilingues FR + EN** avec acronymes (FA/AF, CMH/HCM, IC/HF…),
   qui alimentent la barre de recherche.
 
@@ -109,8 +114,8 @@ Autres règles de mise en page :
   verdict de Brevo : c'est le mail de confirmation (double opt-in) qui fait foi, et le message affiché
   le dit ainsi. Ne pas retirer la case à cocher de consentement ni la mention sur l'usage de l'adresse.
 - **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
-  libellé « Au cabinet ») ; c'est le **niveau** qui porte la couleur forte — badge, et fond légèrement
-  rosé pour les `crit`. Ne pas remettre de grosse pastille de couleur par article.
+  libellé « Au cabinet ») ; le fond légèrement rosé est réservé aux cartes `reco` (recommandations).
+  Ne pas remettre de grosse pastille de couleur ni de badge de niveau par article.
 - **Tiroirs de surspécialité** : la tête de section (`.spec-h`) est cliquable (chevron à droite, `role`
   et `aria-expanded` posés par le script) ; l'état ouvert est porté par `section.spec.ouvert` et par
   l'ensemble `ouverts` du script. Trois règles à ne pas casser : les tiroirs ouverts sont **mémorisés

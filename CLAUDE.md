@@ -1,7 +1,8 @@
 # Pause Cardio — contexte du projet
 
-Le projet s'appelle **Pause Cardio**, descriptif : *« Screening transversal hebdomadaire de sorties
-bibliographiques d'ampleur, assisté par IA. »* (nom choisi le 23/08/2026 ; le dépôt et l'URL gardent pour l'instant l'ancien nom `veille-cardio`, un nom
+Le projet s'appelle **Pause Cardio**, descriptif : *« Chaque semaine, l'essentiel des publications qui
+comptent en cardiologie : essais pivots, recommandations et grandes méta-analyses, résumés en
+français. »* (réécrit le 29/08/2026 ; nom choisi le 23/08/2026 ; le dépôt et l'URL gardent pour l'instant l'ancien nom `veille-cardio`, un nom
 de domaine propre est prévu). Le fichier principal est **`index.html`**, publié automatiquement par
 GitHub Pages sur **https://hacuubo.github.io/veille-cardio/**. C'est un tableau de bord de veille
 scientifique en cardiologie.
@@ -37,8 +38,8 @@ ses articles (années comprises), un second le referme, et plusieurs tiroirs peu
 - Il ne reste **que deux filtres** : les années et la recherche. Les puces de surspécialité et de niveau
   ont été retirées le 24/08/2026 — le sommaire replié fait le tri, et le niveau se lit sur chaque ligne.
   Ne pas les réintroduire sans demande explicite.
-- Années : deux puces, **2026 et 2025, cochées toutes les deux par défaut**, que le lecteur décoche
-  indépendamment (ce ne sont pas des boutons exclusifs). Si les deux sont décochées, la page affiche le
+- Années : deux puces — **seule l'année en cours est cochée par défaut** (décision du 29/08/2026),
+  le lecteur coche 2025 s'il veut l'an dernier (ce ne sont pas des boutons exclusifs). Si les deux sont décochées, la page affiche le
   message « Aucune année sélectionnée ». Les puces et les en-têtes d'année ne portent que le millésime
   (pas de mention « en cours »). Au passage à 2027, ajouter la puce de l'année en cours et retirer la
   plus ancienne.
@@ -61,7 +62,8 @@ ses articles (années comprises), un second le referme, et plusieurs tiroirs peu
   d'analyse (TCTMD, ACC.org, Cardio-online).
 - Fiche de lecture pour les niveaux crit et warn : question clinique → méthode → résultats chiffrés
   (HR, IC95 %, NNT) → limites → **« Au cabinet »** (ce que ça change en pratique libérale), suivie de la
-  mention « Fiche rédigée par Claude — à valider par le lecteur avant application clinique ».
+  mention « Résumé à valider par le lecteur avant application clinique — se reporter à l'article
+  original en lien » (depuis le 29/08/2026, aucune mention d'auteur dans les fiches ni les bulletins).
 - Ne jamais inventer un chiffre, un titre ou un lien : vérifier par recherche web, sinon omettre.
 
 ## Présentation (ne pas casser)
@@ -96,15 +98,14 @@ Autres règles de mise en page :
 - En-tête (`header.site-head`) : **rien au-dessus du logo**, et tout est **centré**. Dans l'ordre — le nom
   **PAUSE CARDIO** (`h1.brand-name`) au milieu, avec la marque ECG (`svg.brand-mark`) à sa droite sur
   ordinateur et **sous le nom sur téléphone** (moins de 560 px) ; la ligne discrète `.eyebrow` (nombre de
-  sorties + date de mise à jour + lien vers le dernier bulletin) ; le liséré rouge `.brand-rule` ; puis la
-  seule ligne de descriptif *« Screening transversal hebdomadaire de sorties bibliographiques d'ampleur,
-  assisté par IA. »*. Pas de tuiles de statistiques.
-- Sous le descriptif vient le bandeau **« Cette semaine »** (construit par le script à partir des
-  `data-ajout` les plus récents : jusqu'à six sorties). Il est **replié par défaut** — une seule ligne
+  sorties + date de mise à jour) ; le liséré rouge `.brand-rule` ; puis la
+  seule ligne de descriptif (la même phrase que sur l'écran d'ouverture). Pas de tuiles de statistiques.
+- Sous le descriptif viennent **l'encart d'inscription replié**, puis le bandeau **« Cette
+  semaine »** (construit par le script : **toutes** les cartes dont `data-ajout` date de moins de
+  7 jours, triées de la plus récente à la plus ancienne — à défaut, le dernier lot ajouté). Il est **replié par défaut** — une seule ligne
   « Cette semaine · N sorties ajoutées le … » avec un chevron ; un clic déplie la liste, un second la
   replie. Les lignes dépliées sont cliquables : elles ouvrent le tiroir de l'article et le déplient.
-  **Puis** l'encart d'inscription (ci-dessous), **puis** les filtres — années et recherche.
-  Rien d'autre, et pas de tuiles de statistiques.
+  **Puis** les filtres — années et recherche. Rien d'autre, et pas de tuiles de statistiques.
 - **Encart d'inscription au bulletin** : construit par le script, en deux exemplaires bâtis par la même
   fonction — une ligne repliée « ✉ Recevoir le bulletin » sous le bandeau « Cette semaine », et la version
   dépliée `.abo.plein` juste avant le pied de page. Trois règles : l'adresse du formulaire Brevo se met
@@ -235,8 +236,10 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   produire de bulletin — à ne relancer qu'en cas de remise à zéro), `bash outils/faire-bulletin.sh --apercu`
   (bulletin d'essai à partir des 5 dernières sorties 2026, ne touche à rien d'autre),
   `--date=AAAA-MM-JJ` pour forcer la date du bulletin.
-- Ne jamais toucher aux repères `<!--BULLETIN:DEBUT-->` / `<!--BULLETIN:FIN-->` de `index.html` : c'est là
-  que le script insère le lien vers le dernier bulletin.
+- Les repères `<!--BULLETIN:DEBUT-->` / `<!--BULLETIN:FIN-->` d'`index.html` restent en place mais
+  **vides** : depuis le 29/08/2026 le tableau de bord n'affiche plus de lien vers le PDF ni vers les
+  archives (le bulletin part par courriel ; `/bulletin/` reste accessible par adresse directe).
+  Ne pas les retirer, `outils/bulletin.mjs` s'en sert toujours.
 
 ## Envoi du bulletin par e-mail
 

@@ -230,7 +230,7 @@ ${entrees}
   <footer class="pied">
     Tableau de bord complet &mdash; toutes les sorties, recherche FR/EN, fiches de lecture :
     <a href="https://pausecardio.fr/">pausecardio.fr</a><br>
-    <b>Fiches r&eacute;dig&eacute;es par Claude &mdash; &agrave; valider par le lecteur avant toute application clinique.</b>
+    <b>R&eacute;sum&eacute;s &agrave; valider par le lecteur avant toute application clinique &mdash; se reporter aux articles originaux.</b>
   </footer>
 </div>
 </body>
@@ -315,7 +315,7 @@ ${entrees}
       <tr><td style="padding:16px 20px 8px;">
         <div style="font-family:Helvetica,Arial,sans-serif;font-size:11px;color:#898781;line-height:1.55;border-top:1px solid #e4e3dc;padding-top:12px;">
           <b style="color:#52514e;">Pause Cardio</b> — veille bibliographique hebdomadaire en cardiologie.
-          Fiches r&eacute;dig&eacute;es par Claude, &agrave; valider par le lecteur avant toute application clinique.<br>
+          R&eacute;sum&eacute;s &agrave; valider par le lecteur avant toute application clinique &mdash; se reporter aux articles originaux.<br>
           Vous recevez ce message parce que vous vous &ecirc;tes inscrit sur <a href="${SITE_URL}" style="color:#898781;">pausecardio.fr</a>.
           <a href="{{ unsubscribe }}" style="color:#898781;">Se d&eacute;sinscrire</a>
         </div>
@@ -409,7 +409,7 @@ if (opt('init')) {
   etat.derniere_execution = dateIso;
   writeFileSync(ETAT, JSON.stringify(etat, null, 2) + '\n');
   writeFileSync(join(DOSSIER, 'index.html'), rendreArchives(etat.bulletins));
-  poserLien(html, ' &middot; <a class="bl bl-arch" href="bulletin/">Bulletins hebdo</a>');
+  poserLien(html, '');
   console.log(`INIT ${etat.connus.length} articles mémorisés — aucun bulletin produit.`);
   process.exit(0);
 }
@@ -449,8 +449,9 @@ etat.derniere_execution = dateIso;
 writeFileSync(ETAT, JSON.stringify(etat, null, 2) + '\n');
 writeFileSync(join(DOSSIER, 'index.html'), rendreArchives(etat.bulletins));
 
-poserLien(html, ` &middot; <a class="bl" href="bulletin/${nomPdf}">&#128196; Bulletin du ${enFrancaisCourt(dateIso)}</a>`
-                + ` <a class="bl bl-arch" href="bulletin/">archives</a>`);
+// depuis le 29/08/2026 le tableau de bord n'affiche plus de lien vers le PDF :
+// le bulletin part par courriel, les archives restent accessibles sur /bulletin/.
+poserLien(html, '');
 
 console.log(`BULLETIN ${nouveaux.length} nouveauté(s) → bulletin/${nomHtml}`);
 nouveaux.forEach(a => console.log('  · [' + a.niveau + '] ' + brut(a.titre)));

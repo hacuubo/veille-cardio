@@ -434,6 +434,7 @@
   .card .body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .26s ease; }
   .card .bodyin { overflow: hidden; min-height: 0; padding: 0 16px 0 20px; }
   .card.exp .bodyin { padding-bottom: 16px; }
+  .card.sans-anim .body { transition: none !important; }
   @media (prefers-reduced-motion: reduce) { .card .body { transition: none; } }
   /* déplié = fiche de lecture complète, comme la version longue */
   .card.exp .fiche { display: block; }
@@ -3677,15 +3678,23 @@
     card.appendChild(row);
     card.appendChild(body);
     row.addEventListener('click', () => {
+      // le titre doit rester sous le doigt : on note sa position avant tout changement
+      const avant = row.getBoundingClientRect().top;
       const open = card.classList.toggle('exp');
-      // une seule fiche ouverte a la fois : ouvrir celle-ci referme la precedente
+      // une seule fiche ouverte a la fois : ouvrir celle-ci referme la precedente,
+      // sans animation pour que la compensation de defilement soit exacte
       if (open) document.querySelectorAll('article.card.exp').forEach(autre => {
         if (autre !== card) {
+          autre.classList.add('sans-anim');
           autre.classList.remove('exp');
           autre.querySelector('.artrow')?.setAttribute('aria-expanded', 'false');
+          requestAnimationFrame(() => autre.classList.remove('sans-anim'));
         }
       });
       row.setAttribute('aria-expanded', open ? 'true' : 'false');
+      // si la fermeture s'est faite au-dessus, la page a raccourci : on recale
+      const delta = row.getBoundingClientRect().top - avant;
+      if (delta) window.scrollBy(0, delta);
     });
   });
   // le tri se fait par les tiroirs de surspécialité : ne restent que les années et la recherche

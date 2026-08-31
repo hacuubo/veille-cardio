@@ -60,11 +60,18 @@ ses articles (années comprises), un second le referme, et plusieurs tiroirs peu
   anecdotiques. Mieux vaut 5 sorties qui comptent que 20 sans intérêt.
 - Chaque entrée a un **lien vers l'article original** (NEJM, PubMed, JAMA, EHJ…) et, si possible, un lien
   d'analyse (TCTMD, ACC.org, Cardio-online).
-- Fiche de lecture pour les niveaux crit et warn : question clinique → méthode → résultats chiffrés
-  (HR, IC95 %, NNT) → limites → **« Au cabinet »** (ce que ça change en pratique libérale), suivie de la
+- Fiche de lecture sur **chaque carte, tous niveaux confondus** (décision du 30/08/2026) : question
+  clinique → méthode → résultats chiffrés (HR, IC95 %, NNT) → limites → **« En pratique »** (ce que ça
+  change au quotidien), suivie de la
   mention « Résumé à valider par le lecteur avant application clinique — se reporter à l'article
   original en lien » (depuis le 29/08/2026, aucune mention d'auteur dans les fiches ni les bulletins).
 - Ne jamais inventer un chiffre, un titre ou un lien : vérifier par recherche web, sinon omettre.
+- **Aucune référence géographique ou personnelle** dans les résumés et fiches (pas de « en Aveyron »,
+  « à Rodez », « notre centre ») : le contenu doit servir n'importe quel cardiologue francophone.
+- **Grands congrès** (ESC, ACC, AHA…) : couverture **exhaustive des recommandations et documents de
+  consensus** présentés — les vérifier une à une sur PubMed et le site du congrès, aucune ne doit
+  manquer. Les sorties de congrès restent en ligne **au moins trois mois** après la fin du congrès ;
+  quand la publication définitive paraît, mettre la carte à jour plutôt que la retirer.
 
 ## Présentation (ne pas casser)
 
@@ -90,7 +97,7 @@ Trois attributs et un bloc à renseigner **sur chaque nouvelle carte** :
 - `<div class="cle">…</div>` — **juste après `<p class="sum">`**, hors de la fiche : le chiffre clé de
   l'étude, repris mot pour mot de la fiche (HR, IC95 %, pourcentages, avec les nombres en `<b>`). Le script
   l'affiche en bandeau « Résultat principal ». À omettre pour les recommandations sans chiffre unique.
-- Le bloc `.verdict` (« Au cabinet ») reste écrit à sa place habituelle dans la fiche : **le script le
+- Le bloc `.verdict` (« En pratique ») reste écrit à sa place habituelle dans la fiche : **le script le
   remonte tout seul** juste sous le résumé, avec un libellé en capitales. Ne pas le déplacer à la main.
 
 Autres règles de mise en page :
@@ -115,7 +122,7 @@ Autres règles de mise en page :
   verdict de Brevo : c'est le mail de confirmation (double opt-in) qui fait foi, et le message affiché
   le dit ainsi. Ne pas retirer la case à cocher de consentement ni la mention sur l'usage de l'adresse.
 - **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
-  libellé « Au cabinet ») ; le fond légèrement rosé est réservé aux cartes `reco` (recommandations).
+  libellé « En pratique ») ; le fond légèrement rosé est réservé aux cartes `reco` (recommandations).
   Ne pas remettre de grosse pastille de couleur ni de badge de niveau par article.
 - **Tiroirs de surspécialité** : la tête de section (`.spec-h`) est cliquable (chevron à droite, `role`
   et `aria-expanded` posés par le script) ; l'état ouvert est porté par `section.spec.ouvert` et par
@@ -226,7 +233,7 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   - **s'il n'y a rien de neuf** → n'écrit aucun fichier et affiche `RIEN`. Pas de bulletin vide : Robin
     n'est sollicité que quand il y a quelque chose à lire.
 - Contenu d'une entrée : surspécialité, niveau, type d'étude, titre (cliquable vers l'article original),
-  journal et date, résumé, et l'encadré **« Au cabinet »** repris de la fiche de lecture. Ordre :
+  journal et date, résumé, et l'encadré **« En pratique »** repris de la fiche de lecture. Ordre :
   crit → warn → watch. Le pied de page rappelle que les fiches sont rédigées par Claude et à valider.
 - Le PDF est publié avec le site : `https://hacuubo.github.io/veille-cardio/bulletin/` liste tous les
   bulletins, le plus récent en tête. `bulletin/exemple.pdf` sert d'aperçu avant le premier vrai bulletin.

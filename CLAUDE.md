@@ -26,7 +26,9 @@ Structure : sections par **surspécialité** → sous-groupes par **année** (an
 toute nouvelle carte en haut de son année, et lire la date dans la ligne `.meta` (jour facultatif, mois en
 toutes lettres, année). Les cartes sans mois lisible restent en fin d'année. Chaque surspécialité est un **tiroir replié** : au chargement,
 la page n'affiche que la liste des huit titres avec leur nombre de sorties ; un clic sur un titre ouvre
-ses articles (années comprises), un second le referme, et plusieurs tiroirs peuvent rester ouverts.
+ses articles (années comprises), un second le referme, et **un seul tiroir est ouvert à la fois** —
+en ouvrir un referme le précédent (décision du 31/08/2026). Même exclusivité pour les fiches : déplier
+un article referme celui qui était déplié.
 
 - Surspécialités (`data-spec`) : `rythmo` (Rythmologie), `interv` (Interventionnel & structurel),
   `imagerie` (Imagerie cardiaque — coroscanner, IRM cardiaque, échocardiographie et ETT de stress),
@@ -127,7 +129,8 @@ Autres règles de mise en page :
 - **Tiroirs de surspécialité** : la tête de section (`.spec-h`) est cliquable (chevron à droite, `role`
   et `aria-expanded` posés par le script) ; l'état ouvert est porté par `section.spec.ouvert` et par
   l'ensemble `ouverts` du script. Trois règles à ne pas casser : les tiroirs ouverts sont **mémorisés
-  d'une visite à l'autre** (`localStorage`, clé `pc-ouverts`) et rouverts au chargement, une
+  d'une visite à l'autre** (`localStorage`, clé `pc-ouverts` — un seul désormais) et rouvert au
+  chargement, une
   **recherche ouvre tout** — sinon le lecteur ne verrait pas ses propres résultats —, et le compteur de
   la tête (`.count`) est recalculé à chaque filtrage, il ne doit plus être écrit en dur dans le HTML.
 - **Confort de lecture** : le texte des fiches est limité à 68 caractères de large, les lignes d'articles

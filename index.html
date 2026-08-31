@@ -3678,6 +3678,13 @@
     card.appendChild(body);
     row.addEventListener('click', () => {
       const open = card.classList.toggle('exp');
+      // une seule fiche ouverte a la fois : ouvrir celle-ci referme la precedente
+      if (open) document.querySelectorAll('article.card.exp').forEach(autre => {
+        if (autre !== card) {
+          autre.classList.remove('exp');
+          autre.querySelector('.artrow')?.setAttribute('aria-expanded', 'false');
+        }
+      });
       row.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   });
@@ -3688,7 +3695,8 @@
   const ouverts = new Set();
   try {
     const gardes = JSON.parse(localStorage.getItem(MEMOIRE) || '[]');
-    if (Array.isArray(gardes)) gardes.forEach(v => ouverts.add(v));
+    // un seul tiroir a la fois : on ne rouvre que le dernier memorise
+    if (Array.isArray(gardes) && gardes.length) ouverts.add(gardes[gardes.length - 1]);
   } catch (e) { /* navigation privée ou stockage refusé : on repart replié */ }
   function memoriser() {
     try { localStorage.setItem(MEMOIRE, JSON.stringify([...ouverts])); } catch (e) {}
@@ -3748,7 +3756,9 @@
     const basculer = () => {
       const spec = sec.dataset.spec;
       const ouvrir = !ouverts.has(spec);
-      if (ouvrir) ouverts.add(spec); else ouverts.delete(spec);
+      // un seul tiroir ouvert a la fois : ouvrir celui-ci referme l'autre
+      ouverts.clear();
+      if (ouvrir) ouverts.add(spec);
       memoriser();
       applyFilters();
       if (ouvrir) sec.scrollIntoView({ behavior: douceur ? 'smooth' : 'auto', block: 'start' });
@@ -3847,6 +3857,7 @@
         state.q = '';
         qInput.value = '';
         state.annees.add(carte.dataset.year);
+        ouverts.clear();
         ouverts.add(carte.dataset.spec);
         memoriser();
         document.querySelectorAll('.chip[data-f="year"]').forEach(c =>
@@ -3893,6 +3904,7 @@
       if (cible.dataset.year) state.annees.add(cible.dataset.year);
       document.querySelectorAll('.chip[data-f="year"]').forEach(c =>
         c.setAttribute('aria-pressed', state.annees.has(c.dataset.v) ? 'true' : 'false'));
+      ouverts.clear();
       ouverts.add(cible.dataset.spec);
       memoriser();
       applyFilters();

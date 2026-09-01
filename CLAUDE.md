@@ -111,7 +111,9 @@ Autres règles de mise en page :
 - En-tête (`header.site-head`) : **rien au-dessus du logo**, et tout est **centré**. Dans l'ordre — le nom
   **PAUSE CARDIO** (`h1.brand-name`) au milieu, avec la marque ECG (`svg.brand-mark`) à sa droite sur
   ordinateur et **sous le nom sur téléphone** (moins de 560 px) ; la ligne discrète `.eyebrow` (nombre de
-  sorties + date de mise à jour) ; le liséré rouge `.brand-rule` ; puis la
+  sorties + date de mise à jour — **recalculés automatiquement** par le script depuis les cartes :
+  compte des `article.card`, date du `data-ajout` le plus récent ; ne plus les écrire à la main, le
+  `span#maj-ligne` n'est qu'un texte de secours) ; le liséré rouge `.brand-rule` ; puis la
   seule ligne de descriptif (la même phrase que sur l'écran d'ouverture). Pas de tuiles de statistiques.
 - Sous le descriptif viennent **l'encart d'inscription replié**, puis le bandeau **« Cette
   semaine »** (construit par le script : **toutes** les cartes **parues** depuis moins de 7 jours —

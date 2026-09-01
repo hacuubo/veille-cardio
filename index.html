@@ -542,7 +542,7 @@
         <path class="trace" d="M58,13 H66 l3,-7 l4,15 l3,-8 H92"/>
       </svg>
     </div>
-    <div class="eyebrow">101 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 29 ao&ucirc;t 2026<!--BULLETIN:DEBUT--><!--BULLETIN:FIN--></div>
+    <div class="eyebrow"><span id="maj-ligne">101 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 29 ao&ucirc;t 2026</span><!--BULLETIN:DEBUT--><!--BULLETIN:FIN--></div>
     <div class="brand-rule"></div>
     <div class="sub">Chaque semaine, l&rsquo;essentiel des publications qui comptent en cardiologie&nbsp;: essais pivots, recommandations et grandes m&eacute;ta-analyses.</div>
   </header>
@@ -3577,6 +3577,25 @@
     const jours = (Date.now() - new Date(iso + 'T12:00:00').getTime()) / 86400000;
     return jours >= -1 && jours <= 7;
   }
+
+  // la ligne d'en-tête (nombre de sorties, date de mise à jour) se recalcule
+  // toute seule : le compte vient des cartes, la date du data-ajout le plus récent
+  (function majEnTete() {
+    const ligne = document.getElementById('maj-ligne');
+    const cartes = [...document.querySelectorAll('article.card[data-spec]')];
+    if (!ligne || !cartes.length) return;
+    const NOMS = ['janvier','février','mars','avril','mai','juin','juillet','août',
+                  'septembre','octobre','novembre','décembre'];
+    const annees = [...new Set(cartes.map(c => c.dataset.year))].filter(Boolean).sort();
+    const maj = cartes.map(c => c.getAttribute('data-ajout') || '').sort().pop();
+    let texte = cartes.length + ' sorties ' + annees[0]
+      + (annees.length > 1 ? '–' + annees[annees.length - 1] : '');
+    if (maj) {
+      const [a, m, j] = maj.split('-').map(Number);
+      texte += ' · mis à jour le ' + j + ' ' + NOMS[m - 1] + ' ' + a;
+    }
+    ligne.textContent = texte;
+  })();
 
   document.querySelectorAll('article.card[data-spec]').forEach(card => {
     const pick = sel => { const el = card.querySelector(sel); return el ? el.textContent : ''; };

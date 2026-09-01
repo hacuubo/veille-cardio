@@ -23,10 +23,20 @@ const api = async chemin => {
 const l = await api(`/contacts/lists/${liste}`);
 console.log(`LISTE ${liste} « ${l.name} » : ${l.totalSubscribers} inscrit(s), ${l.totalBlacklisted} désinscrit(s)`);
 
-const c = await api('/emailCampaigns?limit=5&sort=desc');
+const c = await api('/emailCampaigns?limit=5&sort=desc&statistics=globalStats');
 for (const camp of c.campaigns ?? []) {
-  const s = camp.statistics?.globalStats || {};
+  // globalStats est parfois rendu tout à zéro alors que la campagne est bien
+  // partie (constaté le 01/09/2026, réception confirmée) : on additionne alors
+  // les statistiques par liste (campaignStats), et à défaut on dit qu'on ne
+  // sait pas — un zéro ici ne prouve PAS un échec d'envoi.
+  const g = camp.statistics?.globalStats || {};
+  const parListe = camp.statistics?.campaignStats || [];
+  const somme = ch => parListe.reduce((t, x) => t + (x?.[ch] || 0), 0);
+  const s = ch => g[ch] || somme(ch) || 0;
+  const aucune = ['sent', 'delivered', 'uniqueViews'].every(ch => !s(ch));
   console.log(`CAMPAGNE ${camp.id} « ${camp.name} » : statut=${camp.status}`
     + (camp.sentDate ? ` envoyée=${camp.sentDate}` : '')
-    + ` · destinataires=${s.sent ?? '?'} délivrés=${s.delivered ?? '?'} ouverts=${s.uniqueViews ?? '?'}`);
+    + (camp.status === 'sent' && aucune
+      ? ' · statistiques non remontées par l’API (ne prouve pas un échec — vérifier la réception)'
+      : ` · destinataires=${s('sent')} délivrés=${s('delivered')} ouverts=${s('uniqueViews')}`));
 }

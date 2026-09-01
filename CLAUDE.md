@@ -195,12 +195,21 @@ Règles de classement qui évitent les oublis constatés :
 
 ## Mise à jour
 
-- Automatique : la **routine Claude Code « Veille cardio hebdo »** s'exécute **tous les jours à
-  05:00 UTC** et décide elle-même du mode : congrès d'ampleur mondiale en cours (ESC, ACC, AHA
-  principalement) → couverture quotidienne des Hot Lines ; mardi → veille hebdomadaire complète ;
-  autre jour sans congrès → elle termine sans rien modifier.
-- **L'envoi aux inscrits part à 09:00, heure de Paris** : `outils/envoyer-courriel.mjs` programme la
-  campagne Brevo pour 09:00 quand le bulletin est poussé avant l'heure, et l'envoie immédiatement
+- Automatique : la **routine Claude Code « Veille cardio »** s'exécute **tous les jours à
+  05:00 UTC** et décide elle-même du mode (rythme définitif arrêté le 01/09/2026) :
+  - **samedi** → veille hebdomadaire complète, bulletin et courriel « Les sorties de la semaine du
+    lundi … » ;
+  - **congrès d'ampleur mondiale en cours** (ESC, ACC, AHA principalement) → mise à jour quotidienne
+    du site avec les Hot Lines, **sans courriel** (supprimer `bulletin/courriel-AAAA-MM-JJ.html`
+    avant le commit pour ne pas déclencher l'envoi) ;
+  - **lendemain de la clôture d'un congrès** → courriel récapitulatif
+    « Récapitulatif des sorties du congrès "…" » (`--congres="ESC 2026"` sur `faire-bulletin.sh`),
+    qui **remplace** le courriel du samedi de cette semaine-là (ce samedi-là : veille et mise à
+    jour du site normales, mais courriel supprimé avant commit) ;
+  - autre jour sans congrès → elle termine sans rien modifier.
+  Semaine calme sans nouveauté → aucun courriel (règle `RIEN` du bulletin).
+- **L'envoi aux inscrits part à 08:00, heure de Paris** : `outils/envoyer-courriel.mjs` programme la
+  campagne Brevo pour 08:00 quand le bulletin est poussé avant l'heure, et l'envoie immédiatement
   sinon (cas des tests à la main).
 - **Une fois `index.html` à jour, toujours lancer `bash outils/faire-bulletin.sh`** (voir la section
   suivante) : c'est ce qui fabrique le bulletin PDF de la semaine.
@@ -223,6 +232,13 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   secret `BREVO_CLE_API` (Settings → Secrets → Actions) ; sans lui l'envoi est ignoré sans erreur.
   Le pied du courriel doit garder le lien `{{ unsubscribe }}`, que Brevo remplace chez chaque
   destinataire. `--apercu` produit aussi `courriel-apercu.html`, jamais envoyé.
+- **Gabarit du courriel** (refondu le 01/09/2026) : sujet et en-tête « Les sorties de la semaine du
+  lundi … » (le lundi de la semaine couverte), articles **rangés par surspécialité** comme sur la
+  plateforme — en-tête au nom de la surspécialité dans sa couleur, puis ses articles dans l'ordre de
+  la page — **sans aucun badge de niveau** : chaque bloc commence directement par le titre (accroche,
+  repère revue · date, « Résultat principal », lien « Lire la fiche » dessous ; fond rosé conservé
+  pour les recommandations). Avec `--congres="…"`, le sujet devient « Récapitulatif des sorties du
+  congrès "…" ». Ne pas réintroduire les badges de niveau dans le courriel.
 - **Ancres des articles** : le script d'`index.html` donne à chaque carte un `id` tiré de son titre
   (minuscules sans accents, tirets, 64 caractères max, suffixe `-2` en cas de doublon) et ouvre
   tiroir + fiche à l'arrivée sur `#ancre`. La **même règle vit dans `outils/bulletin.mjs`**
@@ -235,9 +251,11 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
     d'en-tête du tableau de bord ;
   - **s'il n'y a rien de neuf** → n'écrit aucun fichier et affiche `RIEN`. Pas de bulletin vide : Robin
     n'est sollicité que quand il y a quelque chose à lire.
-- Contenu d'une entrée : surspécialité, niveau, type d'étude, titre (cliquable vers l'article original),
-  journal et date, résumé, et l'encadré **« En pratique »** repris de la fiche de lecture. Ordre :
-  crit → warn → watch. Le pied de page rappelle que les fiches sont rédigées par Claude et à valider.
+- Contenu d'une entrée du PDF : surspécialité, niveau, type d'étude, titre (cliquable vers l'article
+  original), journal et date, résumé, et l'encadré **« En pratique »** repris de la fiche de lecture.
+  Ordre : crit → warn → watch. Le pied de page — du PDF comme du courriel — porte la mention
+  « **Fiches rédigées à l'aide de l'IA** — résumés à valider par le lecteur avant toute application
+  clinique » (jamais « rédigées par Claude », décision du 01/09/2026).
 - Le PDF est publié avec le site : `https://hacuubo.github.io/veille-cardio/bulletin/` liste tous les
   bulletins, le plus récent en tête. `bulletin/exemple.pdf` sert d'aperçu avant le premier vrai bulletin.
 - Les fichiers de `bulletin/` (PDF, `index.html`, `etat.json`) doivent être **commités** : c'est `etat.json`
@@ -245,7 +263,8 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
 - Autres commandes utiles : `node outils/bulletin.mjs --init` (remémorise tous les articles actuels sans
   produire de bulletin — à ne relancer qu'en cas de remise à zéro), `bash outils/faire-bulletin.sh --apercu`
   (bulletin d'essai à partir des 5 dernières sorties 2026, ne touche à rien d'autre),
-  `--date=AAAA-MM-JJ` pour forcer la date du bulletin.
+  `--date=AAAA-MM-JJ` pour forcer la date du bulletin, `--congres="ESC 2026"` pour le titre
+  récapitulatif de congrès.
 - Les repères `<!--BULLETIN:DEBUT-->` / `<!--BULLETIN:FIN-->` d'`index.html` restent en place mais
   **vides** : depuis le 29/08/2026 le tableau de bord n'affiche plus de lien vers le PDF ni vers les
   archives (le bulletin part par courriel ; `/bulletin/` reste accessible par adresse directe).

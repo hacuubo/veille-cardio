@@ -8,10 +8,13 @@
  * figure en tête du site.  S'il n'y a rien de neuf, ne produit aucun fichier.
  *
  * Usage :  node outils/bulletin.mjs [--date=AAAA-MM-JJ] [--init] [--apercu]
+ *                                   [--congres="ESC 2026"]
  *   --init    : mémorise les articles actuels sans produire de bulletin
  *               (à ne lancer qu'une fois, à la mise en place)
  *   --apercu  : produit un bulletin d'essai à partir des articles les plus
  *               récents, sans rien mémoriser ni modifier le site
+ *   --congres : bulletin et courriel prennent le titre « Récapitulatif des
+ *               sorties du congrès "…" » (lendemain de la fin d'un congrès)
  * --------------------------------------------------------------------------- */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
@@ -43,6 +46,12 @@ function enFrancais(iso) {
 function enFrancaisCourt(iso) {
   const [, m, j] = iso.split('-').map(Number);
   return `${j} ${MOIS[m - 1]}`;
+}
+/** le lundi de la semaine qui contient la date donnée (AAAA-MM-JJ) */
+function lundiDeLaSemaine(iso) {
+  const d = new Date(iso + 'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7);
+  return d.toISOString().slice(0, 10);
 }
 /** texte brut, sans balises ni entités — sert de clé de comparaison */
 function brut(html) {
@@ -133,7 +142,7 @@ function poserAncres(articles) {
 
 /* --------------------------------------------------------- rendu du bulletin */
 
-function rendreBulletin(nouveaux, dateIso) {
+function rendreBulletin(nouveaux, dateIso, congres = '') {
   const tri = [...nouveaux].sort((a, b) =>
     (NIVEAUX[a.niveau]?.rang ?? 9) - (NIVEAUX[b.niveau]?.rang ?? 9)
     || a.spec.localeCompare(b.spec));
@@ -223,14 +232,16 @@ function rendreBulletin(nouveaux, dateIso) {
   <header class="tete">
     <div class="sur">Bulletin hebdomadaire &middot; Centre de Cardiologie de Rodez</div>
     <h1>PAUSE CARDIO <span class="c">&#10084;</span></h1>
-    <div class="date">Nouveaut&eacute;s de la semaine du ${enFrancais(dateIso)}</div>
+    <div class="date">${congres
+      ? `R&eacute;capitulatif des sorties du congr&egrave;s &laquo;&nbsp;${congres}&nbsp;&raquo;`
+      : `Nouveaut&eacute;s de la semaine du ${enFrancais(dateIso)}`}</div>
   </header>
   <p class="chapeau">${chapeau}</p>
 ${entrees}
   <footer class="pied">
     Tableau de bord complet &mdash; toutes les sorties, recherche FR/EN, fiches de lecture :
     <a href="https://pausecardio.fr/">pausecardio.fr</a><br>
-    <b>R&eacute;sum&eacute;s &agrave; valider par le lecteur avant toute application clinique &mdash; se reporter aux articles originaux.</b>
+    <b>Fiches r&eacute;dig&eacute;es &agrave; l&rsquo;aide de l&rsquo;IA &mdash; r&eacute;sum&eacute;s &agrave; valider par le lecteur avant toute application clinique, se reporter aux articles originaux.</b>
   </footer>
 </div>
 </body>
@@ -239,43 +250,48 @@ ${entrees}
 
 /* ------------------------------------------------------------- courriel */
 
-/** Le bulletin en version e-mail, au visuel des cartes de l'application :
- *  fond papier, carte claire au liséré de surspécialité, badge de niveau,
- *  accroche puis repère revue · date. Le titre est du texte : seul le lien
+/** Le bulletin en version e-mail, au visuel de la plateforme : les articles
+ *  sont rangés par surspécialité (nom en tête dans sa couleur, puis ses
+ *  articles, dans l'ordre de la page), sans badge de niveau — chaque bloc
+ *  commence directement par le titre. Le titre est du texte : seul le lien
  *  rouge « Lire la fiche » (et le bouton du bas) mènent au site.
+ *  Sujet : « Les sorties de la semaine du lundi … », ou, quand --congres
+ *  est fourni, « Récapitulatif des sorties du congrès "…" ».
  *  HTML « à l'ancienne » (tableaux, styles en ligne), seule forme que
  *  Gmail, Outlook et Apple Mail affichent tous correctement. */
-function rendreCourriel(nouveaux, dateIso) {
+function rendreCourriel(nouveaux, dateIso, congres = '') {
   const SITE_URL = 'https://pausecardio.fr/';
-  const tri = [...nouveaux].sort((a, b) =>
-    (NIVEAUX[a.niveau]?.rang ?? 9) - (NIVEAUX[b.niveau]?.rang ?? 9)
-    || a.spec.localeCompare(b.spec));
-  const n = tri.length;
-  const nbCrit = tri.filter(a => a.niveau === 'crit').length;
-  const chapeau = nbCrit
-    ? `${n} nouveaut${n > 1 ? 'és' : 'é'} cette semaine, dont ${nbCrit} susceptible${nbCrit > 1 ? 's' : ''} de changer votre pratique.`
-    : `${n} nouveaut${n > 1 ? 'és' : 'é'} cette semaine — aucune ne modifie la pratique dans l’immédiat.`;
+  const n = nouveaux.length;
+  const sujet = congres
+    ? `Récapitulatif des sorties du congrès «&nbsp;${congres}&nbsp;»`
+    : `Les sorties de la semaine du lundi ${enFrancaisCourt(lundiDeLaSemaine(dateIso))}`;
+  const chapeau = congres
+    ? `${n} sortie${n > 1 ? 's' : ''} retenue${n > 1 ? 's' : ''} du congrès ${congres}, résumée${n > 1 ? 's' : ''} en français — le détail de chaque fiche est sur le site.`
+    : `${n} nouvelle${n > 1 ? 's' : ''} sortie${n > 1 ? 's' : ''} cette semaine — le détail de chaque fiche est sur le site.`;
 
-  // les pastilles de niveau, reprises trait pour trait des badges du site
-  const BADGE = {
-    crit:  '<span style="font-size:11px;font-weight:bold;color:#d03b3b;letter-spacing:.3px;">&#9733; À la une</span>'
-         + '&nbsp;&nbsp;<span style="background:#d03b3b;color:#ffffff;font-weight:bold;border-radius:99px;padding:2px 10px;font-size:11px;">Changement de pratique</span>',
-    warn:  '<span style="background:#fab219;color:#4a3500;font-weight:bold;border-radius:99px;padding:2px 10px;font-size:11px;">À connaître</span>',
-    watch: '<span style="background:#f2f2ee;color:#52514e;font-weight:bold;border-radius:99px;padding:2px 10px;font-size:11px;border:1px solid #e4e3dc;">Veille</span>',
-  };
+  // groupement par surspécialité, dans l'ordre de la plateforme ;
+  // au sein d'un groupe, l'ordre de la page est conservé (derniers parus en tête)
+  const sections = Object.entries(SPECS)
+    .map(([id, spec]) => ({ spec, articles: nouveaux.filter(a => a.spec === id) }))
+    .filter(s => s.articles.length);
+  const orphelins = nouveaux.filter(a => !SPECS[a.spec]);
+  if (orphelins.length) sections.push({ spec: { nom: 'Autres', couleur: '#898781' }, articles: orphelins });
 
-  const entrees = tri.map(a => {
-    const spec = SPECS[a.spec] || { nom: a.spec, couleur: '#898781' };
-    const lien = SITE_URL + '#' + a.ancre;
-    const fond = a.niveau === 'crit' ? '#fbf2f1' : '#fcfcfb';
-    return `
-    <tr><td style="padding:0 20px;">
+  const blocs = sections.map(({ spec, articles }) => {
+    const tete = `
+    <tr><td style="padding:14px 34px 8px;">
+      <div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:.8px;text-transform:uppercase;color:${spec.couleur};border-bottom:2px solid ${spec.couleur};padding-bottom:5px;">${spec.nom}
+        <span style="font-weight:normal;text-transform:none;letter-spacing:0;color:#898781;">&nbsp;·&nbsp;${articles.length}&nbsp;sortie${articles.length > 1 ? 's' : ''}</span></div>
+    </td></tr>`;
+    const cartes = articles.map(a => {
+      const lien = SITE_URL + '#' + a.ancre;
+      const fond = /recommandation/i.test(brut(a.type)) ? '#fbf2f1' : '#fcfcfb';
+      return `
+    <tr><td style="padding:0 34px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
              style="background:${fond};border:1px solid #e4e3dc;border-left:3px solid ${spec.couleur};border-radius:12px;">
-        <tr><td style="padding:13px 15px 14px;">
-          <div style="font-family:Helvetica,Arial,sans-serif;">${BADGE[a.niveau] || ''}
-            &nbsp;&nbsp;<span style="font-size:11px;color:#898781;font-weight:bold;">${spec.nom}</span></div>
-          <div style="font-family:Helvetica,Arial,sans-serif;font-size:15px;line-height:1.32;font-weight:bold;color:#0b0b0b;margin-top:7px;">${a.titre}</div>
+        <tr><td style="padding:12px 14px 13px;">
+          <div style="font-family:Helvetica,Arial,sans-serif;font-size:15px;line-height:1.32;font-weight:bold;color:#0b0b0b;">${a.titre}</div>
           ${a.accroche ? `<div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#52514e;line-height:1.35;margin-top:3px;">${a.accroche}</div>` : ''}
           ${a.meta ? `<div style="font-family:Helvetica,Arial,sans-serif;font-size:11.5px;color:#898781;margin-top:3px;">${a.meta}</div>` : ''}
           ${a.chiffre ? `<div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#52514e;line-height:1.5;background:#f2f2ee;border:1px solid #e4e3dc;border-radius:10px;padding:8px 12px;margin-top:9px;"><span style="display:block;font-size:10.5px;font-weight:bold;letter-spacing:.9px;color:#898781;margin-bottom:3px;">RÉSULTAT PRINCIPAL</span>${a.chiffre}</div>` : ''}
@@ -286,6 +302,8 @@ function rendreCourriel(nouveaux, dateIso) {
       </table>
       <div style="font-size:8px;line-height:8px;">&nbsp;</div>
     </td></tr>`;
+    }).join('\n');
+    return tete + '\n' + cartes;
   }).join('\n');
 
   return `<!DOCTYPE html>
@@ -293,7 +311,7 @@ function rendreCourriel(nouveaux, dateIso) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pause Cardio — les sorties du ${enFrancais(dateIso)}</title>
+<title>${brut(sujet)}</title>
 </head>
 <body style="margin:0;padding:0;background:#f9f9f7;">
 <div style="display:none;max-height:0;overflow:hidden;">${chapeau}</div>
@@ -302,20 +320,20 @@ function rendreCourriel(nouveaux, dateIso) {
     <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
       <tr><td align="center" style="padding:0 20px 6px;">
         <div style="font-family:Helvetica,Arial,sans-serif;font-size:26px;font-weight:bold;letter-spacing:5px;color:#0b0b0b;">PAUSE&nbsp;CARDIO</div>
-        <div style="font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#898781;margin-top:5px;">Les sorties de la semaine du ${enFrancais(dateIso)}</div>
+        <div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#52514e;margin-top:5px;font-weight:bold;">${sujet}</div>
         <div style="height:6px;border-radius:3px;background:#d03b3b;margin-top:12px;font-size:0;line-height:0;">&nbsp;</div>
       </td></tr>
-      <tr><td style="padding:14px 20px 12px;">
+      <tr><td style="padding:14px 20px 4px;">
         <div style="font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#333333;">${chapeau}</div>
       </td></tr>
-${entrees}
+${blocs}
       <tr><td align="center" style="padding:12px 20px 8px;">
         <a href="${SITE_URL}" style="font-family:Helvetica,Arial,sans-serif;font-size:13.5px;font-weight:bold;color:#ffffff;background:#d03b3b;border-radius:8px;padding:11px 22px;text-decoration:none;display:inline-block;">Ouvrir le tableau de bord complet</a>
       </td></tr>
       <tr><td style="padding:16px 20px 8px;">
         <div style="font-family:Helvetica,Arial,sans-serif;font-size:11px;color:#898781;line-height:1.55;border-top:1px solid #e4e3dc;padding-top:12px;">
           <b style="color:#52514e;">Pause Cardio</b> — veille bibliographique hebdomadaire en cardiologie.
-          R&eacute;sum&eacute;s &agrave; valider par le lecteur avant toute application clinique &mdash; se reporter aux articles originaux.<br>
+          Fiches r&eacute;dig&eacute;es &agrave; l&rsquo;aide de l&rsquo;IA &mdash; r&eacute;sum&eacute;s &agrave; valider par le lecteur avant toute application clinique, se reporter aux articles originaux.<br>
           Vous recevez ce message parce que vous vous &ecirc;tes inscrit sur <a href="${SITE_URL}" style="color:#898781;">pausecardio.fr</a>.
           <a href="{{ unsubscribe }}" style="color:#898781;">Se d&eacute;sinscrire</a>
         </div>
@@ -403,6 +421,7 @@ const etat = existsSync(ETAT)
   : { connus: [], bulletins: [], derniere_execution: null };
 
 const dateIso = valeur('date') || aujourdhui();
+const congres = valeur('congres');   // « ESC 2026 » → courriel/bulletin récapitulatifs de congrès
 
 if (opt('init')) {
   etat.connus = articles.map(a => a.cle);
@@ -417,8 +436,8 @@ if (opt('init')) {
 if (opt('apercu')) {
   const echantillon = articles.filter(a => a.annee === '2026').slice(0, 5);
   const fichier = join(DOSSIER, 'apercu.html');
-  writeFileSync(fichier, rendreBulletin(echantillon, dateIso));
-  writeFileSync(join(DOSSIER, 'courriel-apercu.html'), rendreCourriel(echantillon, dateIso));
+  writeFileSync(fichier, rendreBulletin(echantillon, dateIso, congres));
+  writeFileSync(join(DOSSIER, 'courriel-apercu.html'), rendreCourriel(echantillon, dateIso, congres));
   console.log('APERCU ' + fichier + ' (+ courriel-apercu.html)');
   process.exit(0);
 }
@@ -435,8 +454,8 @@ if (!nouveaux.length) {
 
 const nomHtml = `bulletin-${dateIso}.html`;
 const nomPdf  = `bulletin-${dateIso}.pdf`;
-writeFileSync(join(DOSSIER, nomHtml), rendreBulletin(nouveaux, dateIso));
-writeFileSync(join(DOSSIER, `courriel-${dateIso}.html`), rendreCourriel(nouveaux, dateIso));
+writeFileSync(join(DOSSIER, nomHtml), rendreBulletin(nouveaux, dateIso, congres));
+writeFileSync(join(DOSSIER, `courriel-${dateIso}.html`), rendreCourriel(nouveaux, dateIso, congres));
 
 /* on garde aussi les clés des articles retirés du site : un article un jour supprimé
    puis remis ne doit pas être re-signalé comme une nouveauté. */

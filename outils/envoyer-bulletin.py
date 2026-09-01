@@ -100,7 +100,7 @@ def corps_html(entrees, date_iso, nom_pdf):
     &middot; <a href="https://hacuubo.github.io/veille-cardio/bulletin/" style="color:#2a78d6">bulletins précédents</a>
   </td></tr>
   <tr><td style="padding-top:16px;margin-top:16px;border-top:1px solid #e4e3dc;font-size:12px;color:#898781;line-height:1.5">
-    Fiches rédigées par Claude — à valider par le lecteur avant toute application clinique.
+    Fiches rédigées à l'aide de l'IA — à valider par le lecteur avant toute application clinique.
   </td></tr>
 </table>
 </td></tr></table>
@@ -119,7 +119,7 @@ def corps_texte(entrees, date_iso):
     lignes += ["Le détail est dans le PDF joint.",
                "Tableau de bord : https://hacuubo.github.io/veille-cardio/",
                "Bulletins précédents : https://hacuubo.github.io/veille-cardio/bulletin/", "",
-               "Fiches rédigées par Claude — à valider avant toute application clinique."]
+               "Fiches rédigées à l'aide de l'IA — à valider avant toute application clinique."]
     return "\n".join(lignes)
 
 

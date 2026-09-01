@@ -1,7 +1,7 @@
 {
   "name": "Pause Cardio",
   "short_name": "Pause Cardio",
-  "description": "Chaque semaine, l'essentiel des publications qui comptent en cardiologie : essais pivots, recommandations et grandes méta-analyses, résumés en français.",
+  "description": "Chaque semaine, l'essentiel des publications qui comptent en cardiologie : essais pivots, recommandations et grandes méta-analyses.",
   "lang": "fr",
   "start_url": "/",
   "scope": "/",

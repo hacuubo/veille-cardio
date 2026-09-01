@@ -266,7 +266,7 @@ function rendreCourriel(nouveaux, dateIso, congres = '') {
     ? `Récapitulatif des sorties du congrès «&nbsp;${congres}&nbsp;»`
     : `Les sorties de la semaine du lundi ${enFrancaisCourt(lundiDeLaSemaine(dateIso))}`;
   const chapeau = congres
-    ? `${n} sortie${n > 1 ? 's' : ''} retenue${n > 1 ? 's' : ''} du congrès ${congres}, résumée${n > 1 ? 's' : ''} en français — le détail de chaque fiche est sur le site.`
+    ? `${n} sortie${n > 1 ? 's' : ''} retenue${n > 1 ? 's' : ''} du congrès ${congres} — le détail de chaque fiche est sur le site.`
     : `${n} nouvelle${n > 1 ? 's' : ''} sortie${n > 1 ? 's' : ''} cette semaine — le détail de chaque fiche est sur le site.`;
 
   // groupement par surspécialité, dans l'ordre de la plateforme ;
@@ -359,7 +359,7 @@ function rendreArchives(bulletins) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pause Cardio — bulletins hebdomadaires</title>
-<meta name="description" content="Tous les bulletins hebdomadaires Pause Cardio en PDF : les nouvelles sorties bibliographiques en cardiologie de chaque semaine, résumées en français.">
+<meta name="description" content="Tous les bulletins hebdomadaires Pause Cardio : les nouvelles sorties bibliographiques en cardiologie de chaque semaine, avec fiches de lecture.">
 <link rel="canonical" href="https://pausecardio.fr/bulletin/">
 <link rel="icon" href="../icone/icone.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="../icone/pausecardio-180.png">
@@ -467,6 +467,14 @@ etat.bulletins = [
 etat.derniere_execution = dateIso;
 writeFileSync(ETAT, JSON.stringify(etat, null, 2) + '\n');
 writeFileSync(join(DOSSIER, 'index.html'), rendreArchives(etat.bulletins));
+
+// tient le sitemap à jour : accueil et archives changent avec chaque bulletin
+const SITEMAP = join(RACINE, 'sitemap.xml');
+if (existsSync(SITEMAP)) {
+  writeFileSync(SITEMAP, readFileSync(SITEMAP, 'utf8')
+    .replace(/(<loc>https:\/\/pausecardio\.fr\/<\/loc>\s*<lastmod>)[^<]+/, `$1${dateIso}`)
+    .replace(/(<loc>https:\/\/pausecardio\.fr\/bulletin\/<\/loc>\s*<lastmod>)[^<]+/, `$1${dateIso}`));
+}
 
 // depuis le 29/08/2026 le tableau de bord n'affiche plus de lien vers le PDF :
 // le bulletin part par courriel, les archives restent accessibles sur /bulletin/.

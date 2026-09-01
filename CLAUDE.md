@@ -231,7 +231,8 @@ Règles de classement qui évitent les oublis constatés :
   suivante) : c'est ce qui fabrique le bulletin PDF de la semaine.
 - **Avant** d'écrire quoi que ce soit : `node outils/moisson.mjs` (voir la section précédente).
 - Après modification : commit + push sur `main` (index.html **et** le dossier `bulletin/`).
-  GitHub Pages republie tout seul en 1–2 minutes.
+  GitHub Pages republie tout seul en 1–2 minutes. Les dates `lastmod` de `sitemap.xml` sont
+  entretenues automatiquement par `outils/bulletin.mjs` à chaque bulletin produit.
 - Toujours vérifier avant de pousser : HTML valide, liens qui fonctionnent, filtres et recherche opérants.
 
 ## Bulletin PDF hebdomadaire

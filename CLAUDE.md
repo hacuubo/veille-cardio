@@ -49,8 +49,9 @@ un article referme celui qui était déplié.
   plateforme** (badges masqués en CSS) mais restent obligatoires sur chaque carte : le bulletin et le
   courriel s'en servent pour leur tri, et ils gardent le classement éditorial. La seule mise en avant
   visuelle est réservée aux **recommandations** : le script pose la classe `reco` (fond rosé) sur toute
-  carte dont le `span.type` contient « Recommandation ». La pastille verte « nouveau » (7 jours après
-  `data-ajout`) est conservée.
+  carte dont le `span.type` contient « Recommandation ». La pastille verte « nouveau » est conservée :
+  depuis le 01/09/2026 elle suit la **date de parution** lue dans la ligne `.meta` (7 jours), et non
+  plus la date d'ajout.
 - Chaque carte porte `data-kw` : mots-clés **bilingues FR + EN** avec acronymes (FA/AF, CMH/HCM, IC/HF…),
   qui alimentent la barre de recherche.
 
@@ -86,9 +87,12 @@ fabrique tout seul. Ne pas écrire de cartes « déjà compactes ».
 
 Trois attributs et un bloc à renseigner **sur chaque nouvelle carte** :
 
-- `data-ajout="AAAA-MM-JJ"` — **obligatoire** : date d'ajout. C'est elle qui déclenche la pastille verte
-  « nouveau » (pendant 7 jours) et qui alimente le bandeau « Cette semaine ». Sans elle, la sortie passe
-  inaperçue.
+- `data-ajout="AAAA-MM-JJ"` — **obligatoire** : date d'ajout, gardée pour la traçabilité des lots.
+  Depuis le 01/09/2026 elle ne pilote plus l'affichage : la pastille verte « nouveau » et le bandeau
+  « Cette semaine » sont déclenchés par la **date de parution** lue dans la ligne `.meta`
+  (« *Revue* · 5 août 2026 · … »), pendant 7 jours après parution — un article repris tardivement
+  n'est donc plus marqué « nouveau » à tort. Le **jour** doit figurer dans `.meta` pour qu'une carte
+  soit signalée (sans jour, pas de pastille) : toujours l'écrire pour les sorties de la semaine.
 - `data-fr="…"` — accroche française de six à dix mots, **obligatoire sur chaque carte, quel que soit
   le niveau** : c'est la ligne que Robin lit sous le titre anglais, et celle qui s'affiche dans le bandeau
   « Cette semaine ». Elle doit se lire à voix haute sans buter : une phrase de français courant, verbe
@@ -110,10 +114,12 @@ Autres règles de mise en page :
   sorties + date de mise à jour) ; le liséré rouge `.brand-rule` ; puis la
   seule ligne de descriptif (la même phrase que sur l'écran d'ouverture). Pas de tuiles de statistiques.
 - Sous le descriptif viennent **l'encart d'inscription replié**, puis le bandeau **« Cette
-  semaine »** (construit par le script : **toutes** les cartes dont `data-ajout` date de moins de
-  7 jours, triées de la plus récente à la plus ancienne — à défaut, le dernier lot ajouté). Il est **replié par défaut** — une seule ligne
-  « Cette semaine · N sorties ajoutées le … » avec un chevron ; un clic déplie la liste, un second la
-  replie. Les lignes dépliées sont cliquables : elles ouvrent le tiroir de l'article et le déplient.
+  semaine »** (construit par le script : **toutes** les cartes **parues** depuis moins de 7 jours —
+  date de parution de la ligne `.meta` —, triées de la plus récente à la plus ancienne ; à défaut,
+  les dernières parutions). Il est **replié par défaut** — une seule ligne
+  « Cette semaine · N sorties parues … » avec un chevron ; un clic déplie la liste, un second la
+  replie. Pastille « nouveau » et bandeau se recalculent tout seuls à chaque chargement : la routine
+  n'a qu'à écrire des dates de parution justes dans `.meta`, rien d'autre à entretenir. Les lignes dépliées sont cliquables : elles ouvrent le tiroir de l'article et le déplient.
   **Puis** les filtres — années et recherche. Rien d'autre, et pas de tuiles de statistiques.
 - **Encart d'inscription au bulletin** : construit par le script, en deux exemplaires bâtis par la même
   fonction — une ligne repliée « ✉ Recevoir par mail chaque semaine les dernières sorties, c'est ici. »

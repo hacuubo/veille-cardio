@@ -3558,7 +3558,20 @@
     prev:   ['--series-5', 'Prévention'],
     sport:  ['--series-4', 'Cardiologie du sport · CFX/VO₂ max']
   };
-  // une sortie est « nouvelle » pendant une semaine après son ajout
+  // une sortie est « nouvelle » pendant une semaine après sa PARUTION ;
+  // la date est lue dans la ligne .meta (« JAMA · 5 août 2026 · … »).
+  // Sans jour précis dans la ligne, pas de pastille : on ne devine pas.
+  const MOIS_FR = { janvier:1, 'février':2, fevrier:2, mars:3, avril:4, mai:5, juin:6,
+                    juillet:7, 'août':8, aout:8, septembre:9, octobre:10, novembre:11,
+                    'décembre':12, decembre:12 };
+  function dateParution(card) {
+    const meta = card.querySelector('.meta');
+    if (!meta) return '';
+    const m = meta.textContent.toLowerCase()
+      .match(/(\d{1,2})(?:er)?\s+([a-zéèêûôîàç]+)\s+(\d{4})/);
+    if (!m || !MOIS_FR[m[2]]) return '';
+    return m[3] + '-' + String(MOIS_FR[m[2]]).padStart(2, '0') + '-' + String(+m[1]).padStart(2, '0');
+  }
   function estRecent(iso) {
     if (!iso) return false;
     const jours = (Date.now() - new Date(iso + 'T12:00:00').getTime()) / 86400000;
@@ -3568,6 +3581,7 @@
   document.querySelectorAll('article.card[data-spec]').forEach(card => {
     const pick = sel => { const el = card.querySelector(sel); return el ? el.textContent : ''; };
     card.dataset.hay = norm([pick('h3'), pick('.sum'), pick('.meta'), pick('.type'), card.getAttribute('data-kw') || ''].join(' '));
+    card.dataset.paru = dateParution(card);
 
     // --- présentation compacte : une ligne titre + légende, dépliable au clic ---
     const sp = SPECS[card.dataset.spec] || ['--text-muted', ''];
@@ -3618,7 +3632,7 @@
     title.textContent = h3 ? h3.textContent : '';
     const tags = document.createElement('span');
     tags.className = 'art-tags';
-    if (estRecent(card.dataset.ajout)) {
+    if (estRecent(card.dataset.paru)) {
       const nv = document.createElement('span');
       nv.className = 'art-new';
       nv.textContent = 'nouveau';
@@ -3798,13 +3812,13 @@
                    warn: ['\u25B2', 'À connaître'],
                    watch: ['\u25CE', 'Veille'] };
 
-    const cartes = [...document.querySelectorAll('article.card[data-ajout]')];
+    const cartes = [...document.querySelectorAll('article.card[data-spec]')].filter(c => c.dataset.paru);
     if (!cartes.length) return;
-    const derniere = cartes.map(c => c.dataset.ajout).sort().pop();
-    // toutes les sorties des 7 derniers jours ; a defaut, le dernier lot ajoute
-    let lot = cartes.filter(c => estRecent(c.dataset.ajout));
-    if (!lot.length) lot = cartes.filter(c => c.dataset.ajout === derniere);
-    lot.sort((a, b) => b.dataset.ajout.localeCompare(a.dataset.ajout));
+    const derniere = cartes.map(c => c.dataset.paru).sort().pop();
+    // toutes les sorties PARUES depuis moins de 7 jours ; à défaut, les dernières parutions
+    let lot = cartes.filter(c => estRecent(c.dataset.paru));
+    if (!lot.length) lot = cartes.filter(c => c.dataset.paru === derniere);
+    lot.sort((a, b) => b.dataset.paru.localeCompare(a.dataset.paru));
     if (!lot.length) return;
 
     const [an, mo, jo] = derniere.split('-').map(Number);
@@ -3814,11 +3828,11 @@
     tete.type = 'button';
     tete.className = 'recent-h';
     tete.setAttribute('aria-expanded', 'false');
-    const plusieursJours = new Set(lot.map(x => x.dataset.ajout)).size > 1;
-    tete.innerHTML = '<b>' + (estRecent(derniere) ? 'Cette semaine' : 'Derniers ajouts') + '</b>'
+    const plusieursJours = new Set(lot.map(x => x.dataset.paru)).size > 1;
+    tete.innerHTML = '<b>' + (estRecent(derniere) ? 'Cette semaine' : 'Dernières parutions') + '</b>'
       + '<span class="d">' + lot.length + (lot.length > 1 ? ' sorties' : ' sortie')
-      + (plusieursJours ? ' ajoutées ces 7 derniers jours'
-                        : (lot.length > 1 ? ' ajoutées le ' : ' ajoutée le ') + jo + ' ' + MOIS[mo - 1] + ' ' + an)
+      + (plusieursJours ? ' parues ces 7 derniers jours'
+                        : (lot.length > 1 ? ' parues le ' : ' parue le ') + jo + ' ' + MOIS[mo - 1] + ' ' + an)
       + '</span>'
       + '<span class="chev">\u25B8</span>';
     tete.addEventListener('click', () => {

@@ -378,15 +378,21 @@
   .cle b { color: var(--text-primary); font-weight: 700; }
   .fiche .sig { font-size: 11.5px; color: var(--text-muted); margin-top: 10px; font-style: italic; }
 
-  .radar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .radar .card { margin-bottom: 0; }
+  .radar .card { margin-bottom: 0; padding-top: 6px; padding-bottom: 6px; }
   .radar li a { color: inherit; text-decoration: none; }
   .radar li a b { border-bottom: 1px dotted var(--text-muted); }
   .radar li a:hover b { color: var(--brand); border-bottom-color: var(--brand); }
-  .radar ul { list-style: none; margin-top: 10px; }
-  .radar li { padding: 8px 0; border-top: 1px solid var(--grid); font-size: 13.5px; color: var(--text-secondary); }
+  .radar ul { list-style: none; }
+  .radar li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+              padding: 11px 0; border-top: 1px solid var(--grid);
+              font-size: 13.5px; color: var(--text-secondary); }
+  .radar li:first-child { border-top: none; }
+  .radar li .txt { flex: 1 1 260px; min-width: 0; }
+  @media (max-width: 560px) { .radar li .txt { flex-basis: 100%; } }
   .radar li b { color: var(--text-primary); }
-  .radar .when { font-size: 11.5px; color: var(--text-muted); }
+  .radar .when { font-size: 11.5px; color: var(--text-muted); white-space: nowrap;
+                 border: 1px solid var(--grid); border-radius: 99px; padding: 2px 10px;
+                 margin-left: auto; }
   .radar-h { display: flex; align-items: baseline; gap: 10px; margin: 34px 0 12px; }
   .radar-h h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .06em; }
   .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; }
@@ -395,7 +401,6 @@
 
   @media (max-width: 780px) {
     .tiles { grid-template-columns: repeat(2, 1fr); }
-    .radar { grid-template-columns: 1fr; }
     .filters .lab { width: 100%; }
   }
   /* ---------- lignes compactes (accordéon) ---------- */
@@ -505,7 +510,7 @@
       <path class="trace t2" d="M170,45 H186 l6,-22 l8,44 l7,-22 H300"/>
     </svg>
     <div class="splash-nom">PAUSE CARDIO</div>
-    <div class="splash-tag">Chaque semaine, l&rsquo;essentiel des publications qui comptent en cardiologie&nbsp;: essais pivots, recommandations et grandes m&eacute;ta-analyses, r&eacute;sum&eacute;s en fran&ccedil;ais.</div>
+    <div class="splash-tag">Chaque semaine, l&rsquo;essentiel des publications qui comptent en cardiologie&nbsp;: essais pivots, recommandations et grandes m&eacute;ta-analyses.</div>
   </div>
   <div class="splash-passer">Touchez l&rsquo;&eacute;cran pour entrer</div>
 </div>
@@ -539,7 +544,7 @@
     </div>
     <div class="eyebrow">101 sorties 2025&#8211;2026 &middot; mis &agrave; jour le 29 ao&ucirc;t 2026<!--BULLETIN:DEBUT--><!--BULLETIN:FIN--></div>
     <div class="brand-rule"></div>
-    <div class="sub">Chaque semaine, l&rsquo;essentiel des publications qui comptent en cardiologie&nbsp;: essais pivots, recommandations et grandes m&eacute;ta-analyses, r&eacute;sum&eacute;s en fran&ccedil;ais.</div>
+    <div class="sub">Chaque semaine, l&rsquo;essentiel des publications qui comptent en cardiologie&nbsp;: essais pivots, recommandations et grandes m&eacute;ta-analyses.</div>
   </header>
 
   <div class="filters" id="filters">
@@ -3512,29 +3517,21 @@
     </article>
   </section>
 
-  <!-- ================= RADAR ================= -->
+  <!-- ================= RADAR =================
+       À remettre à jour CHAQUE SEMAINE lors de la veille du samedi : ce qui est
+       attendu dans les prochaines publications (essais présentés en attente de
+       parution, congrès à venir, recommandations annoncées). Une ligne = un
+       <li> avec le libellé, puis l'échéance dans <span class="when">. -->
   <div class="radar-h"><h2>&#128225; Radar — les prochaines semaines</h2></div>
   <div class="radar">
     <div class="card">
-      <div class="top"><span class="tag">ESC Congress 2026 &middot; Munich &middot; 28&#8211;31 ao&ucirc;t &middot; en cours</span></div>
-      <h3 style="font-size:15px">Hot Lines encore attendues d&rsquo;ici lundi</h3>
       <ul>
-        <li><a href="#staree-statins-in-reducing-events-in-the-elderly"><b>STAREE</b> — statine en pr&eacute;vention primaire apr&egrave;s 70 ans, pr&egrave;s de 10&nbsp;000 participants&nbsp;: r&eacute;sultats topline en ligne <span class="when">&middot; lire la fiche</span></a></li>
-        <li><b>PRESC1SE-MI</b> — algorithme 0/1&nbsp;heure pour confirmer ou &eacute;carter l&rsquo;infarctus, ~68&nbsp;000 passages aux urgences <span class="when">&middot; SCA</span></li>
-        <li>Sessions <b>insuffisance cardiaque</b>, <b>fibrillation atriale</b> et <b>cardiopathies structurelles</b> des 30 et 31 ao&ucirc;t <span class="when">&middot; 59 essais au total</span></li>
+        <li><a href="#staree-statins-in-reducing-events-in-the-elderly"><span class="txt"><b>STAREE</b> — statine en pr&eacute;vention primaire apr&egrave;s 70 ans&nbsp;: publication compl&egrave;te attendue apr&egrave;s les r&eacute;sultats topline de l&rsquo;ESC</span></a><span class="when">fiche &agrave; jour &agrave; la parution</span></li>
+        <li><span class="txt"><b>PRESC1SE-MI</b> — algorithme 0/1&nbsp;heure aux urgences, Hot Line de l&rsquo;ESC 2026&nbsp;: publication attendue</span><span class="when">&agrave; la parution</span></li>
+        <li><span class="txt"><b>Recommandations ESC 2026</b> — d&eacute;clinaisons pratiques attendues (parcours de soins, algorithmes de traitement)</span><span class="when">les prochains mois</span></li>
+        <li><span class="txt"><b>TCT 2026</b> — congr&egrave;s de cardiologie interventionnelle, San&nbsp;Diego</span><span class="when">31 oct. &#8211; 3 nov.</span></li>
+        <li><span class="txt"><b>AHA Scientific Sessions 2026</b> — Chicago, couverture quotidienne pr&eacute;vue</span><span class="when">6&#8211;9 novembre</span></li>
       </ul>
-      <p style="font-size:12px;color:var(--text-muted);margin:6px 0 0">Les sorties du 28 ao&ucirc;t sont d&eacute;j&agrave; en ligne ci-dessus. Prochaine mise &agrave; jour d&egrave;s la fin du congr&egrave;s.</p>
-    </div>
-    <div class="card">
-      <div class="top"><span class="tag">Publi&eacute; &agrave; Munich &middot; fiches en ligne</span></div>
-      <h3 style="font-size:15px">Les quatre textes ESC 2026 sont parus</h3>
-      <ul>
-        <li><a href="#2026-esc-guidelines-for-the-management-of-heart-failure"><b>Insuffisance cardiaque</b> — deux ph&eacute;notypes au lieu de trois, antagonistes min&eacute;ralocortico&iuml;des en classe&nbsp;I <span class="when">&middot; lire la fiche</span></a></li>
-        <li><a href="#fifth-universal-definition-of-myocardial-infarction-2026"><b>5&#7497; d&eacute;finition universelle de l&rsquo;infarctus</b> — primaire, secondaire, li&eacute; &agrave; un geste <span class="when">&middot; lire la fiche</span></a></li>
-        <li><a href="#2026-esc-guidelines-for-the-management-of-cardiovascular-disease"><b>Maladie CV &amp; insuffisance r&eacute;nale chronique</b> — d&eacute;pistage syst&eacute;matique, d&eacute;marche STAMP <span class="when">&middot; lire la fiche</span></a></li>
-        <li><a href="#2026-esc-guidelines-on-cardiac-rehabilitation"><b>R&eacute;adaptation cardiaque</b> — premi&egrave;re reco ESC d&eacute;di&eacute;e <span class="when">&middot; lire la fiche</span></a></li>
-      </ul>
-      <p style="font-size:12px;color:var(--text-muted);margin:6px 0 0">&Agrave; suivre&nbsp;: les d&eacute;clinaisons pratiques (parcours de soins, algorithmes de traitement) attendues dans les mois qui viennent.</p>
     </div>
   </div>
 
@@ -3953,7 +3950,7 @@
         tete.className = 'abo-h';
         tete.setAttribute('aria-expanded', 'false');
         tete.innerHTML = '<span class="env">✉</span>'
-          + '<b>Recevoir les dernières sorties toutes les semaines</b>'
+          + '<b>Recevoir par mail chaque semaine les dernières sorties, c’est ici.</b>'
           + '<span class="chev">▸</span>';
         tete.addEventListener('click', () => {
           const ouvert = bloc.classList.toggle('ouvert');
@@ -3966,7 +3963,7 @@
       const corps = document.createElement('div');
       corps.className = 'abo-c';
       corps.innerHTML =
-        (plein ? '<p class="abo-t">Recevoir les dernières sorties toutes les semaines</p>' : '')
+        (plein ? '<p class="abo-t">Recevoir par mail chaque semaine les dernières sorties, c’est ici.</p>' : '')
         + '<form class="abo-f" method="post" target="pc-abo-cadre">'
         +   '<label class="abo-sr" for="' + id + '">Votre adresse e-mail</label>'
         +   '<div class="abo-l">'

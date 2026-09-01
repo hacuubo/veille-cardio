@@ -1,8 +1,8 @@
 # Pause Cardio — contexte du projet
 
 Le projet s'appelle **Pause Cardio**, descriptif : *« Chaque semaine, l'essentiel des publications qui
-comptent en cardiologie : essais pivots, recommandations et grandes méta-analyses, résumés en
-français. »* (réécrit le 29/08/2026 ; nom choisi le 23/08/2026 ; le dépôt et l'URL gardent pour l'instant l'ancien nom `veille-cardio`, un nom
+comptent en cardiologie : essais pivots, recommandations et grandes méta-analyses. »* (« résumés en
+français » retiré le 01/09/2026 ; nom choisi le 23/08/2026 ; le dépôt et l'URL gardent pour l'instant l'ancien nom `veille-cardio`, un nom
 de domaine propre est prévu). Le fichier principal est **`index.html`**, publié automatiquement par
 GitHub Pages sur **https://hacuubo.github.io/veille-cardio/**. C'est un tableau de bord de veille
 scientifique en cardiologie.
@@ -116,13 +116,21 @@ Autres règles de mise en page :
   replie. Les lignes dépliées sont cliquables : elles ouvrent le tiroir de l'article et le déplient.
   **Puis** les filtres — années et recherche. Rien d'autre, et pas de tuiles de statistiques.
 - **Encart d'inscription au bulletin** : construit par le script, en deux exemplaires bâtis par la même
-  fonction — une ligne repliée « ✉ Recevoir le bulletin » sous le bandeau « Cette semaine », et la version
+  fonction — une ligne repliée « ✉ Recevoir par mail chaque semaine les dernières sorties, c'est ici. »
+  (libellé arrêté le 01/09/2026) sous le bandeau « Cette semaine », et la version
   dépliée `.abo.plein` juste avant le pied de page. Trois règles : l'adresse du formulaire Brevo se met
   **uniquement** dans la constante `ABO_FORM` en bas du script ; **tant qu'elle est vide, l'encart n'est
   pas affiché du tout** (pas de champ qui ne mène nulle part) ; l'envoi vise une fenêtre invisible
   (`iframe[name=pc-abo-cadre]`) pour que le lecteur ne quitte pas la page. On ne peut donc pas lire le
   verdict de Brevo : c'est le mail de confirmation (double opt-in) qui fait foi, et le message affiché
   le dit ainsi. Ne pas retirer la case à cocher de consentement ni la mention sur l'usage de l'adresse.
+- **Encart « Radar — les prochaines semaines »** (refondu le 01/09/2026) : en bas de page, **une seule
+  carte**, une ligne par élément attendu (`<li>` : libellé avec le nom en `<b>`, puis l'échéance dans
+  une pastille `<span class="when">`). Il annonce ce qui est attendu — essais présentés en attente de
+  publication, congrès à venir, recommandations annoncées — et **doit être remis à jour à chaque
+  veille hebdomadaire du samedi** (retirer ce qui est paru, ajouter ce qui s'annonce, dates vérifiées
+  par recherche web, jamais inventées). Ne pas y remettre de deuxième carte « publié à … » : ce qui
+  est paru va dans les sections, pas dans le Radar.
 - **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
   libellé « En pratique ») ; le fond légèrement rosé est réservé aux cartes `reco` (recommandations).
   Ne pas remettre de grosse pastille de couleur ni de badge de niveau par article.

@@ -443,7 +443,10 @@ if (opt('init')) {
 }
 
 if (opt('apercu')) {
-  const echantillon = articles.filter(a => a.annee === '2026').slice(0, 5);
+  const lot = new Set(etat.dernier_lot || []);
+  const echantillon = opt('rappel') && lot.size
+    ? articles.filter(a => lot.has(a.cle))                 // le vrai rappel : les sorties du dernier bulletin
+    : articles.filter(a => a.annee === '2026').slice(0, 5);
   const fichier = join(DOSSIER, 'apercu.html');
   writeFileSync(fichier, rendreBulletin(echantillon, dateIso, congres));
   writeFileSync(join(DOSSIER, 'courriel-apercu.html'), rendreCourriel(echantillon, dateIso, { congres, rappel: opt('rappel') }));

@@ -3918,19 +3918,27 @@
     lot.sort((a, b) => b.dataset.paru.localeCompare(a.dataset.paru));
     if (!lot.length) return;
 
-    const [an, mo, jo] = derniere.split('-').map(Number);
+    // numéro de semaine calendaire (ISO) : les sorties ne paraissent pas un jour précis,
+    // on repère la semaine plutôt qu'une date
+    const semaineIso = iso => {
+      const d = new Date(iso + 'T12:00:00Z');
+      d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7 + 3);      // jeudi de la semaine
+      const an = d.getUTCFullYear();
+      const j4 = new Date(Date.UTC(an, 0, 4));
+      return [1 + Math.round(((d - j4) / 86400000 - 3 + (j4.getUTCDay() + 6) % 7) / 7), an];
+    };
+    const recente = estRecent(derniere);
+    const auj = new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    const [sem, anSem] = semaineIso(recente ? auj : derniere);
     const bloc = document.createElement('div');
     bloc.className = 'recent';
     const tete = document.createElement('button');
     tete.type = 'button';
     tete.className = 'recent-h';
     tete.setAttribute('aria-expanded', 'false');
-    const plusieursJours = new Set(lot.map(x => x.dataset.paru)).size > 1;
-    tete.innerHTML = '<b>' + (estRecent(derniere) ? 'Cette semaine' : 'Dernières parutions') + '</b>'
+    tete.innerHTML = '<b>' + (recente ? 'Cette semaine' : 'Dernières parutions') + '</b>'
       + '<span class="d">' + lot.length + (lot.length > 1 ? ' sorties' : ' sortie')
-      + (plusieursJours ? ' parues ces 7 derniers jours'
-                        : (lot.length > 1 ? ' parues le ' : ' parue le ') + jo + ' ' + MOIS[mo - 1] + ' ' + an)
-      + '</span>'
+      + ' \u00b7 semaine ' + sem + ' \u00b7 ' + anSem + '</span>'
       + '<span class="chev">\u25B8</span>';
     tete.addEventListener('click', () => {
       const ouvert = bloc.classList.toggle('ouvert');

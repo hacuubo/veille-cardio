@@ -119,8 +119,9 @@ Autres règles de mise en page :
   semaine »** (construit par le script : **toutes** les cartes **parues** depuis moins de 7 jours —
   date de parution de la ligne `.meta` —, triées de la plus récente à la plus ancienne ; à défaut,
   les dernières parutions). Il est **replié par défaut** — une seule ligne
-  « Cette semaine · N sorties parues … » avec un chevron ; un clic déplie la liste, un second la
-  replie. Pastille « nouveau » et bandeau se recalculent tout seuls à chaque chargement : la routine
+  « Cette semaine · N sorties · semaine 36 · 2026 » — le **numéro de semaine calendaire** (ISO) plutôt
+  qu'une date, les sorties ne paraissant pas un jour précis (décision du 02/09/2026) — avec un
+  chevron ; un clic déplie la liste, un second la replie. Pastille « nouveau » et bandeau se recalculent tout seuls à chaque chargement : la routine
   n'a qu'à écrire des dates de parution justes dans `.meta`, rien d'autre à entretenir. Les lignes dépliées sont cliquables : elles ouvrent le tiroir de l'article et le déplient.
   **Puis** les filtres — années et recherche. Rien d'autre, et pas de tuiles de statistiques.
 - **Encart d'inscription au bulletin** : construit par le script, en deux exemplaires bâtis par la même

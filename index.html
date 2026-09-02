@@ -379,21 +379,22 @@
   .cle b { color: var(--text-primary); font-weight: 700; }
   .fiche .sig { font-size: 11.5px; color: var(--text-muted); margin-top: 10px; font-style: italic; }
 
-  .radar .card { margin-bottom: 0; padding-top: 6px; padding-bottom: 6px; }
+  .radar .card { margin-bottom: 0; padding: 14px 16px 4px; }
+  .radar .fil { list-style: none; position: relative; padding-left: 22px; }
+  .radar .fil::before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 14px; width: 2px; background: var(--grid); }
+  .radar li { position: relative; padding: 0 0 15px; font-size: 13.5px; line-height: 1.4; color: var(--text-secondary); }
+  .radar li::before { content: ""; position: absolute; left: -20px; top: 5px; width: 10px; height: 10px; border-radius: 50%;
+                      background: var(--surface-1); border: 2px solid var(--text-muted); }
+  .radar li.pub::before { border-color: var(--series-1); }
+  .radar li.c1::before { background: var(--brand); border-color: var(--brand); }
+  .radar li .q { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); }
+  .radar li.pub .q { color: var(--series-1); }
+  .radar li.c1 .q { color: var(--brand); }
+  .radar li .t { display: block; margin-top: 2px; }
+  .radar li b { color: var(--text-primary); }
   .radar li a { color: inherit; text-decoration: none; }
   .radar li a b { border-bottom: 1px dotted var(--text-muted); }
   .radar li a:hover b { color: var(--brand); border-bottom-color: var(--brand); }
-  .radar ul { list-style: none; }
-  .radar li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
-              padding: 11px 0; border-top: 1px solid var(--grid);
-              font-size: 13.5px; color: var(--text-secondary); }
-  .radar li:first-child { border-top: none; }
-  .radar li .txt { flex: 1 1 260px; min-width: 0; }
-  @media (max-width: 560px) { .radar li .txt { flex-basis: 100%; } }
-  .radar li b { color: var(--text-primary); }
-  .radar .when { font-size: 11.5px; color: var(--text-muted); white-space: nowrap;
-                 border: 1px solid var(--grid); border-radius: 99px; padding: 2px 10px;
-                 margin-left: auto; }
   .radar-h { display: flex; align-items: baseline; gap: 10px; margin: 34px 0 12px; }
   .radar-h h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .06em; }
   .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; }
@@ -3529,20 +3530,22 @@
   </section>
 
   <!-- ================= RADAR =================
-       À remettre à jour CHAQUE SEMAINE lors de la veille du samedi : ce qui est
-       attendu dans les prochaines publications (essais présentés en attente de
-       parution, congrès à venir, recommandations annoncées). Une ligne = un
-       <li> avec le libellé, puis l'échéance dans <span class="when">. -->
+       Fil chronologique. Deux sortes de lignes :
+       - class="pub" : publications attendues — À REMETTRE À JOUR CHAQUE SAMEDI par la routine
+         (retirer ce qui est paru, ajouter ce qui s'annonce) ;
+       - congrès : AJOUTÉS AUTOMATIQUEMENT par le script depuis outils/congres.json ; les lignes
+         class="secours" ne servent que si le calendrier ne peut pas être lu (elles sont retirées
+         sinon) — ne pas écrire de congrès à la main ailleurs qu'en secours. -->
   <div class="radar-h"><h2>&#128225; Radar — les prochaines semaines</h2></div>
   <div class="radar">
     <div class="card">
-      <ul>
-        <li><a href="#staree-statins-in-reducing-events-in-the-elderly"><span class="txt"><b>STAREE</b> — statine en pr&eacute;vention primaire apr&egrave;s 70 ans&nbsp;: publication compl&egrave;te attendue apr&egrave;s les r&eacute;sultats topline de l&rsquo;ESC</span></a><span class="when">fiche &agrave; jour &agrave; la parution</span></li>
-        <li><span class="txt"><b>PRESC1SE-MI</b> — algorithme 0/1&nbsp;heure aux urgences, Hot Line de l&rsquo;ESC 2026&nbsp;: publication attendue</span><span class="when">&agrave; la parution</span></li>
-        <li><span class="txt"><b>Recommandations ESC 2026</b> — d&eacute;clinaisons pratiques attendues (parcours de soins, algorithmes de traitement)</span><span class="when">les prochains mois</span></li>
-        <li><span class="txt"><b>TCT 2026</b> — congr&egrave;s de cardiologie interventionnelle, San&nbsp;Diego</span><span class="when">31 oct. &#8211; 3 nov.</span></li>
-        <li><span class="txt"><b>AHA Scientific Sessions 2026</b> — Chicago, couverture quotidienne pr&eacute;vue</span><span class="when">6&#8211;9 novembre</span></li>
-      </ul>
+      <ol class="fil" id="radar-fil">
+        <li class="pub"><span class="q">&Agrave; la parution</span><span class="t"><a href="#staree-statins-in-reducing-events-in-the-elderly"><b>STAREE</b> — statine en pr&eacute;vention primaire apr&egrave;s 70 ans&nbsp;: publication compl&egrave;te attendue apr&egrave;s les r&eacute;sultats topline de l&rsquo;ESC</a></span></li>
+        <li class="pub"><span class="q">&Agrave; la parution</span><span class="t"><b>PRESC1SE-MI</b> — algorithme 0/1&nbsp;heure aux urgences, Hot Line de l&rsquo;ESC 2026</span></li>
+        <li class="pub"><span class="q">Les prochains mois</span><span class="t"><b>Recommandations ESC 2026</b> — d&eacute;clinaisons pratiques attendues (parcours de soins, algorithmes de traitement)</span></li>
+        <li class="c2 secours"><span class="q">31 oct. &#8211; 3 nov. &middot; San Diego</span><span class="t"><b>TCT 2026</b> — repris dans la veille du samedi</span></li>
+        <li class="c1 secours"><span class="q">6 &#8211; 9 novembre &middot; Chicago</span><span class="t"><b>AHA Scientific Sessions 2026</b> — couverture quotidienne, r&eacute;capitulatif le lendemain</span></li>
+      </ol>
     </div>
   </div>
 
@@ -3599,6 +3602,47 @@
     const jours = (Date.now() - new Date(iso + 'T12:00:00').getTime()) / 86400000;
     return jours >= -1 && jours <= 7;
   }
+
+  // le Radar lit le calendrier des congrès : les congrès à venir s'affichent tout
+  // seuls (niveau 1 en rouge, niveau 2 en gris) ; en cas d'échec, les lignes de
+  // secours écrites dans le HTML restent en place
+  (async function radarCongres() {
+    const fil = document.getElementById('radar-fil');
+    if (!fil || location.protocol === 'file:') return;
+    try {
+      const r = await fetch('outils/congres.json', { cache: 'no-cache' });
+      if (!r.ok) return;
+      const { congres } = await r.json();
+      const auj = new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+      const horizon = new Date(Date.now() + 150 * 86400000).toISOString().slice(0, 10);
+      const avenir = congres.filter(c => c.debut && c.fin && c.fin >= auj).sort((a, b) => a.debut.localeCompare(b.debut));
+      let choix = avenir.filter(c => c.debut <= horizon);
+      if (choix.length < 2) choix = avenir.slice(0, 2);
+      choix = choix.slice(0, 4);
+      if (!choix.length) return;
+      const LONG = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+      const COURT = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+      const quand = c => {
+        const [, m1, j1] = c.debut.split('-').map(Number), [, m2, j2] = c.fin.split('-').map(Number);
+        if (c.debut <= auj) return 'En cours';
+        return m1 === m2 ? `${j1} \u2013 ${j2} ${LONG[m1 - 1]}` : `${j1} ${COURT[m1 - 1]} \u2013 ${j2} ${COURT[m2 - 1]}`;
+      };
+      fil.querySelectorAll('li.secours').forEach(li => li.remove());
+      choix.forEach(c => {
+        const li = document.createElement('li');
+        li.className = c.niveau === 1 ? 'c1' : 'c2';
+        const q = document.createElement('span'); q.className = 'q';
+        q.textContent = quand(c) + (c.ville ? ' \u00b7 ' + c.ville : '') + (c.confirme ? '' : ' \u00b7 \u00e0 confirmer');
+        const t = document.createElement('span'); t.className = 't';
+        const b = document.createElement('b'); b.textContent = c.nom;
+        t.appendChild(b);
+        t.appendChild(document.createTextNode(c.niveau === 1
+          ? ' \u2014 couverture quotidienne, r\u00e9capitulatif le lendemain'
+          : ' \u2014 repris dans la veille du samedi'));
+        li.appendChild(q); li.appendChild(t); fil.appendChild(li);
+      });
+    } catch (e) { /* calendrier illisible : les lignes de secours restent */ }
+  })();
 
   // la ligne d'en-tête (nombre de sorties, date de mise à jour) se recalcule
   // toute seule : le compte vient des cartes, la date du data-ajout le plus récent

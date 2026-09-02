@@ -132,13 +132,19 @@ Autres règles de mise en page :
   (`iframe[name=pc-abo-cadre]`) pour que le lecteur ne quitte pas la page. On ne peut donc pas lire le
   verdict de Brevo : c'est le mail de confirmation (double opt-in) qui fait foi, et le message affiché
   le dit ainsi. Ne pas retirer la case à cocher de consentement ni la mention sur l'usage de l'adresse.
-- **Encart « Radar — les prochaines semaines »** (refondu le 01/09/2026) : en bas de page, **une seule
-  carte**, une ligne par élément attendu (`<li>` : libellé avec le nom en `<b>`, puis l'échéance dans
-  une pastille `<span class="when">`). Il annonce ce qui est attendu — essais présentés en attente de
-  publication, congrès à venir, recommandations annoncées — et **doit être remis à jour à chaque
-  veille hebdomadaire du samedi** (retirer ce qui est paru, ajouter ce qui s'annonce, dates vérifiées
-  par recherche web, jamais inventées). Ne pas y remettre de deuxième carte « publié à … » : ce qui
-  est paru va dans les sections, pas dans le Radar.
+- **Encart « Radar — les prochaines semaines »** (design « fil chronologique » choisi le 02/09/2026) :
+  en bas de page, **une seule carte**, une liste `ol#radar-fil` où chaque `<li>` porte l'échéance
+  (`<span class="q">`) puis le libellé (`<span class="t">`, nom en `<b>`). Deux sortes de lignes :
+  - `class="pub"` (point bleu) : **publications attendues** — essais présentés en attente de parution,
+    recommandations annoncées. **C'est la seule partie que la routine entretient**, à chaque veille
+    du samedi et au lendemain de chaque congrès : retirer ce qui est paru, ajouter ce qui s'annonce,
+    dates vérifiées par recherche web, jamais inventées.
+  - congrès (point rouge = niveau 1, gris = niveau 2) : **ajoutés automatiquement par le script** depuis
+    `outils/congres.json` (les 4 prochains dans les 150 jours, « En cours » pendant le congrès,
+    « à confirmer » si la date n'est pas confirmée). Ne jamais écrire de congrès à la main : pour
+    en changer, corriger le calendrier. Les `<li class="secours">` ne servent que si le calendrier
+    est illisible (retirés sinon) — les tenir à jour à l'occasion, sans plus.
+  Ne pas y remettre de deuxième carte « publié à … » : ce qui est paru va dans les sections.
 - **Encart « Rythme de mise à jour »** (`section.rythme`, ajouté le 01/09/2026) : juste avant le pied
   de page, après l'encart d'inscription déplié. Texte fixe et discret qui explique le fonctionnement :
   samedi matin (veille + bulletin 8 h, même semaine calme), mise à jour quotidienne pendant ESC, ACC

@@ -139,6 +139,11 @@ Autres règles de mise en page :
   veille hebdomadaire du samedi** (retirer ce qui est paru, ajouter ce qui s'annonce, dates vérifiées
   par recherche web, jamais inventées). Ne pas y remettre de deuxième carte « publié à … » : ce qui
   est paru va dans les sections, pas dans le Radar.
+- **Encart « Rythme de mise à jour »** (`section.rythme`, ajouté le 01/09/2026) : juste avant le pied
+  de page, après l'encart d'inscription déplié. Texte fixe et discret qui explique le fonctionnement :
+  samedi matin (veille + bulletin 8 h, même semaine calme), mise à jour quotidienne pendant ESC, ACC
+  et AHA avec récapitulatif le lendemain de la clôture, autres congrès repris le samedi. À modifier
+  seulement si le rythme change.
 - **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
   libellé « En pratique ») ; le fond légèrement rosé est réservé aux cartes `reco` (recommandations).
   Ne pas remettre de grosse pastille de couleur ni de badge de niveau par article.
@@ -211,22 +216,38 @@ Règles de classement qui évitent les oublis constatés :
 
 ## Mise à jour
 
-- Automatique : la **routine Claude Code « Veille cardio »** s'exécute **tous les jours à
-  05:00 UTC** et décide elle-même du mode (rythme définitif arrêté le 01/09/2026) :
-  - **samedi** → veille hebdomadaire complète, bulletin et courriel « Les sorties de la semaine du
-    lundi … » ;
-  - **congrès d'ampleur mondiale en cours** (ESC, ACC, AHA principalement) → mise à jour quotidienne
-    du site avec les Hot Lines, **sans courriel** (supprimer `bulletin/courriel-AAAA-MM-JJ.html`
-    avant le commit pour ne pas déclencher l'envoi) ;
-  - **lendemain de la clôture d'un congrès** → courriel récapitulatif
-    « Récapitulatif des sorties du congrès "…" » (`--congres="ESC 2026"` sur `faire-bulletin.sh`),
-    qui **remplace** le courriel du samedi de cette semaine-là (ce samedi-là : veille et mise à
-    jour du site normales, mais courriel supprimé avant commit) ;
-  - autre jour sans congrès → elle termine sans rien modifier.
-  Semaine calme sans nouveauté → aucun courriel (règle `RIEN` du bulletin).
-- **L'envoi aux inscrits part à 08:00, heure de Paris** : `outils/envoyer-courriel.mjs` programme la
-  campagne Brevo pour 08:00 quand le bulletin est poussé avant l'heure, et l'envoie immédiatement
-  sinon (cas des tests à la main).
+- Automatique : la **routine Claude Code « Veille cardio »** (modèle **Opus 5**) s'exécute **tous les
+  jours à 05:00 UTC**. Elle commence par `node outils/congres.mjs`, qui lit le **calendrier des
+  congrès** `outils/congres.json` et lui donne son mode du jour, sans interprétation (rythme
+  définitif arrêté le 01/09/2026) :
+  - `MODE SAMEDI` → veille hebdomadaire complète, mise à jour du site et du Radar, puis
+    `bash outils/faire-bulletin.sh --rappel` : **le courriel du samedi part toutes les semaines sans
+    exception**, à 08:00. S'il y a du nouveau, c'est « Les sorties de la semaine du lundi … » ; s'il
+    n'y a rien, c'est « Semaine calme — rappel des sorties de la semaine du lundi … », même gabarit,
+    qui dit proprement qu'aucune sortie d'ampleur n'est parue et rappelle les sorties du dernier
+    bulletin (mémorisées dans `bulletin/etat.json`, clé `dernier_lot`).
+  - `MODE CONGRES_EN_COURS` (congrès de **niveau 1** : ESC, ACC, AHA) → mise à jour quotidienne du
+    site avec les Hot Lines, **sans courriel** (supprimer `bulletin/courriel-AAAA-MM-JJ.html` avant
+    le commit). Si ce jour est un samedi (`SAMEDI_DANS_CONGRES`), **pas de courriel hebdomadaire**
+    non plus : le récapitulatif le remplace.
+  - `MODE CLOTURE_HIER` → veille complète du congrès, Radar remis à jour, puis
+    `bash outils/faire-bulletin.sh --congres="ESC 2026"` : courriel « Récapitulatif des sorties du
+    congrès "…" », envoyé à **07:50**.
+  - `MODE RIEN` → elle termine sans rien modifier.
+  - Les congrès de **niveau 2** (TCT, EuroPCR, HRS, EHRA, HFA, sessions de cardiologie du sport)
+    n'ont pas de mode propre : leurs sorties sont reprises par la veille du samedi.
+- **Entretien du calendrier, pour que ça roule d'une année sur l'autre** : `congres.mjs` imprime des
+  lignes `A_VERIFIER` — dates inconnues, dates non confirmées, ou édition suivante à chercher quand la
+  dernière édition connue d'une famille est passée, et revérification générale le premier samedi de
+  janvier. La routine traite chaque ligne le jour même : elle cherche les dates **sur le site officiel
+  du congrès** (champ `source`), les inscrit dans `outils/congres.json` avec `"confirme": true`, et
+  laisse `null` ce qu'elle ne trouve pas — jamais une date inventée.
+- **Contexte de congrès sur les cartes** : quand une sortie est ajoutée pendant ou pour un congrès,
+  la ligne `.meta` se termine par le sigle du congrès — « <b>NEJM</b> · 28 août 2026 · Essai
+  randomisé · **ESC 2026** » — pour la distinguer des sorties ordinaires.
+- **Horaires d'envoi** (`outils/envoyer-courriel.mjs`) : bulletin du samedi à **08:00**, récapitulatif
+  de congrès à **07:50**, heure de Paris ; la campagne Brevo est programmée quand le courriel est
+  poussé avant l'heure, envoyée immédiatement sinon (tests à la main).
 - **Une fois `index.html` à jour, toujours lancer `bash outils/faire-bulletin.sh`** (voir la section
   suivante) : c'est ce qui fabrique le bulletin PDF de la semaine.
 - **Avant** d'écrire quoi que ce soit : `node outils/moisson.mjs` (voir la section précédente).
@@ -266,8 +287,9 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   - **s'il y a du nouveau** → écrit `bulletin/bulletin-AAAA-MM-JJ.html`, l'imprime en PDF avec Chromium,
     met à jour la page d'archives `bulletin/index.html` et pose le lien « 📄 Bulletin du … » dans la ligne
     d'en-tête du tableau de bord ;
-  - **s'il n'y a rien de neuf** → n'écrit aucun fichier et affiche `RIEN`. Pas de bulletin vide : Robin
-    n'est sollicité que quand il y a quelque chose à lire.
+  - **s'il n'y a rien de neuf** → affiche `RIEN` et n'écrit rien… sauf avec `--rappel` (le samedi) :
+    il écrit alors le courriel « Semaine calme » qui rappelle les sorties du dernier bulletin
+    (`RAPPEL`), sans PDF ni entrée d'archives.
 - Contenu d'une entrée du PDF : surspécialité, niveau, type d'étude, titre (cliquable vers l'article
   original), journal et date, résumé, et l'encadré **« En pratique »** repris de la fiche de lecture.
   Ordre : crit → warn → watch. Le pied de page — du PDF comme du courriel — porte la mention
@@ -281,7 +303,8 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   produire de bulletin — à ne relancer qu'en cas de remise à zéro), `bash outils/faire-bulletin.sh --apercu`
   (bulletin d'essai à partir des 5 dernières sorties 2026, ne touche à rien d'autre),
   `--date=AAAA-MM-JJ` pour forcer la date du bulletin, `--congres="ESC 2026"` pour le titre
-  récapitulatif de congrès.
+  récapitulatif de congrès, `--rappel` pour le courriel « Semaine calme » quand rien n'est neuf
+  (`--apercu --rappel` pour en voir un exemple).
 - Les repères `<!--BULLETIN:DEBUT-->` / `<!--BULLETIN:FIN-->` d'`index.html` restent en place mais
   **vides** : depuis le 29/08/2026 le tableau de bord n'affiche plus de lien vers le PDF ni vers les
   archives (le bulletin part par courriel ; `/bulletin/` reste accessible par adresse directe).
@@ -313,7 +336,8 @@ Dès qu'un nouveau bulletin arrive sur `main`, GitHub l'envoie par e-mail avec l
 
 NEJM, Lancet, Circulation, European Heart Journal, JACC, JAMA / JAMA Cardiology, NEJM Evidence ;
 recommandations ESC (escardio.org) et ACC/AHA ; relais TCTMD, Cardio-online (français), Medscape,
-ACC.org journal scans. Congrès : ESC, ACC, AHA, HRS, EHRA, TCT, EuroPCR, HFA, et pour le sport les
+ACC.org journal scans. Congrès (calendrier tenu dans `outils/congres.json`, deux niveaux — 1 :
+ESC, ACC, AHA avec couverture quotidienne et récapitulatif ; 2 : repris le samedi) : ESC, ACC, AHA, HRS, EHRA, TCT, EuroPCR, HFA, et pour le sport les
 sessions Sports & Exercise Cardiology (EAPC) et Care of the Athletic Heart.
 
 ## Historique

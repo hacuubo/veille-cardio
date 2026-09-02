@@ -1,0 +1,61 @@
+{
+  "_lire_moi": [
+    "Calendrier des congrès suivis par Pause Cardio. Lu chaque matin par outils/congres.mjs.",
+    "niveau 1 = ampleur mondiale : mise à jour quotidienne du site pendant le congrès, courriel",
+    "  récapitulatif le lendemain de la clôture (07:50), pas de courriel le samedi s'il tombe dedans.",
+    "niveau 2 = congrès de surspécialité : ses sorties sont reprises par la veille du samedi.",
+    "Dates au format AAAA-MM-JJ, jamais inventées : 'confirme': true seulement si lues sur le site",
+    "  officiel (champ 'source'). Une édition sans date connue garde debut/fin à null.",
+    "Entretien : le lendemain de la clôture d'un congrès, la routine cherche l'édition suivante et",
+    "  l'ajoute ; le premier samedi de janvier, elle revérifie toutes les dates de l'année."
+  ],
+  "congres": [
+    { "famille": "esc", "sigle": "ESC 2026", "nom": "ESC Congress 2026", "niveau": 1,
+      "ville": "Munich", "debut": "2026-08-28", "fin": "2026-08-31", "confirme": true,
+      "source": "https://www.escardio.org/events/congresses/esc-congress/future-destinations/" },
+    { "famille": "esc", "sigle": "ESC 2027", "nom": "ESC Congress 2027", "niveau": 1,
+      "ville": "Milan", "debut": "2027-08-27", "fin": "2027-08-30", "confirme": true,
+      "source": "https://www.escardio.org/events/congresses/esc-congress/future-destinations/" },
+
+    { "famille": "acc", "sigle": "ACC 2027", "nom": "ACC.27 Annual Scientific Session", "niveau": 1,
+      "ville": "Houston", "debut": "2027-04-10", "fin": "2027-04-12", "confirme": true,
+      "source": "https://accscientificsession.acc.org/" },
+
+    { "famille": "aha", "sigle": "AHA 2026", "nom": "AHA Scientific Sessions 2026", "niveau": 1,
+      "ville": "Chicago", "debut": "2026-11-06", "fin": "2026-11-09", "confirme": true,
+      "source": "https://professional.heart.org/en/meetings/scientific-sessions" },
+    { "famille": "aha", "sigle": "AHA 2027", "nom": "AHA Scientific Sessions 2027", "niveau": 1,
+      "ville": "Boston", "debut": "2027-11-05", "fin": "2027-11-08", "confirme": false,
+      "source": "sources secondaires (dzhk.de) — à confirmer sur professional.heart.org" },
+
+    { "famille": "tct", "sigle": "TCT 2026", "nom": "TCT 2026", "niveau": 2,
+      "ville": "San Diego", "debut": "2026-10-31", "fin": "2026-11-03", "confirme": true,
+      "source": "https://www.tctconference.com/" },
+    { "famille": "tct", "sigle": "TCT 2027", "nom": "TCT 2027", "niveau": 2,
+      "ville": "San Francisco", "debut": "2027-10-18", "fin": "2027-10-21", "confirme": true,
+      "source": "https://www.tctmd.com/node/50962" },
+
+    { "famille": "europcr", "sigle": "EuroPCR 2027", "nom": "EuroPCR 2027", "niveau": 2,
+      "ville": "Paris", "debut": "2027-05-18", "fin": "2027-05-21", "confirme": true,
+      "source": "https://www.pcronline.com/Courses/EuroPCR" },
+
+    { "famille": "hrs", "sigle": "HRS 2027", "nom": "Heart Rhythm 2027", "niveau": 2,
+      "ville": "San Francisco", "debut": "2027-05-13", "fin": "2027-05-16", "confirme": true,
+      "source": "https://www.hrsonline.org/event/heart-rhythm-2027/" },
+
+    { "famille": "ehra", "sigle": "EHRA 2027", "nom": "EHRA 2027", "niveau": 2,
+      "ville": "Helsinki", "debut": "2027-04-11", "fin": "2027-04-13", "confirme": true,
+      "source": "https://www.escardio.org/events/congresses/ehra-congress/" },
+
+    { "famille": "hfa", "sigle": "HFA 2027", "nom": "Heart Failure Congress 2027", "niveau": 2,
+      "ville": "Londres", "debut": "2027-05-22", "fin": "2027-05-25", "confirme": true,
+      "source": "https://www.escardio.org/events/congresses/heart-failure/" },
+
+    { "famille": "eapc-sport", "sigle": "EAPC Preventive Cardiology 2027", "nom": "ESC Preventive Cardiology 2027 (sessions Sports & Exercise Cardiology)", "niveau": 2,
+      "ville": null, "debut": null, "fin": null, "confirme": false,
+      "source": "https://www.escardio.org/events/congresses/esc-preventive-cardiology/ — dates à relever" },
+    { "famille": "cath", "sigle": "Care of the Athletic Heart 2027", "nom": "Care of the Athletic Heart 2027 (ACC)", "niveau": 2,
+      "ville": null, "debut": null, "fin": null, "confirme": false,
+      "source": "acc.org — dates à relever" }
+  ]
+}

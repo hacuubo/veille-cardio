@@ -70,11 +70,12 @@ const api = async (chemin, corps) => {
   return texte ? JSON.parse(texte) : {};
 };
 
-// Le bulletin part à 08:00, heure de Paris. Si on fabrique avant l'heure
-// (la routine tourne au petit matin), la campagne est programmée pour 08:00 ;
-// après l'heure (test à la main dans la journée), elle part immédiatement.
+// Le bulletin du samedi part à 08:00, heure de Paris ; le récapitulatif de
+// congrès à 07:50. Si on fabrique avant l'heure (la routine tourne au petit
+// matin), la campagne est programmée ; après l'heure (test à la main dans la
+// journée), elle part immédiatement.
 function programmation() {
-  const CIBLE = 8 * 60;                            // 08:00
+  const CIBLE = /^R[ée]capitulatif/.test(sujet) ? 7 * 60 + 50 : 8 * 60;
   const f = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit', hour12: false });
   const [h, m] = f.format(new Date()).split(':').map(Number);
   const ecart = CIBLE - (h * 60 + m);
@@ -92,7 +93,7 @@ const campagne = await api('/emailCampaigns', {
   ...(quand ? { scheduledAt: quand } : {}),
 });
 if (quand) {
-  console.log(`Campagne créée (id ${campagne.id}), programmée pour 08:00 heure de Paris (${quand}).`);
+  console.log(`Campagne créée (id ${campagne.id}), programmée pour ${/^R[ée]capitulatif/.test(sujet) ? '07:50' : '08:00'} heure de Paris (${quand}).`);
   console.log('PROGRAMMÉ.');
 } else {
   console.log(`Campagne créée (id ${campagne.id}), envoi immédiat…`);

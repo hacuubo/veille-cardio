@@ -15,6 +15,8 @@
  *               récents, sans rien mémoriser ni modifier le site
  *   --congres : bulletin et courriel prennent le titre « Récapitulatif des
  *               sorties du congrès "…" » (lendemain de la fin d'un congrès)
+ *   --rappel  : s'il n'y a rien de neuf, écrit quand même le courriel du samedi
+ *               (« Semaine calme »), qui rappelle les sorties du dernier bulletin
  * --------------------------------------------------------------------------- */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
@@ -259,15 +261,22 @@ ${entrees}
  *  est fourni, « Récapitulatif des sorties du congrès "…" ».
  *  HTML « à l'ancienne » (tableaux, styles en ligne), seule forme que
  *  Gmail, Outlook et Apple Mail affichent tous correctement. */
-function rendreCourriel(nouveaux, dateIso, congres = '') {
+function rendreCourriel(nouveaux, dateIso, { congres = '', rappel = false } = {}) {
   const SITE_URL = 'https://pausecardio.fr/';
   const n = nouveaux.length;
+  const lundi = lundiDeLaSemaine(dateIso);
+  const lundiPrecedent = new Date(lundi + 'T12:00:00Z');
+  lundiPrecedent.setUTCDate(lundiPrecedent.getUTCDate() - 7);
   const sujet = congres
     ? `Récapitulatif des sorties du congrès «&nbsp;${congres}&nbsp;»`
-    : `Les sorties de la semaine du lundi ${enFrancaisCourt(lundiDeLaSemaine(dateIso))}`;
+    : rappel
+      ? `Semaine calme — rappel des sorties de la semaine du lundi ${enFrancaisCourt(lundiPrecedent.toISOString().slice(0, 10))}`
+      : `Les sorties de la semaine du lundi ${enFrancaisCourt(lundi)}`;
   const chapeau = congres
     ? `${n} sortie${n > 1 ? 's' : ''} retenue${n > 1 ? 's' : ''} du congrès ${congres} — le détail de chaque fiche est sur le site.`
-    : `${n} nouvelle${n > 1 ? 's' : ''} sortie${n > 1 ? 's' : ''} cette semaine — le détail de chaque fiche est sur le site.`;
+    : rappel
+      ? `Aucune sortie d’ampleur dans les grandes revues ces derniers jours. En attendant les prochaines, voici un rappel des sorties de la semaine dernière — le détail de chaque fiche est sur le site.`
+      : `${n} nouvelle${n > 1 ? 's' : ''} sortie${n > 1 ? 's' : ''} cette semaine — le détail de chaque fiche est sur le site.`;
 
   // groupement par surspécialité, dans l'ordre de la plateforme ;
   // au sein d'un groupe, l'ordre de la page est conservé (derniers parus en tête)
@@ -437,7 +446,7 @@ if (opt('apercu')) {
   const echantillon = articles.filter(a => a.annee === '2026').slice(0, 5);
   const fichier = join(DOSSIER, 'apercu.html');
   writeFileSync(fichier, rendreBulletin(echantillon, dateIso, congres));
-  writeFileSync(join(DOSSIER, 'courriel-apercu.html'), rendreCourriel(echantillon, dateIso, congres));
+  writeFileSync(join(DOSSIER, 'courriel-apercu.html'), rendreCourriel(echantillon, dateIso, { congres, rappel: opt('rappel') }));
   console.log('APERCU ' + fichier + ' (+ courriel-apercu.html)');
   process.exit(0);
 }
@@ -448,6 +457,21 @@ const nouveaux = articles.filter(a => !connus.has(a.cle));
 if (!nouveaux.length) {
   etat.derniere_execution = dateIso;
   writeFileSync(ETAT, JSON.stringify(etat, null, 2) + '\n');
+  if (opt('rappel')) {
+    // samedi calme : le courriel part quand même, avec les sorties du dernier bulletin
+    const lot = new Set(etat.dernier_lot || []);
+    let rappel = articles.filter(a => lot.has(a.cle));
+    if (!rappel.length) {
+      // pas de mémoire : on rappelle les sorties parues le plus récemment
+      const paru = a => { const m = brut(a.meta).toLowerCase().match(/(\d{1,2})(?:er)?\s+([a-zéû]+)\s+(\d{4})/);
+        const k = m && MOIS.indexOf(m[2]); return m && k >= 0 ? `${m[3]}-${String(k + 1).padStart(2, '0')}-${m[1].padStart(2, '0')}` : ''; };
+      rappel = articles.filter(a => paru(a)).sort((a, b) => paru(b).localeCompare(paru(a))).slice(0, 6);
+    }
+    const nom = `courriel-${dateIso}.html`;
+    writeFileSync(join(DOSSIER, nom), rendreCourriel(rappel, dateIso, { rappel: true }));
+    console.log(`RAPPEL ${rappel.length} sortie(s) du dernier bulletin → bulletin/${nom}`);
+    process.exit(0);
+  }
   console.log('RIEN — aucune nouveauté cette semaine, pas de bulletin produit.');
   process.exit(0);
 }
@@ -455,11 +479,12 @@ if (!nouveaux.length) {
 const nomHtml = `bulletin-${dateIso}.html`;
 const nomPdf  = `bulletin-${dateIso}.pdf`;
 writeFileSync(join(DOSSIER, nomHtml), rendreBulletin(nouveaux, dateIso, congres));
-writeFileSync(join(DOSSIER, `courriel-${dateIso}.html`), rendreCourriel(nouveaux, dateIso, congres));
+writeFileSync(join(DOSSIER, `courriel-${dateIso}.html`), rendreCourriel(nouveaux, dateIso, { congres }));
 
 /* on garde aussi les clés des articles retirés du site : un article un jour supprimé
    puis remis ne doit pas être re-signalé comme une nouveauté. */
 etat.connus = [...new Set([...etat.connus, ...articles.map(a => a.cle)])];
+etat.dernier_lot = nouveaux.map(a => a.cle);   // servira au courriel « Semaine calme »
 etat.bulletins = [
   ...etat.bulletins.filter(b => b.date !== dateIso),
   { date: dateIso, fichier: nomPdf, nb: nouveaux.length, crit: nouveaux.filter(a => a.niveau === 'crit').length },

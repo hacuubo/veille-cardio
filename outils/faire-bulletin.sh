@@ -17,7 +17,7 @@ echo "$SORTIE"
 
 # Rien de neuf, ou simple initialisation : pas de PDF à imprimer.
 case "$SORTIE" in
-  RIEN*|INIT*) exit 0 ;;
+  RIEN*|INIT*|RAPPEL*) exit 0 ;;
 esac
 
 if [[ "$SORTIE" == APERCU* ]]; then

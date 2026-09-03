@@ -142,10 +142,10 @@ Autres règles de mise en page :
   exemplaires comme l'inscription — une ligne repliée « 📱 Ajouter l'appli Pause Cardio » **juste sous
   l'encart d'inscription replié**, et la version dépliée `.instal.plein` après l'inscription dépliée,
   avant « Rythme de mise à jour ». Pas de paragraphe d'introduction : le contenu commence par les deux
-  onglets « iPhone · iPad » / « Android », l'appareil détecté étant présélectionné. Sur iPhone : bouton
-  « Ouvrir le menu Partager » (`navigator.share`, à l'essai — il ouvre la feuille de partage d'iOS, Apple
-  n'autorisant aucun site à déclencher l'installation directement) puis les trois étapes Partager →
-  « Sur l'écran d'accueil » → « Ajouter ». Sur Android : quand Chrome propose l'installation
+  onglets « iPhone · iPad » / « Android », l'appareil détecté étant présélectionné. Sur iPhone : les trois
+  étapes Partager → « Sur l'écran d'accueil » → « Ajouter », et rien d'autre — Apple n'autorise aucun
+  site à déclencher l'installation, et la feuille de partage ouverte par `navigator.share` **ne contient
+  pas** « Sur l'écran d'accueil » (bouton essayé puis retiré le 03/09/2026 : ne pas le remettre). Sur Android : quand Chrome propose l'installation
   (`beforeinstallprompt`), **un appui sur la ligne repliée lance directement la fenêtre d'installation**,
   sans rien déplier ; sinon la ligne se déplie sur le bouton « Installer Pause Cardio » (caché tant que
   Chrome ne le permet pas) et les étapes menu ⋮ → « Ajouter à l'écran d'accueil ». Trois règles :

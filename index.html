@@ -345,7 +345,6 @@
     border-radius: 10px; background: var(--brand); color: #fff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
   }
   .instal-b:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
-  .instal-b .ico { vertical-align: -3px; margin-right: 4px; }
 
   /* ---------- sections par surspécialité ---------- */
   section.spec { margin-top: 34px; }
@@ -4819,15 +4818,13 @@
       + '<path d="M8 11H6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-2"/></svg>';
 
     const ETAPES = {
+      // sur iPhone, seul le bouton Partager de Safari mène à « Sur l'écran d'accueil » : un site ne peut
+      // ni déclencher l'installation, ni ouvrir ce menu-là (la feuille de partage ouverte par
+      // navigator.share ne le contient pas — vérifié le 03/09/2026), d'où les étapes à la main
       ios:
-        // sur iPhone, le site peut ouvrir la feuille de partage d'iOS, mais pas déclencher lui-même
-        // « Sur l'écran d'accueil » : le bouton épargne un geste, les étapes restent
-        (ios && navigator.share ? '<button class="instal-b" type="button" data-partage>' + ICONE_PARTAGE + ' Ouvrir le menu Partager</button>' : '')
-        + '<ol class="instal-etapes">'
-        + '<li>' + (ios && navigator.share
-            ? 'Touchez le bouton ci-dessus, ou le bouton <b>Partager</b> ' + ICONE_PARTAGE + ' de <b>Safari</b> en bas de l’écran (en haut à droite sur iPad).'
-            : 'Ouvrez cette page dans <b>Safari</b>, puis touchez le bouton <b>Partager</b> ' + ICONE_PARTAGE + ' en bas de l’écran (en haut à droite sur iPad).')
-        + '</li>'
+        '<ol class="instal-etapes">'
+        + '<li>Dans <b>Safari</b>, touchez le bouton <b>Partager</b> ' + ICONE_PARTAGE
+        + ' de la barre du bas, au milieu de l’écran (en haut à droite sur iPad).</li>'
         + '<li>Faites défiler la liste et touchez <b>« Sur l’écran d’accueil »</b>.</li>'
         + '<li>Touchez <b>« Ajouter »</b> en haut à droite. C’est fait&nbsp;: l’icône Pause Cardio est sur votre écran d’accueil.</li>'
         + '</ol>'
@@ -4880,13 +4877,7 @@
         os = choix;
         onglets.forEach(o => o.setAttribute('aria-selected', o.dataset.os === choix ? 'true' : 'false'));
         pas.innerHTML = ETAPES[choix];
-        const partage = pas.querySelector('[data-partage]');
-        if (partage) {
-          partage.addEventListener('click', () => {
-            navigator.share({ title: 'Pause Cardio', url: location.href.split('#')[0] }).catch(() => {});
-          });
-        }
-        const b = pas.querySelector('.instal-b:not([data-partage])');
+        const b = pas.querySelector('.instal-b');
         if (b) {
           b.hidden = !invitation;
           boutons.push(b);

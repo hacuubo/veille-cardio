@@ -69,6 +69,7 @@ const SPECIALISEES = [
   'Heart Rhythm', 'Europace', 'EuroIntervention', 'Heart', 'J Card Fail',
   'Resuscitation', 'Intensive Care Med', 'Crit Care', 'Br J Sports Med',
   'J Cardiovasc Magn Reson', 'J Am Soc Echocardiogr',
+  'JACC CardioOncol', 'Lancet Oncol', 'J Clin Oncol', 'JAMA Oncol', 'Ann Oncol',
 ];
 const TYPES_FORTS = [
   'randomized controlled trial[pt]', 'guideline[pt]', 'practice guideline[pt]',
@@ -122,6 +123,13 @@ const SPECS = {
     nom: 'Cardiologie du sport · CFX/VO₂ max',
     termes: ['athlete', 'sports cardiology', 'cardiopulmonary exercise testing', 'exercise capacity',
              'sudden cardiac death young', 'preparticipation screening', 'endurance exercise'],
+  },
+  onco: {
+    nom: 'Onco-cardiologie',
+    termes: ['cardio-oncology', 'cardiotoxicity', 'anthracycline', 'trastuzumab',
+             'immune checkpoint inhibitor myocarditis', 'cancer therapy-related cardiac dysfunction',
+             'cancer survivors cardiovascular', 'cancer-associated venous thromboembolism',
+             'CAR-T cardiac', 'radiotherapy cardiac', 'cardioprotection cancer'],
   },
 };
 

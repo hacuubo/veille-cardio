@@ -25,7 +25,7 @@ Structure : sections par **surspécialité** → sous-groupes par **année** (an
 → articles triés par **date de parution, les derniers parus en tête** (décision du 29/08/2026) : insérer
 toute nouvelle carte en haut de son année, et lire la date dans la ligne `.meta` (jour facultatif, mois en
 toutes lettres, année). Les cartes sans mois lisible restent en fin d'année. Chaque surspécialité est un **tiroir replié** : au chargement,
-la page n'affiche que la liste des huit titres avec leur nombre de sorties ; un clic sur un titre ouvre
+la page n'affiche que la liste des neuf titres avec leur nombre de sorties ; un clic sur un titre ouvre
 ses articles (années comprises), un second le referme, et **un seul tiroir est ouvert à la fois** —
 en ouvrir un referme le précédent (décision du 31/08/2026). Même exclusivité pour les fiches : déplier
 un article referme celui qui était déplié.
@@ -34,7 +34,9 @@ un article referme celui qui était déplié.
   `imagerie` (Imagerie cardiaque — coroscanner, IRM cardiaque, échocardiographie et ETT de stress),
   `ic` (Insuffisance cardiaque), `usic` (USIC · Réanimation cardiologique — arrêt cardiaque, choc
   cardiogénique, assistance circulatoire, soins critiques), `cmh` (Cardiomyopathies & myocardites),
-  `prev` (Prévention), `sport` (Cardiologie du sport · CFX/VO₂ max). En créer une nouvelle si besoin (valvulopathies, SCA)
+  `prev` (Prévention), `sport` (Cardiologie du sport · CFX/VO₂ max), `onco` (Onco-cardiologie — cardiotoxicité
+  des traitements, myocardites sous immunothérapie, thrombose et cancer, survivants, ajoutée le 03/09/2026).
+  En créer une nouvelle si besoin (valvulopathies, SCA)
   avec sa couleur (`--series-N`), sa section **et son entrée dans la table `SPECS` du script en bas de
   page** ainsi que dans `outils/bulletin.mjs`.
 - Il ne reste **que deux filtres** : les années et la recherche. Les puces de surspécialité et de niveau
@@ -358,5 +360,9 @@ sessions Sports & Exercise Cardiology (EAPC) et Care of the Athletic Heart.
 - 23/08/2026 — identité visuelle : logo « pause dans l'ECG » en tête de page et sur l'écran d'ouverture,
   accroche française sur les 84 sorties, et création de la surspécialité **USIC · Réanimation
   cardiologique** (6 premières sorties, dont les recommandations AHA 2025 de réanimation).
+- 03/09/2026 — création de la surspécialité **Onco-cardiologie** (`onco`, couleur `--series-9`) : rattrapage
+  2025–2026 sur les mêmes critères (essais pivots, recommandations HFA/AHA/ACC/ICOS, méta-analyses),
+  moisson PubMed élargie aux revues d'oncologie (JACC CardioOncology, Lancet Oncology, JCO, JAMA Oncology,
+  Annals of Oncology), prise en compte dans le bulletin et le courriel.
 - Autres projets de Robin sur ce compte GitHub : `site-cardios` (site vitrine du cabinet, déployé sur
   Netlify) et `planning-indispo` (application d'indisponibilités des cardiologues, également sur Netlify).

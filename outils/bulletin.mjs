@@ -88,6 +88,7 @@ const SPECS = {
   prev:   { nom: 'Prévention',                        couleur: '#e87ba4' },
   imagerie: { nom: 'Imagerie cardiaque',            couleur: '#0f95a8' },
   sport:  { nom: 'Cardiologie du sport · CFX/VO₂ max',couleur: '#eda100' },
+  onco:   { nom: 'Onco-cardiologie',                  couleur: '#6b7f2e' },
 };
 const NIVEAUX = {
   crit:  { nom: 'Changement de pratique probable', court: 'Changement de pratique', couleur: '#d03b3b', rang: 0 },

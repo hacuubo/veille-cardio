@@ -143,7 +143,8 @@ Autres règles de mise en page :
   l'encart d'inscription replié**, et la version dépliée `.instal.plein` après l'inscription dépliée,
   avant « Rythme de mise à jour ». Pas de paragraphe d'introduction : le contenu commence par les deux
   onglets « iPhone · iPad » / « Android », l'appareil détecté étant présélectionné. Sur iPhone : les trois
-  étapes Partager → « Sur l'écran d'accueil » → « Ajouter », et rien d'autre — Apple n'autorise aucun
+  étapes « ⋯ » (à droite de la barre d'adresse, depuis iOS 26) → Partager → « Sur l'écran d'accueil » →
+  « Ajouter », et rien d'autre — Apple n'autorise aucun
   site à déclencher l'installation, et la feuille de partage ouverte par `navigator.share` **ne contient
   pas** « Sur l'écran d'accueil » (bouton essayé puis retiré le 03/09/2026 : ne pas le remettre). Sur Android : quand Chrome propose l'installation
   (`beforeinstallprompt`), **un appui sur la ligne repliée lance directement la fenêtre d'installation**,

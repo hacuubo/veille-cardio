@@ -4823,12 +4823,14 @@
       // navigator.share ne le contient pas — vérifié le 03/09/2026), d'où les étapes à la main
       ios:
         '<ol class="instal-etapes">'
-        + '<li>Dans <b>Safari</b>, touchez le bouton <b>Partager</b> ' + ICONE_PARTAGE
-        + ' de la barre du bas, au milieu de l’écran (en haut à droite sur iPad).</li>'
+        + '<li>Dans <b>Safari</b>, touchez le bouton <span class="men">⋯</span> à droite de la barre d’adresse, '
+        + 'en bas de l’écran, puis <b>Partager</b> ' + ICONE_PARTAGE + '.</li>'
         + '<li>Faites défiler la liste et touchez <b>« Sur l’écran d’accueil »</b>.</li>'
         + '<li>Touchez <b>« Ajouter »</b> en haut à droite. C’est fait&nbsp;: l’icône Pause Cardio est sur votre écran d’accueil.</li>'
         + '</ol>'
-        + '<p class="instal-note">Depuis Chrome sur iPhone, le bouton Partager est en haut à droite et propose la même option.</p>',
+        + '<p class="instal-note">Sur un iPhone qui n’a pas la dernière version d’iOS, le bouton Partager ' + ICONE_PARTAGE
+        + ' est directement au milieu de la barre du bas. Sur iPad, il est en haut à droite. '
+        + 'Depuis Chrome sur iPhone, il est en haut à droite et propose la même option.</p>',
       android:
         '<button class="instal-b" type="button" hidden>Installer Pause Cardio</button>'
         + '<ol class="instal-etapes">'

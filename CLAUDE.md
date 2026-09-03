@@ -119,8 +119,8 @@ Autres règles de mise en page :
   compte des `article.card`, date du `data-ajout` le plus récent ; ne plus les écrire à la main, le
   `span#maj-ligne` n'est qu'un texte de secours) ; le liséré rouge `.brand-rule` ; puis la
   seule ligne de descriptif (la même phrase que sur l'écran d'ouverture). Pas de tuiles de statistiques.
-- Sous le descriptif viennent **l'encart d'inscription replié**, la ligne repliée **« Installer sur le
-  téléphone »**, puis le bandeau **« Cette semaine »** (construit par le script : **toutes** les cartes **parues** depuis moins de 7 jours —
+- Sous le descriptif viennent **l'encart d'inscription replié**, la ligne repliée **« Ajouter l'appli
+  Pause Cardio »**, puis le bandeau **« Cette semaine »** (construit par le script : **toutes** les cartes **parues** depuis moins de 7 jours —
   date de parution de la ligne `.meta` —, triées de la plus récente à la plus ancienne ; à défaut,
   les dernières parutions). Il est **replié par défaut** — une seule ligne
   « Cette semaine · N sorties · semaine 36 · 2026 » — le **numéro de semaine calendaire** (ISO) plutôt
@@ -137,20 +137,21 @@ Autres règles de mise en page :
   (`iframe[name=pc-abo-cadre]`) pour que le lecteur ne quitte pas la page. On ne peut donc pas lire le
   verdict de Brevo : c'est le mail de confirmation (double opt-in) qui fait foi, et le message affiché
   le dit ainsi. Ne pas retirer la case à cocher de consentement ni la mention sur l'usage de l'adresse.
-- **Encart « Installer sur le téléphone »** (`section.instal`, ajouté le 03/09/2026) : construit par le
-  script (bloc « installation sur l'écran d'accueil » en bas de page), en deux exemplaires comme
-  l'inscription — une ligne repliée « 📱 Ajouter Pause Cardio à l'écran d'accueil de votre téléphone,
-  comme une appli : c'est ici. » **juste sous l'encart d'inscription replié**, et la version dépliée
-  `.instal.plein` après l'inscription dépliée, avant « Rythme de mise à jour ». Il détecte l'appareil et
-  affiche d'abord les gestes qui conviennent (deux onglets « iPhone · iPad » / « Android ») : sur iPhone,
-  un bouton « Ouvrir le menu Partager » (`navigator.share`, ajouté le 03/09/2026 à l'essai : il ouvre la feuille
-  de partage d'iOS, où « Sur l'écran d'accueil » doit se trouver — Apple n'autorise aucun site à déclencher
-  l'installation directement) puis « Sur l'écran d'accueil » → « Ajouter » ; sur Android, menu ⋮ de Chrome →
-  « Ajouter à l'écran d'accueil », avec un vrai bouton « Installer Pause Cardio » quand Chrome propose
-  l'installation (`beforeinstallprompt`). Trois règles : **il n'est jamais affiché quand la page est
-  déjà ouverte depuis l'icône** (mode `standalone`), il reste en teinte neutre (pas le rosé de marque,
-  réservé à l'inscription et aux recommandations), et il disparaît pendant une recherche comme les
-  autres encarts.
+- **Encart « Ajouter l'appli Pause Cardio »** (`section.instal`, ajouté le 03/09/2026, simplifié le même
+  jour) : construit par le script (bloc « installation sur l'écran d'accueil » en bas de page), en deux
+  exemplaires comme l'inscription — une ligne repliée « 📱 Ajouter l'appli Pause Cardio » **juste sous
+  l'encart d'inscription replié**, et la version dépliée `.instal.plein` après l'inscription dépliée,
+  avant « Rythme de mise à jour ». Pas de paragraphe d'introduction : le contenu commence par les deux
+  onglets « iPhone · iPad » / « Android », l'appareil détecté étant présélectionné. Sur iPhone : bouton
+  « Ouvrir le menu Partager » (`navigator.share`, à l'essai — il ouvre la feuille de partage d'iOS, Apple
+  n'autorisant aucun site à déclencher l'installation directement) puis les trois étapes Partager →
+  « Sur l'écran d'accueil » → « Ajouter ». Sur Android : quand Chrome propose l'installation
+  (`beforeinstallprompt`), **un appui sur la ligne repliée lance directement la fenêtre d'installation**,
+  sans rien déplier ; sinon la ligne se déplie sur le bouton « Installer Pause Cardio » (caché tant que
+  Chrome ne le permet pas) et les étapes menu ⋮ → « Ajouter à l'écran d'accueil ». Trois règles :
+  **il n'est jamais affiché quand la page est déjà ouverte depuis l'icône** (mode `standalone`), il
+  reste en teinte neutre (pas le rosé de marque, réservé à l'inscription et aux recommandations), et
+  il disparaît pendant une recherche comme les autres encarts.
 - **Encart « Radar — les prochaines semaines »** (design « fil chronologique » choisi le 02/09/2026) :
   en bas de page, **une seule carte**, une liste `ol#radar-fil` où chaque `<li>` porte l'échéance
   (`<span class="q">`) puis le libellé (`<span class="t">`, nom en `<b>`). Deux sortes de lignes :

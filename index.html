@@ -325,9 +325,8 @@
   @media (prefers-reduced-motion: reduce) { .instal-h .chev { transition: none; } }
   .instal.plein { margin: 18px 0 0; }
   .instal.plein .instal-c { display: block; border-top: none; }
-  .instal-t { font-size: 15.5px; font-weight: 700; margin: 0 0 2px; }
+  .instal-t { font-size: 15.5px; font-weight: 700; margin: 0 0 10px; }
   .instal-c { padding: 13px 15px 15px; border-top: 1px solid var(--grid); font-size: 13.5px; line-height: 1.5; }
-  .instal-p { color: var(--text-secondary); margin: 0 0 10px; max-width: 62ch; }
   .instal-os { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 10px; }
   .instal-os button {
     min-height: 36px; padding: 6px 14px; border: 1px solid var(--border); border-radius: 999px;
@@ -4794,7 +4793,6 @@
 
     const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const android = /Android/i.test(ua);
-    const mobile = ios || android;
     let os = android ? 'android' : 'ios';
 
     // sur Android, Chrome peut proposer l'installation en un geste : on garde l'invitation sous le coude
@@ -4808,6 +4806,13 @@
     window.addEventListener('appinstalled', () => {
       document.querySelectorAll('.instal').forEach(el => el.remove());
     });
+
+    function installer() {
+      if (!invitation) return;
+      const inv = invitation;
+      inv.prompt();
+      inv.userChoice.finally(() => { invitation = null; boutons.forEach(b => { b.hidden = true; }); });
+    }
 
     const ICONE_PARTAGE = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
       + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/>'
@@ -4841,7 +4846,7 @@
       const bloc = document.createElement('section');
       bloc.className = 'instal' + (plein ? ' plein ouvert' : '');
       bloc.setAttribute('aria-label', 'Installer Pause Cardio sur votre téléphone');
-      const libelle = 'Ajouter Pause Cardio à l’écran d’accueil de votre téléphone, comme une appli&nbsp;: c’est ici.';
+      const libelle = 'Ajouter l’appli Pause Cardio';
 
       if (!plein) {
         const tete = document.createElement('button');
@@ -4850,6 +4855,8 @@
         tete.setAttribute('aria-expanded', 'false');
         tete.innerHTML = '<span class="tel">📱</span><b>' + libelle + '</b><span class="chev">▸</span>';
         tete.addEventListener('click', () => {
+          // sur Android, quand Chrome le permet, un appui sur la ligne installe tout de suite
+          if (invitation) { installer(); return; }
           const ouvert = bloc.classList.toggle('ouvert');
           tete.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
         });
@@ -4860,10 +4867,6 @@
       corps.className = 'instal-c';
       corps.innerHTML =
         (plein ? '<p class="instal-t">📱 ' + libelle + '</p>' : '')
-        + '<p class="instal-p">Rien à télécharger&nbsp;: en deux gestes, Pause Cardio s’ouvre depuis une icône, '
-        + 'en plein écran, comme n’importe quelle application. '
-        + (mobile ? '' : 'Sur ordinateur, Chrome et Edge proposent aussi une petite icône d’installation à droite de la barre d’adresse.')
-        + '</p>'
         + '<div class="instal-os" role="tablist" aria-label="Votre téléphone">'
         +   '<button type="button" role="tab" data-os="ios">iPhone · iPad</button>'
         +   '<button type="button" role="tab" data-os="android">Android</button>'
@@ -4887,11 +4890,7 @@
         if (b) {
           b.hidden = !invitation;
           boutons.push(b);
-          b.addEventListener('click', () => {
-            if (!invitation) return;
-            invitation.prompt();
-            invitation.userChoice.finally(() => { invitation = null; b.hidden = true; });
-          });
+          b.addEventListener('click', installer);
         }
       }
       onglets.forEach(o => o.addEventListener('click', () => montrer(o.dataset.os)));

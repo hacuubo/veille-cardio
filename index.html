@@ -338,7 +338,7 @@
   .instal-etapes { margin: 0; padding-left: 22px; max-width: 62ch; }
   .instal-etapes li { padding: 3px 0; }
   .instal-etapes b { font-weight: 600; color: var(--text-primary); }
-  .instal-etapes .ico { display: inline-block; vertical-align: -3px; width: 16px; height: 16px; margin: 0 2px; }
+  .instal .ico { display: inline-block; vertical-align: -3px; width: 16px; height: 16px; margin: 0 2px; }
   .instal-etapes .men { display: inline-block; font-weight: 700; padding: 0 5px; border: 1px solid var(--border); border-radius: 5px; line-height: 1.3; }
   .instal-note { font-size: 12px; color: var(--text-muted); margin: 10px 0 0; max-width: 62ch; }
   .instal-b {
@@ -346,6 +346,7 @@
     border-radius: 10px; background: var(--brand); color: #fff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
   }
   .instal-b:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+  .instal-b .ico { vertical-align: -3px; margin-right: 4px; }
 
   /* ---------- sections par surspécialité ---------- */
   section.spec { margin-top: 34px; }
@@ -4814,9 +4815,14 @@
 
     const ETAPES = {
       ios:
-        '<ol class="instal-etapes">'
-        + '<li>Ouvrez cette page dans <b>Safari</b>, puis touchez le bouton <b>Partager</b> ' + ICONE_PARTAGE
-        + ' en bas de l’écran (en haut à droite sur iPad).</li>'
+        // sur iPhone, le site peut ouvrir la feuille de partage d'iOS, mais pas déclencher lui-même
+        // « Sur l'écran d'accueil » : le bouton épargne un geste, les étapes restent
+        (ios && navigator.share ? '<button class="instal-b" type="button" data-partage>' + ICONE_PARTAGE + ' Ouvrir le menu Partager</button>' : '')
+        + '<ol class="instal-etapes">'
+        + '<li>' + (ios && navigator.share
+            ? 'Touchez le bouton ci-dessus, ou le bouton <b>Partager</b> ' + ICONE_PARTAGE + ' de <b>Safari</b> en bas de l’écran (en haut à droite sur iPad).'
+            : 'Ouvrez cette page dans <b>Safari</b>, puis touchez le bouton <b>Partager</b> ' + ICONE_PARTAGE + ' en bas de l’écran (en haut à droite sur iPad).')
+        + '</li>'
         + '<li>Faites défiler la liste et touchez <b>« Sur l’écran d’accueil »</b>.</li>'
         + '<li>Touchez <b>« Ajouter »</b> en haut à droite. C’est fait&nbsp;: l’icône Pause Cardio est sur votre écran d’accueil.</li>'
         + '</ol>'
@@ -4871,7 +4877,13 @@
         os = choix;
         onglets.forEach(o => o.setAttribute('aria-selected', o.dataset.os === choix ? 'true' : 'false'));
         pas.innerHTML = ETAPES[choix];
-        const b = pas.querySelector('.instal-b');
+        const partage = pas.querySelector('[data-partage]');
+        if (partage) {
+          partage.addEventListener('click', () => {
+            navigator.share({ title: 'Pause Cardio', url: location.href.split('#')[0] }).catch(() => {});
+          });
+        }
+        const b = pas.querySelector('.instal-b:not([data-partage])');
         if (b) {
           b.hidden = !invitation;
           boutons.push(b);

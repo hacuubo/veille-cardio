@@ -143,7 +143,9 @@ Autres règles de mise en page :
   comme une appli : c'est ici. » **juste sous l'encart d'inscription replié**, et la version dépliée
   `.instal.plein` après l'inscription dépliée, avant « Rythme de mise à jour ». Il détecte l'appareil et
   affiche d'abord les gestes qui conviennent (deux onglets « iPhone · iPad » / « Android ») : sur iPhone,
-  Safari → bouton Partager → « Sur l'écran d'accueil » → « Ajouter » ; sur Android, menu ⋮ de Chrome →
+  un bouton « Ouvrir le menu Partager » (`navigator.share`, ajouté le 03/09/2026 à l'essai : il ouvre la feuille
+  de partage d'iOS, où « Sur l'écran d'accueil » doit se trouver — Apple n'autorise aucun site à déclencher
+  l'installation directement) puis « Sur l'écran d'accueil » → « Ajouter » ; sur Android, menu ⋮ de Chrome →
   « Ajouter à l'écran d'accueil », avec un vrai bouton « Installer Pause Cardio » quand Chrome propose
   l'installation (`beforeinstallprompt`). Trois règles : **il n'est jamais affiché quand la page est
   déjà ouverte depuis l'icône** (mode `standalone`), il reste en teinte neutre (pas le rosé de marque,

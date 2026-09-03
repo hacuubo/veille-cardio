@@ -21,7 +21,9 @@ Interlocuteur non développeur : explique les choses simplement, et évite le ja
 
 ## Ce que contient la page
 
-Structure : sections par **surspécialité** → sous-groupes par **année** (année en cours d'abord, puis N−1)
+Structure : sections par **surspécialité** — **rangées automatiquement par le script de la plus fournie à
+la moins fournie** sur l'année cochée (compte des cartes, ordre stable en cas d'égalité, décision du
+03/09/2026 : l'ordre des sections dans le HTML n'a plus d'importance) → sous-groupes par **année** (année en cours d'abord, puis N−1)
 → articles triés par **date de parution, les derniers parus en tête** (décision du 29/08/2026) : insérer
 toute nouvelle carte en haut de son année, et lire la date dans la ligne `.meta` (jour facultatif, mois en
 toutes lettres, année). Les cartes sans mois lisible restent en fin d'année. Chaque surspécialité est un **tiroir replié** : au chargement,

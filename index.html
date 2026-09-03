@@ -4393,16 +4393,20 @@
     const cherche = terms.length > 0;
     document.body.classList.toggle('searching', cherche);
     let shown = 0;
-    document.querySelectorAll('section.spec').forEach(sec => {
+    const volume = new Map();   // sorties de l'année cochée, par surspécialité : sert au classement
+    const sections = [...document.querySelectorAll('section.spec')];
+    sections.forEach(sec => {
       // une recherche ouvre tout : sinon on ne verrait pas ses propres résultats
       const deplie = cherche || ouverts.has(sec.dataset.spec);
-      let retenues = 0;
+      let retenues = 0, dansAnnee = 0;
       sec.querySelectorAll('article.card[data-spec]').forEach(card => {
-        const ok = state.annees.has(card.dataset.year)
-                && terms.every(t => card.dataset.hay.includes(t));
+        const annee = state.annees.has(card.dataset.year);
+        if (annee) dansAnnee++;
+        const ok = annee && terms.every(t => card.dataset.hay.includes(t));
         if (ok) { retenues++; shown++; }
         card.style.display = (ok && deplie) ? '' : 'none';
       });
+      volume.set(sec, dansAnnee);
       // année : masque les sous-titres d'année sans carte visible
       sec.querySelectorAll('.year-h').forEach(yh => {
         let el = yh.nextElementSibling, any = false;
@@ -4423,6 +4427,16 @@
         if (compte) compte.textContent = retenues + (retenues > 1 ? ' sorties' : ' sortie');
       }
     });
+    // les surspécialités se rangent de la plus fournie à la moins fournie sur
+    // l'année cochée (ordre stable en cas d'égalité) — décision du 03/09/2026
+    if (sections.length > 1) {
+      const ordre = sections.map((sec, i) => ({ sec, i }))
+        .sort((a, b) => (volume.get(b.sec) - volume.get(a.sec)) || (a.i - b.i))
+        .map(x => x.sec);
+      const parent = sections[0].parentNode;
+      const suite = sections[sections.length - 1].nextSibling;
+      ordre.forEach(sec => parent.insertBefore(sec, suite));
+    }
     document.body.classList.toggle('empty', cherche && shown === 0);
     document.body.classList.toggle('no-year-on', state.annees.size === 0);
     const rb = document.getElementById('resbar');

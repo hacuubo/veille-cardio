@@ -337,6 +337,14 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   archives (le bulletin part par courriel ; `/bulletin/` reste accessible par adresse directe).
   Ne pas les retirer, `outils/bulletin.mjs` s'en sert toujours.
 
+## Fréquentation du site
+
+Compteur **GoatCounter** (posé le 04/09/2026) : une balise `<script data-goatcounter=…>` juste avant
+`</body>` dans `index.html` et dans la page d'archives `bulletin/index.html` (gabarit dans
+`outils/bulletin.mjs`, fonction `rendreArchives`, pour qu'elle survive à chaque régénération). Sans
+cookie ni bandeau de consentement. Tableau de bord : https://pausecardio.goatcounter.com (compte de
+Robin). Ne pas ajouter d'autre outil de mesure sans demande explicite.
+
 ## Envoi du bulletin par e-mail
 
 Dès qu'un nouveau bulletin arrive sur `main`, GitHub l'envoie par e-mail avec le PDF en pièce jointe

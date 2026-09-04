@@ -405,6 +405,8 @@ function rendreArchives(bulletins) {
   <a class="retour" href="../">&#8592; Retour au tableau de bord</a>
   ${bulletins.length ? `<ul>${lignes}\n  </ul>` : '<p class="vide">Aucun bulletin pour le moment — le premier para&icirc;tra d&egrave;s qu&rsquo;une nouvelle sortie sera ajout&eacute;e au tableau de bord.<br><br>En attendant, voici <a href="exemple.pdf">un exemple de bulletin</a> pour voir &agrave; quoi il ressemblera.</p>'}
 </div>
+<!-- fréquentation : GoatCounter, sans cookie ni bandeau ; tableau de bord sur https://pausecardio.goatcounter.com -->
+<script data-goatcounter="https://pausecardio.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>`;
 }

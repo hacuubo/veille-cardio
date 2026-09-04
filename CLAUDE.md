@@ -326,6 +326,12 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   bulletins, le plus récent en tête. `bulletin/exemple.pdf` sert d'aperçu avant le premier vrai bulletin.
 - Les fichiers de `bulletin/` (PDF, `index.html`, `etat.json`) doivent être **commités** : c'est `etat.json`
   qui évite de re-signaler la semaine suivante les articles déjà annoncés.
+- **Rattrapages** (décision du 04/09/2026) : quand on ajoute d'un coup des cartes anciennes — nouvelle
+  surspécialité, rattrapage 2025 — elles ne partent **pas** dans le bulletin ni le courriel : le bulletin
+  ne signale que ce qui est **paru dans la semaine**. Les mémoriser tout de suite comme déjà signalées en
+  ajoutant leur clé (titre en minuscules sans accents ni ponctuation, fonction `cle` de `bulletin.mjs`)
+  à `connus` dans `bulletin/etat.json`, puis vérifier que `node outils/bulletin.mjs` répond `RIEN`.
+  Fait pour les 16 cartes d'onco-cardiologie (dernière parution 8 août 2026).
 - Autres commandes utiles : `node outils/bulletin.mjs --init` (remémorise tous les articles actuels sans
   produire de bulletin — à ne relancer qu'en cas de remise à zéro), `bash outils/faire-bulletin.sh --apercu`
   (bulletin d'essai à partir des 5 dernières sorties 2026, ne touche à rien d'autre),

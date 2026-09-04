@@ -310,7 +310,8 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   (fonction `poserAncres`) : ne jamais changer l'une sans l'autre, les liens des bulletins déjà
   envoyés en dépendent.
 - Elle compare les articles de `index.html` à ceux déjà signalés (mémorisés dans `bulletin/etat.json`,
-  la comparaison se fait sur le titre) :
+  la comparaison se fait sur le titre) et ne garde que ceux **parus dans les 7 derniers jours** (voir
+  plus bas) :
   - **s'il y a du nouveau** → écrit `bulletin/bulletin-AAAA-MM-JJ.html`, l'imprime en PDF avec Chromium,
     met à jour la page d'archives `bulletin/index.html` et pose le lien « 📄 Bulletin du … » dans la ligne
     d'en-tête du tableau de bord ;
@@ -326,12 +327,14 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   bulletins, le plus récent en tête. `bulletin/exemple.pdf` sert d'aperçu avant le premier vrai bulletin.
 - Les fichiers de `bulletin/` (PDF, `index.html`, `etat.json`) doivent être **commités** : c'est `etat.json`
   qui évite de re-signaler la semaine suivante les articles déjà annoncés.
-- **Rattrapages** (décision du 04/09/2026) : quand on ajoute d'un coup des cartes anciennes — nouvelle
-  surspécialité, rattrapage 2025 — elles ne partent **pas** dans le bulletin ni le courriel : le bulletin
-  ne signale que ce qui est **paru dans la semaine**. Les mémoriser tout de suite comme déjà signalées en
-  ajoutant leur clé (titre en minuscules sans accents ni ponctuation, fonction `cle` de `bulletin.mjs`)
-  à `connus` dans `bulletin/etat.json`, puis vérifier que `node outils/bulletin.mjs` répond `RIEN`.
-  Fait pour les 16 cartes d'onco-cardiologie (dernière parution 8 août 2026).
+- **Ce qui fait foi, c'est la date de parution dans la revue** (décision du 04/09/2026), lue dans la
+  ligne `.meta` de la carte : le bulletin et le courriel ne signalent que les articles **inconnus et
+  parus dans les 7 jours précédant la date du bulletin**. Un article ajouté après coup — rattrapage
+  d'une année, nouvelle surspécialité, reprise tardive — est **mémorisé sans être annoncé** (ligne
+  `HORS_SEMAINE` dans la sortie du script) : s'il n'y a que cela, la semaine reste « calme ». Une carte
+  sans jour dans `.meta` est écartée de la même façon : toujours écrire le jour pour une sortie de la
+  semaine. Exemple : les 16 cartes d'onco-cardiologie (dernière parution le 8 août 2026) ajoutées le
+  03/09 ne sont pas parties dans le courriel du samedi 05/09.
 - Autres commandes utiles : `node outils/bulletin.mjs --init` (remémorise tous les articles actuels sans
   produire de bulletin — à ne relancer qu'en cas de remise à zéro), `bash outils/faire-bulletin.sh --apercu`
   (bulletin d'essai à partir des 5 dernières sorties 2026, ne touche à rien d'autre),

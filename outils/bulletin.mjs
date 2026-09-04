@@ -55,6 +55,20 @@ function lundiDeLaSemaine(iso) {
   d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7);
   return d.toISOString().slice(0, 10);
 }
+/** date de parution AAAA-MM-JJ lue dans la ligne .meta (« NEJM · 28 août 2026 · … »),
+ *  même règle que dateParution() dans index.html ; '' si le jour n'y figure pas. */
+function dateParution(a) {
+  const sansAccent = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const m = sansAccent(brut(a.meta).toLowerCase()).match(/(\d{1,2})(?:er)?\s+([a-z]+)\s+(\d{4})/);
+  if (!m) return '';
+  const k = MOIS.map(sansAccent).indexOf(m[2]);
+  return k >= 0 ? `${m[3]}-${String(k + 1).padStart(2, '0')}-${m[1].padStart(2, '0')}` : '';
+}
+/** décalage d'une date ISO de n jours */
+function decaler(iso, n) {
+  const d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
 /** texte brut, sans balises ni entités — sert de clé de comparaison */
 function brut(html) {
   return html
@@ -457,8 +471,22 @@ if (opt('apercu')) {
   process.exit(0);
 }
 
+/* Ce qui fait foi, c'est la DATE DE PARUTION dans la revue (ligne .meta), pas la
+   date d'ajout sur le site (décision du 04/09/2026) : le bulletin ne signale que ce
+   qui est paru dans les 7 jours précédant sa date. Un article ajouté après coup
+   (rattrapage, nouvelle surspécialité) ou sans jour lisible est mémorisé sans être
+   annoncé — la semaine reste « calme » s'il n'y a que cela. */
+const FENETRE_JOURS = 7;
+const depuis   = decaler(dateIso, -FENETRE_JOURS);
 const connus   = new Set(etat.connus);
-const nouveaux = articles.filter(a => !connus.has(a.cle));
+const inconnus = articles.filter(a => !connus.has(a.cle));
+const nouveaux = inconnus.filter(a => { const p = dateParution(a); return p && p >= depuis && p <= dateIso; });
+const ecartes  = inconnus.filter(a => !nouveaux.includes(a));
+for (const a of ecartes) {
+  const p = dateParution(a);
+  console.log(`HORS_SEMAINE ${p ? 'paru le ' + p : 'SANS JOUR dans .meta'} — mémorisé sans bulletin : ${brut(a.titre).slice(0, 80)}`);
+}
+if (ecartes.length) etat.connus = [...new Set([...etat.connus, ...ecartes.map(a => a.cle)])];
 
 if (!nouveaux.length) {
   etat.derniere_execution = dateIso;
@@ -469,9 +497,7 @@ if (!nouveaux.length) {
     let rappel = articles.filter(a => lot.has(a.cle));
     if (!rappel.length) {
       // pas de mémoire : on rappelle les sorties parues le plus récemment
-      const paru = a => { const m = brut(a.meta).toLowerCase().match(/(\d{1,2})(?:er)?\s+([a-zéû]+)\s+(\d{4})/);
-        const k = m && MOIS.indexOf(m[2]); return m && k >= 0 ? `${m[3]}-${String(k + 1).padStart(2, '0')}-${m[1].padStart(2, '0')}` : ''; };
-      rappel = articles.filter(a => paru(a)).sort((a, b) => paru(b).localeCompare(paru(a))).slice(0, 6);
+      rappel = articles.filter(a => dateParution(a)).sort((a, b) => dateParution(b).localeCompare(dateParution(a))).slice(0, 6);
     }
     const nom = `courriel-${dateIso}.html`;
     writeFileSync(join(DOSSIER, nom), rendreCourriel(rappel, dateIso, { rappel: true }));

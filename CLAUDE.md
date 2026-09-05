@@ -61,6 +61,17 @@ un article referme celui qui était déplié.
 
 ## Règles éditoriales (décidées avec Robin)
 
+- **Charte de rédaction** (`outils/CHARTE-REDACTION.md`, adoptée le 05/09/2026) : tout texte français —
+  accroche, résumé, résultat principal, fiche, « En pratique », courriel — doit se lire comme écrit
+  directement en français par un médecin habitué à la synthèse scientifique. Pas de calque de
+  l'anglais ni de style télégraphique, phrases complètes avec sujet, une idée par phrase, terminologie
+  française usuelle, abréviations peu courantes développées, degré d'affirmation calé sur le niveau de
+  preuve, distinction association/causalité, critère principal/secondaire, relatif/absolu. Le résumé
+  français existant n'est pas une référence : on vérifie sur le résumé PubMed. Toute nouvelle carte
+  suit `outils/BRIEF-CARTE.md` (format) et la charte (fond), puis passe par une **relecture de
+  fidélité distincte** avant publication. Les révisions gardent l'ancienne version et un journal dans
+  `revision/AAAA-MM-JJ/`.
+
 - **Titres des articles dans leur langue d'origine** (anglais si l'article est anglais).
   Tout le reste — résumés, fiches, interface — en français.
 - Sélection stricte : essais randomisés pivots, recommandations, méta-analyses majeures. Pas de cohortes

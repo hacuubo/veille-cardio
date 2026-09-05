@@ -25,8 +25,8 @@
       "ville": "Chicago", "debut": "2026-11-06", "fin": "2026-11-09", "confirme": true,
       "source": "https://professional.heart.org/en/meetings/scientific-sessions" },
     { "famille": "aha", "sigle": "AHA 2027", "nom": "AHA Scientific Sessions 2027", "niveau": 1,
-      "ville": "Boston", "debut": "2027-11-05", "fin": "2027-11-08", "confirme": false,
-      "source": "sources secondaires (dzhk.de) — à confirmer sur professional.heart.org" },
+      "ville": "Boston", "debut": "2027-11-05", "fin": "2027-11-08", "confirme": true,
+      "source": "https://exhibitatsessions.org/scientific-sessions/future-meetings/" },
 
     { "famille": "tct", "sigle": "TCT 2026", "nom": "TCT 2026", "niveau": 2,
       "ville": "San Diego", "debut": "2026-10-31", "fin": "2026-11-03", "confirme": true,
@@ -52,8 +52,8 @@
       "source": "https://www.escardio.org/events/congresses/heart-failure/" },
 
     { "famille": "eapc-sport", "sigle": "EAPC Preventive Cardiology 2027", "nom": "ESC Preventive Cardiology 2027 (sessions Sports & Exercise Cardiology)", "niveau": 2,
-      "ville": null, "debut": null, "fin": null, "confirme": false,
-      "source": "https://www.escardio.org/events/congresses/esc-preventive-cardiology/ — dates à relever" },
+      "ville": "Lisbonne", "debut": "2027-04-15", "fin": "2027-04-17", "confirme": true,
+      "source": "https://www.escardio.org/events/congresses/esc-preventive-cardiology/" },
     { "famille": "cath", "sigle": "Care of the Athletic Heart 2027", "nom": "Care of the Athletic Heart 2027 (ACC)", "niveau": 2,
       "ville": null, "debut": null, "fin": null, "confirme": false,
       "source": "acc.org — dates à relever" }

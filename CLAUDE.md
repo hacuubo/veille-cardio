@@ -244,7 +244,13 @@ Règles de classement qui évitent les oublis constatés :
 ## Mise à jour
 
 - Automatique : la **routine Claude Code « Veille cardio »** (modèle **Opus 5**) s'exécute **tous les
-  jours à 05:00 UTC**. Elle commence par `node outils/congres.mjs`, qui lit le **calendrier des
+  jours à 05:00 UTC**. **Depuis le 05/09/2026 elle tourne dans une session persistante qui a le dépôt
+  attaché et `main` comme branche de sortie** (session « Veille cardio — session de la routine
+  quotidienne ») : la routine créée le 29/08 n'avait aucun dépôt attaché et n'a jamais pu pousser —
+  d'où le samedi 05/09 sans courriel. Si on recrée la routine, il faut la lier à une session qui
+  possède le dépôt (source) et `main` (outcome), sinon elle « réussit » sans rien publier. Son
+  premier geste est `git reset --hard origin/main`, son dernier une vérification que le commit est
+  bien sur `origin/main`. Elle commence par `node outils/congres.mjs`, qui lit le **calendrier des
   congrès** `outils/congres.json` et lui donne son mode du jour, sans interprétation (rythme
   définitif arrêté le 01/09/2026) :
   - `MODE SAMEDI` → veille hebdomadaire complète, mise à jour du site et du Radar, puis

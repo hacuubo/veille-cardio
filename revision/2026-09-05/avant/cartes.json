@@ -2504,5 +2504,22 @@
   "liens": [
    "https://doi.org/10.1161/CIRCULATIONAHA.124.070709"
   ]
+ },
+ {
+  "ancre": "efficacy-and-safety-of-digitalis-glycosides-in-heart-failure-a-m",
+  "spec": "ic",
+  "annee": "2026",
+  "niveau": "warn",
+  "titre": "Efficacy and Safety of Digitalis Glycosides in Heart Failure: A Meta-Analysis",
+  "meta": "<b>JAMA</b> &middot; 10 mai 2026 &middot; pr&eacute;sent&eacute; au congr&egrave;s HFA 2026",
+  "type": "M&eacute;ta-analyse &middot; DIG + DIGIT-HF + DECISION",
+  "fr": "La digoxine à faible dose retrouve une place dans l’insuffisance cardiaque",
+  "sum": "M&eacute;ta-analyse de 3 essais randomis&eacute;s contre placebo (9&nbsp;013 patients) : l&rsquo;ajout de digoxine/digitoxine faible dose r&eacute;duit de 15&nbsp;% le crit&egrave;re d&eacute;c&egrave;s CV ou aggravation d&rsquo;IC, chez des patients d&eacute;j&agrave; sous traitement contemporain optimis&eacute;.",
+  "cle": "",
+  "fiche": "\n        <h4>Question clinique</h4>\n        <p>Les digitaliques gardent-ils une place dans l&rsquo;IC &agrave; FEVG r&eacute;duite/moyenne &agrave; l&rsquo;&egrave;re de la quadrith&eacute;rapie&nbsp;?</p>\n        <h4>M&eacute;thode</h4>\n        <p>M&eacute;ta-analyse de 3 essais randomis&eacute;s vs placebo — DIG (1997, n&nbsp;=&nbsp;6&nbsp;800), DIGIT-HF (2025, n&nbsp;=&nbsp;1&nbsp;212), DECISION (2026, n&nbsp;=&nbsp;1&nbsp;001) — soit 9&nbsp;013 patients, FEVG &le;&nbsp;50&nbsp;%, largement trait&eacute;s par b&ecirc;tabloquant, IEC/ARA2/ARNI, antagoniste min&eacute;ralocortico&iuml;de et iSGLT2.</p>\n        <h4>R&eacute;sultats cl&eacute;s</h4>\n        <ul>\n          <li>D&eacute;c&egrave;s CV ou aggravation d&rsquo;IC&nbsp;: <b>HR 0,85</b> (IC95&nbsp;% 0,80&#8211;0,90&nbsp;; p&nbsp;&lt;&nbsp;0,001).</li>\n          <li>Aggravations d&rsquo;IC seules&nbsp;: <b>&#8722;25&nbsp;%</b> (HR 0,75).</li>\n          <li>Mortalit&eacute; CV et totale&nbsp;: neutre.</li>\n        </ul>\n        <h4>Limites</h4>\n        <ul>\n          <li>Poids majeur de DIG (1997), ant&eacute;rieur aux traitements modernes&nbsp;; effet class&eacute; sur la morbidit&eacute;, pas la mortalit&eacute;.</li>\n          <li>Marge th&eacute;rapeutique &eacute;troite&nbsp;: dosages faibles et surveillance de la digoxin&eacute;mie indispensables.</li>\n        </ul>\n        <div class=\"verdict\"><b>En pratique&nbsp;:</b> option &agrave; reconsid&eacute;rer chez le patient qui reste symptomatique sous quadrith&eacute;rapie optimis&eacute;e (notamment en FA associ&eacute;e), &agrave; faible dose et sous surveillance — sans en faire un pilier du traitement.</div>\n        <div class=\"sig\">R&eacute;sum&eacute; &agrave; valider par le lecteur avant application clinique — se reporter &agrave; l&rsquo;article original en lien.</div>\n      ",
+  "liens": [
+   "https://jamanetwork.com/journals/jama/fullarticle/2848972",
+   "https://www.cardio-online.fr/actualites/couvertures-de-congres-en-cardiologie/hfa-2026/insuffisance-cardiaque-l-ajout-d-un-digitalique-reduit-significativement-les-evenements-lies-a-la-maladie"
+  ]
  }
 ]

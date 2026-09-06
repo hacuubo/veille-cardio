@@ -493,6 +493,26 @@
   body.searching .art-spec { display: inline; }
   .chev { flex: none; color: var(--text-muted); font-size: 11px; transition: transform .15s; }
   .card.exp .chev { transform: rotate(90deg); }
+  /* ---------- favoris et articles lus (mémorisés sur l'appareil) ---------- */
+  .card { position: relative; }
+  .artrow { padding-right: 50px; }
+  .fav-btn {
+    position: absolute; right: 4px; top: 2px; width: 42px; height: 40px;
+    background: none; border: none; cursor: pointer; font-size: 19px; line-height: 40px;
+    color: var(--text-muted); opacity: .55; padding: 0;
+  }
+  .fav-btn:hover, .fav-btn:focus-visible { opacity: 1; outline: none; }
+  .card.fav .fav-btn { color: #d99a00; opacity: 1; }
+  .card.lu > .artrow .art-title { color: var(--text-muted); font-weight: 500; }
+  .card.lu > .artrow .art-fr, .card.lu > .artrow .art-sub, .card.lu > .artrow > .dot { opacity: .55; }
+  .card.lu > .artrow .art-new { opacity: .6; }
+  .lu-btn {
+    display: inline-block; margin: 10px 0 2px; background: none; border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px 11px; font: inherit; font-size: 12px; color: var(--text-secondary); cursor: pointer;
+  }
+  .lu-btn:hover { background: var(--wash); }
+  .chip.fav-chip[aria-pressed="true"] { border-color: #d99a00; }
+  body.favoris .recent, body.favoris .abo, body.favoris .instal { display: none; }
   .card .body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .26s ease; }
   .card .bodyin { overflow: hidden; min-height: 0; padding: 0 16px 0 20px; }
   .card.exp .bodyin { padding-bottom: 16px; }
@@ -516,7 +536,8 @@
   section.spec { margin-top: 26px; }
   .art-tags .b-txt { margin-left: 4px; }
   @media (max-width: 700px) {
-    .artrow { gap: 7px; padding: 6px 9px; }
+    .artrow { gap: 7px; padding: 6px 44px 6px 9px; }   /* place pour l'étoile des favoris à droite */
+    .fav-btn { right: 0; top: 0; width: 40px; }
     .art-main { gap: 6px; }
     .art-title { font-size: 12.5px; }
     .art-tags .b-txt { display: none; }
@@ -610,6 +631,12 @@
       <button class="chip yr" data-f="year" data-v="2026" aria-pressed="true">2026</button>
       <button class="chip yr" data-f="year" data-v="2025" aria-pressed="false">2025</button>
       <span class="hint">cochez 2025 pour afficher aussi les sorties de l&rsquo;an dernier</span>
+    </div>
+    <div class="row">
+      <span class="lab">Lecture</span>
+      <button class="chip fav-chip" data-f="fav" aria-pressed="false" title="Les articles marqu&eacute;s d&rsquo;une &eacute;toile, toutes surspécialit&eacute;s et ann&eacute;es confondues">&#9733; Mes favoris &middot; <span id="nfav">0</span></button>
+      <button class="chip" data-f="lus" aria-pressed="false" title="Ne montrer que les articles dont la fiche n&rsquo;a pas encore &eacute;t&eacute; ouverte">Masquer les lus</button>
+      <span class="hint">l&rsquo;&eacute;toile et la lecture sont m&eacute;moris&eacute;es sur cet appareil</span>
     </div>
   </div>
 
@@ -5543,7 +5570,7 @@
     });
   });
   // le tri se fait par les tiroirs de surspécialité : ne restent que les années et la recherche
-  const state = { annees: new Set(['2026']), q: '' };
+  const state = { annees: new Set(['2026']), q: '', favoris: false, masquerLus: false };
   // chaque surspécialité est un tiroir ; on rouvre ceux de la dernière visite
   const MEMOIRE = 'pc-ouverts';
   const ouverts = new Set();
@@ -5564,12 +5591,16 @@
     const sections = [...document.querySelectorAll('section.spec')];
     sections.forEach(sec => {
       // une recherche ouvre tout : sinon on ne verrait pas ses propres résultats
-      const deplie = cherche || ouverts.has(sec.dataset.spec);
+      // une recherche ou la puce « Mes favoris » ouvre tout : sinon on ne verrait pas ses propres résultats
+      const deplie = cherche || state.favoris || ouverts.has(sec.dataset.spec);
       let retenues = 0, dansAnnee = 0;
       sec.querySelectorAll('article.card[data-spec]').forEach(card => {
         const annee = state.annees.has(card.dataset.year);
         if (annee) dansAnnee++;
-        const ok = annee && terms.every(t => card.dataset.hay.includes(t));
+        // « Mes favoris » ignore les années ; « Masquer les lus » écarte les fiches déjà ouvertes
+        const ok = (annee || state.favoris) && terms.every(t => card.dataset.hay.includes(t))
+          && (!state.favoris || card.classList.contains('fav'))
+          && (!state.masquerLus || !card.classList.contains('lu'));
         if (ok) { retenues++; shown++; }
         card.style.display = (ok && deplie) ? '' : 'none';
       });
@@ -5605,9 +5636,12 @@
       ordre.forEach(sec => parent.insertBefore(sec, suite));
     }
     document.body.classList.toggle('empty', cherche && shown === 0);
-    document.body.classList.toggle('no-year-on', state.annees.size === 0);
+    document.body.classList.toggle('no-year-on', state.annees.size === 0 && !state.favoris);
+    document.body.classList.toggle('favoris', state.favoris);
     const rb = document.getElementById('resbar');
     if (cherche) rb.textContent = shown + (shown > 1 ? ' résultats' : ' résultat') + ' pour « ' + state.q.trim() + ' » — toutes surspécialités confondues';
+    else if (state.favoris) rb.textContent = shown ? shown + (shown > 1 ? ' favoris' : ' favori') + ' — toutes surspécialités et années confondues' : 'Aucun favori pour l’instant : touchez l’étoile à droite d’un article pour le garder sous la main.';
+    else rb.textContent = '';
   }
   // ouverture / fermeture d'une surspécialité
   const douceur = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -5789,6 +5823,71 @@
     }
     window.addEventListener('hashchange', allerA);
     allerA();
+  })();
+
+  // ---------- favoris et articles lus : mémorisés sur l'appareil, par ancre d'article ----------
+  // Rien ne quitte le téléphone : deux listes d'identifiants dans localStorage
+  // (« pc-favoris », « pc-lus »), clés stables puisque ce sont les ancres des cartes.
+  (function () {
+    const lire = k => { try { const v = JSON.parse(localStorage.getItem(k) || '[]'); return new Set(Array.isArray(v) ? v : []); } catch (e) { return new Set(); } };
+    const garder = (k, set) => { try { localStorage.setItem(k, JSON.stringify([...set])); } catch (e) {} };
+    const favoris = lire('pc-favoris'), lus = lire('pc-lus');
+    const compteur = document.getElementById('nfav');
+    const compter = () => { if (compteur) compteur.textContent = favoris.size; };
+    document.querySelectorAll('article.card[data-spec]').forEach(card => {
+      if (!card.id) return;
+      const row = card.querySelector('.artrow');
+      if (!row) return;
+      card.classList.toggle('fav', favoris.has(card.id));
+      card.classList.toggle('lu', lus.has(card.id));
+      // l'étoile : hors du bouton de ligne (un bouton dans un bouton n'est pas permis)
+      const etoile = document.createElement('button');
+      etoile.type = 'button';
+      etoile.className = 'fav-btn';
+      const nommer = () => {
+        const on = card.classList.contains('fav');
+        etoile.textContent = on ? '\u2605' : '\u2606';
+        etoile.setAttribute('aria-pressed', on ? 'true' : 'false');
+        etoile.title = on ? 'Retirer des favoris' : 'Garder en favori pour plus tard';
+        etoile.setAttribute('aria-label', etoile.title);
+      };
+      nommer();
+      etoile.addEventListener('click', e => {
+        e.stopPropagation();
+        if (favoris.has(card.id)) favoris.delete(card.id); else favoris.add(card.id);
+        card.classList.toggle('fav', favoris.has(card.id));
+        garder('pc-favoris', favoris); nommer(); compter();
+        if (state.favoris) applyFilters();
+      });
+      card.insertBefore(etoile, row);
+      // une fiche dépliée compte comme lue
+      const marquer = lu => {
+        if (lu) lus.add(card.id); else lus.delete(card.id);
+        card.classList.toggle('lu', lu);
+        garder('pc-lus', lus);
+        if (bouton) bouton.textContent = lu ? 'Marquer comme non lu' : 'Marquer comme lu';
+      };
+      const bodyin = card.querySelector('.bodyin');
+      let bouton = null;
+      if (bodyin) {
+        bouton = document.createElement('button');
+        bouton.type = 'button';
+        bouton.className = 'lu-btn';
+        bouton.textContent = card.classList.contains('lu') ? 'Marquer comme non lu' : 'Marquer comme lu';
+        bouton.addEventListener('click', e => { e.stopPropagation(); marquer(!card.classList.contains('lu')); });
+        bodyin.appendChild(bouton);
+      }
+      row.addEventListener('click', () => { if (card.classList.contains('exp') && !card.classList.contains('lu')) marquer(true); });
+    });
+    compter();
+    document.querySelectorAll('.chip[data-f="fav"], .chip[data-f="lus"]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const actif = chip.getAttribute('aria-pressed') === 'true';
+        chip.setAttribute('aria-pressed', actif ? 'false' : 'true');
+        if (chip.dataset.f === 'fav') state.favoris = !actif; else state.masquerLus = !actif;
+        applyFilters();
+      });
+    });
   })();
 
   // ---------- encart « recevoir les sorties de la semaine » ----------

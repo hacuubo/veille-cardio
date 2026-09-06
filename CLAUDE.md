@@ -215,6 +215,14 @@ Autres règles de mise en page :
 - **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
   libellé « En pratique ») ; le fond légèrement rosé est réservé aux cartes `reco` (recommandations).
   Ne pas remettre de grosse pastille de couleur ni de badge de niveau par article.
+- **Favoris et articles lus** (ajoutés le 06/09/2026) : construits par le script, mémorisés **sur
+  l'appareil seulement** (`localStorage`, clés `pc-favoris` et `pc-lus`, listes d'ancres de cartes — la
+  même ancre que les liens du bulletin, donc stable). Une étoile (`button.fav-btn`, hors du bouton de
+  ligne) à droite de chaque ligne ; une fiche dépliée marque la carte `lu` (titre et accroche grisés), un
+  bouton « Marquer comme non lu » en bas de la fiche l'annule. Deux puces dans la rangée « Lecture » des
+  filtres : « ★ Mes favoris · N » (n'affiche que les favoris, **toutes surspécialités et années
+  confondues**, ouvre tous les tiroirs, masque les encarts comme une recherche) et « Masquer les lus ».
+  Pas de recherche dans les favoris (décision du 06/09/2026). Rien ne quitte l'appareil, aucun compte.
 - **Tiroirs de surspécialité** : la tête de section (`.spec-h`) est cliquable (chevron à droite, `role`
   et `aria-expanded` posés par le script) ; l'état ouvert est porté par `section.spec.ouvert` et par
   l'ensemble `ouverts` du script. Trois règles à ne pas casser : les tiroirs ouverts sont **mémorisés

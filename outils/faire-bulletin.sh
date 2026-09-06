@@ -12,6 +12,13 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Contrôle qualité (charte de rédaction) des cartes de la semaine : aucun bulletin,
+# aucun courriel tant qu'une carte récente est en ERREUR. --apercu et --init passent outre.
+case " $* " in
+  *" --apercu "*|*" --init "*) ;;
+  *) node outils/controle-cartes.mjs --strict || { echo "CONTROLE_ECHOUE — corriger les cartes ci-dessus avant de refaire le bulletin"; exit 1; } ;;
+esac
+
 SORTIE="$(node outils/bulletin.mjs "$@")"
 echo "$SORTIE"
 

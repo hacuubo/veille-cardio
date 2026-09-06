@@ -48,6 +48,10 @@ jobs:
           BREVO_LISTE_ID: ${{ secrets.BREVO_LISTE_ID }}
         run: node outils/etat-brevo.mjs
 
+      - name: Contrôle qualité des cartes de la semaine (charte de rédaction)
+        if: ${{ github.event.inputs.diagnostic != 'true' }}
+        run: node outils/controle-cartes.mjs --strict
+
       - name: Envoyer aux inscrits
         if: ${{ github.event.inputs.diagnostic != 'true' }}
         env:

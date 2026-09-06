@@ -91,6 +91,36 @@ un article referme celui qui était déplié.
   manquer. Les sorties de congrès restent en ligne **au moins trois mois** après la fin du congrès ;
   quand la publication définitive paraît, mettre la carte à jour plutôt que la retirer.
 
+## Chaîne qualité — obligatoire pour tout texte diffusé (depuis le 06/09/2026)
+
+Quatre pièces, toutes versionnées dans le dépôt, s'appliquent à **chaque nouvelle carte, chaque mise à
+jour de carte et chaque courriel** ; la routine, les sous-agents et toute session qui touche au contenu
+doivent les suivre, sans exception :
+
+1. **`outils/CHARTE-REDACTION.md`** — le fond : ton de médecin francophone, langue, fidélité
+   scientifique, rubrique « En pratique », méthode en deux passes.
+2. **`outils/BRIEF-CARTE.md`** (nouvelle carte) et **`outils/BRIEF-REVISION.md`** (carte existante) — le
+   format et la livraison ; le rédacteur part du résumé PubMed (`efetch`) et des pages ouvertes, jamais
+   de mémoire.
+3. **`outils/BRIEF-CONTROLE.md`** — la relecture de fidélité par un **agent distinct du rédacteur** :
+   chiffres, groupes, critères, degré de certitude, cohérence accroche/résumé/résultat principal/fiche.
+   Aucune carte n'est insérée dans `index.html` sans cette relecture.
+4. **`node outils/controle-cartes.mjs`** — le contrôle automatique, à lancer après toute modification :
+   structure, accroche, date de parution, typographie française, formules interdites (« vs », « Au
+   cabinet », mention d'auteur ou d'IA, référence géographique, effets journalistiques), cohérence des
+   chiffres entre les présentations ; avec `--sources`, fidélité des chiffres au résumé PubMed. Par
+   défaut il contrôle les cartes ajoutées ou parues depuis 8 jours ; `--tout` couvre le site. Avec
+   `--strict`, une ERREUR bloque. **`outils/faire-bulletin.sh` l'exécute en mode strict avant tout
+   bulletin, et le workflow `bulletin-inscrits.yml` avant tout envoi Brevo : un courriel ne part pas
+   tant qu'une carte de la semaine est en ERREUR.** Les AVERTISSEMENTS ne bloquent pas mais doivent
+   être traités par la routine quand ils concernent une carte de la semaine.
+
+Révision par lots (plusieurs cartes anciennes) : `outils/revision/extraire.py` inventorie et conserve
+les versions en cours dans `revision/AAAA-MM-JJ/avant/`, les lots passent par BRIEF-REVISION puis
+BRIEF-CONTROLE, et `outils/revision/appliquer.py` applique les textes validés avec le garde-fou sur les
+chiffres et écrit `revision/AAAA-MM-JJ/journal.md` (corrections sourcées, passages à vérifier).
+Première application : révision complète des 153 cartes le 05/09/2026.
+
 ## Présentation (ne pas casser)
 
 La page affiche chaque article sur **une ligne repliée** : titre d'origine, accroche française en dessous,

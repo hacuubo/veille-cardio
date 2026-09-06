@@ -220,10 +220,13 @@ Autres règles de mise en page :
   même ancre que les liens du bulletin, donc stable). Une étoile (`button.fav-btn`, hors du bouton de
   ligne) à droite de chaque ligne, précédée d'une **coche « lu »** (`button.lu-chk`, cercle vide puis plein) :
   c'est le lecteur qui décide, **déplier une fiche ne marque rien** (décision du 06/09/2026) ; la carte
-  cochée passe en `lu` (titre et accroche grisés), un second appui l'annule. Deux puces dans la rangée « Lecture » des
-  filtres : « ★ Mes favoris · N » (n'affiche que les favoris, **toutes surspécialités et années
-  confondues**, ouvre tous les tiroirs, masque les encarts comme une recherche) et « Masquer les lus ».
-  Pas de recherche dans les favoris (décision du 06/09/2026). Rien ne quitte l'appareil, aucun compte.
+  cochée passe en `lu` (titre et accroche grisés), un second appui l'annule. **Trois listes exclusives**
+  (décision du 06/09/2026) : la liste principale ne montre que les articles **ni lus ni favoris** — cocher ou
+  étoiler un article le fait quitter la liste aussitôt ; les puces « ★ Mes favoris · N » et « ✓ Lus · N »
+  de la rangée « Lecture » affichent chacune les leurs, **toutes surspécialités et années confondues**,
+  tiroirs ouverts, encarts masqués comme lors d'une recherche (`state.vue` : `tout` / `favoris` / `lus`,
+  `choisirVue()`). Un lien direct vers une carte (bulletin, bandeau) bascule sur la liste qui la contient.
+  Pas de recherche dédiée aux favoris. Rien ne quitte l'appareil, aucun compte.
 - **Tiroirs de surspécialité** : la tête de section (`.spec-h`) est cliquable (chevron à droite, `role`
   et `aria-expanded` posés par le script) ; l'état ouvert est porté par `section.spec.ouvert` et par
   l'ensemble `ouverts` du script. Trois règles à ne pas casser : les tiroirs ouverts sont **mémorisés

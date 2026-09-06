@@ -517,7 +517,7 @@
   .card.lu > .artrow .art-fr, .card.lu > .artrow .art-sub, .card.lu > .artrow > .dot { opacity: .55; }
   .card.lu > .artrow .art-new { opacity: .6; }
   .chip.fav-chip[aria-pressed="true"] { border-color: #d99a00; }
-  body.favoris .recent, body.favoris .abo, body.favoris .instal { display: none; }
+  body.vue-part .recent, body.vue-part .abo, body.vue-part .instal { display: none; }
   .card .body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .26s ease; }
   .card .bodyin { overflow: hidden; min-height: 0; padding: 0 16px 0 20px; }
   .card.exp .bodyin { padding-bottom: 16px; }
@@ -642,8 +642,8 @@
     <div class="row">
       <span class="lab">Lecture</span>
       <button class="chip fav-chip" data-f="fav" aria-pressed="false" title="Les articles marqu&eacute;s d&rsquo;une &eacute;toile, toutes surspécialit&eacute;s et ann&eacute;es confondues">&#9733; Mes favoris &middot; <span id="nfav">0</span></button>
-      <button class="chip" data-f="lus" aria-pressed="false" title="Ne montrer que les articles que vous n&rsquo;avez pas encore coch&eacute;s comme lus">Masquer les lus</button>
-      <span class="hint">la coche &laquo;&nbsp;lu&nbsp;&raquo; et l&rsquo;&eacute;toile sont m&eacute;moris&eacute;es sur cet appareil</span>
+      <button class="chip lu-chip" data-f="lus" aria-pressed="false" title="Les articles que vous avez coch&eacute;s comme lus, toutes surspécialit&eacute;s et ann&eacute;es confondues">&#10003; Lus &middot; <span id="nlus">0</span></button>
+      <span class="hint">un article coch&eacute; lu ou mis en favori quitte la liste principale&nbsp;; m&eacute;moris&eacute; sur cet appareil</span>
     </div>
   </div>
 
@@ -5577,7 +5577,14 @@
     });
   });
   // le tri se fait par les tiroirs de surspécialité : ne restent que les années et la recherche
-  const state = { annees: new Set(['2026']), q: '', favoris: false, masquerLus: false };
+  // trois listes exclusives (décision du 06/09/2026) : « tout » = ni lu ni favori,
+  // « favoris » et « lus » = uniquement ceux-là, toutes surspécialités et années confondues
+  const state = { annees: new Set(['2026']), q: '', vue: 'tout' };
+  function choisirVue(vue) {
+    state.vue = vue;
+    document.querySelectorAll('.chip[data-f="fav"], .chip[data-f="lus"]').forEach(c =>
+      c.setAttribute('aria-pressed', (c.dataset.f === 'fav' && vue === 'favoris') || (c.dataset.f === 'lus' && vue === 'lus') ? 'true' : 'false'));
+  }
   // chaque surspécialité est un tiroir ; on rouvre ceux de la dernière visite
   const MEMOIRE = 'pc-ouverts';
   const ouverts = new Set();
@@ -5598,16 +5605,16 @@
     const sections = [...document.querySelectorAll('section.spec')];
     sections.forEach(sec => {
       // une recherche ouvre tout : sinon on ne verrait pas ses propres résultats
-      // une recherche ou la puce « Mes favoris » ouvre tout : sinon on ne verrait pas ses propres résultats
-      const deplie = cherche || state.favoris || ouverts.has(sec.dataset.spec);
+      // une recherche ou une liste à part (favoris, lus) ouvre tout : sinon on ne verrait pas ses propres résultats
+      const deplie = cherche || state.vue !== 'tout' || ouverts.has(sec.dataset.spec);
       let retenues = 0, dansAnnee = 0;
       sec.querySelectorAll('article.card[data-spec]').forEach(card => {
         const annee = state.annees.has(card.dataset.year);
         if (annee) dansAnnee++;
-        // « Mes favoris » ignore les années ; « Masquer les lus » écarte les fiches déjà ouvertes
-        const ok = (annee || state.favoris) && terms.every(t => card.dataset.hay.includes(t))
-          && (!state.favoris || card.classList.contains('fav'))
-          && (!state.masquerLus || !card.classList.contains('lu'));
+        // liste principale : ni lu ni favori ; « Mes favoris » et « Lus » ignorent les années
+        const fav = card.classList.contains('fav'), lu = card.classList.contains('lu');
+        const dansVue = state.vue === 'favoris' ? fav : state.vue === 'lus' ? lu : (!fav && !lu);
+        const ok = (annee || state.vue !== 'tout') && dansVue && terms.every(t => card.dataset.hay.includes(t));
         if (ok) { retenues++; shown++; }
         card.style.display = (ok && deplie) ? '' : 'none';
       });
@@ -5643,11 +5650,12 @@
       ordre.forEach(sec => parent.insertBefore(sec, suite));
     }
     document.body.classList.toggle('empty', cherche && shown === 0);
-    document.body.classList.toggle('no-year-on', state.annees.size === 0 && !state.favoris);
-    document.body.classList.toggle('favoris', state.favoris);
+    document.body.classList.toggle('no-year-on', state.annees.size === 0 && state.vue === 'tout');
+    document.body.classList.toggle('vue-part', state.vue !== 'tout');
     const rb = document.getElementById('resbar');
-    if (cherche) rb.textContent = shown + (shown > 1 ? ' résultats' : ' résultat') + ' pour « ' + state.q.trim() + ' » — toutes surspécialités confondues';
-    else if (state.favoris) rb.textContent = shown ? shown + (shown > 1 ? ' favoris' : ' favori') + ' — toutes surspécialités et années confondues' : 'Aucun favori pour l’instant : touchez l’étoile à droite d’un article pour le garder sous la main.';
+    if (cherche) rb.textContent = shown + (shown > 1 ? ' résultats' : ' résultat') + ' pour « ' + state.q.trim() + ' »' + (state.vue === 'favoris' ? ' dans vos favoris' : state.vue === 'lus' ? ' dans vos articles lus' : ' — toutes surspécialités confondues');
+    else if (state.vue === 'favoris') rb.textContent = shown ? shown + (shown > 1 ? ' favoris' : ' favori') + ' — toutes surspécialités et années confondues' : 'Aucun favori pour l’instant : touchez l’étoile à droite d’un article pour le garder sous la main.';
+    else if (state.vue === 'lus') rb.textContent = shown ? shown + (shown > 1 ? ' articles lus' : ' article lu') + ' — toutes surspécialités et années confondues' : 'Aucun article coché lu pour l’instant : touchez le cercle à droite d’un article une fois lu.';
     else rb.textContent = '';
   }
   // ouverture / fermeture d'une surspécialité
@@ -5824,6 +5832,7 @@
       ouverts.clear();
       ouverts.add(cible.dataset.spec);
       memoriser();
+      choisirVue(cible.classList.contains('fav') ? 'favoris' : cible.classList.contains('lu') ? 'lus' : 'tout');
       applyFilters();
       if (!cible.classList.contains('exp')) cible.querySelector('.artrow')?.click();
       setTimeout(() => cible.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
@@ -5839,8 +5848,8 @@
     const lire = k => { try { const v = JSON.parse(localStorage.getItem(k) || '[]'); return new Set(Array.isArray(v) ? v : []); } catch (e) { return new Set(); } };
     const garder = (k, set) => { try { localStorage.setItem(k, JSON.stringify([...set])); } catch (e) {} };
     const favoris = lire('pc-favoris'), lus = lire('pc-lus');
-    const compteur = document.getElementById('nfav');
-    const compter = () => { if (compteur) compteur.textContent = favoris.size; };
+    const nfav = document.getElementById('nfav'), nlus = document.getElementById('nlus');
+    const compter = () => { if (nfav) nfav.textContent = favoris.size; if (nlus) nlus.textContent = lus.size; };
     document.querySelectorAll('article.card[data-spec]').forEach(card => {
       if (!card.id) return;
       const row = card.querySelector('.artrow');
@@ -5864,7 +5873,7 @@
         if (favoris.has(card.id)) favoris.delete(card.id); else favoris.add(card.id);
         card.classList.toggle('fav', favoris.has(card.id));
         garder('pc-favoris', favoris); nommer(); compter();
-        if (state.favoris) applyFilters();
+        applyFilters();   // l'article change de liste aussitôt
       });
       card.insertBefore(etoile, row);
       // la coche « lu » : c'est le lecteur qui décide, déplier une fiche ne marque rien
@@ -5884,8 +5893,8 @@
         const lu = !card.classList.contains('lu');
         if (lu) lus.add(card.id); else lus.delete(card.id);
         card.classList.toggle('lu', lu);
-        garder('pc-lus', lus); nommerCoche();
-        if (state.masquerLus) applyFilters();
+        garder('pc-lus', lus); nommerCoche(); compter();
+        applyFilters();   // l'article change de liste aussitôt
       });
       card.insertBefore(coche, row);
     });
@@ -5893,11 +5902,15 @@
     document.querySelectorAll('.chip[data-f="fav"], .chip[data-f="lus"]').forEach(chip => {
       chip.addEventListener('click', () => {
         const actif = chip.getAttribute('aria-pressed') === 'true';
-        chip.setAttribute('aria-pressed', actif ? 'false' : 'true');
-        if (chip.dataset.f === 'fav') state.favoris = !actif; else state.masquerLus = !actif;
+        choisirVue(actif ? 'tout' : (chip.dataset.f === 'fav' ? 'favoris' : 'lus'));
         applyFilters();
       });
     });
+    // au chargement : les cartes lues ou favorites quittent la liste principale ; un lien
+    // direct vers l'une d'elles ouvre la liste qui la contient
+    const cible = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (cible && cible.classList.contains('card')) choisirVue(cible.classList.contains('fav') ? 'favoris' : cible.classList.contains('lu') ? 'lus' : 'tout');
+    applyFilters();
   })();
 
   // ---------- encart « recevoir les sorties de la semaine » ----------

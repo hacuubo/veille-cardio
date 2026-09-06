@@ -495,22 +495,27 @@
   .card.exp .chev { transform: rotate(90deg); }
   /* ---------- favoris et articles lus (mémorisés sur l'appareil) ---------- */
   .card { position: relative; }
-  .artrow { padding-right: 50px; }
-  .fav-btn {
-    position: absolute; right: 4px; top: 2px; width: 42px; height: 40px;
+  .artrow { padding-right: 90px; }
+  .fav-btn, .lu-chk {
+    position: absolute; top: 2px; width: 42px; height: 40px;
     background: none; border: none; cursor: pointer; font-size: 19px; line-height: 40px;
     color: var(--text-muted); opacity: .55; padding: 0;
   }
+  .fav-btn { right: 2px; }
+  /* la coche « lu » : un cercle vide, plein une fois validé par le lecteur */
+  .lu-chk { right: 44px; opacity: .8; }
+  .lu-chk > span {
+    display: inline-block; width: 20px; height: 20px; border-radius: 50%; box-sizing: border-box;
+    border: 1.6px solid var(--text-muted); font-size: 13px; line-height: 17px; color: transparent; vertical-align: middle;
+  }
+  .card.lu .lu-chk { opacity: 1; }
+  .card.lu .lu-chk > span { background: var(--text-muted); border-color: var(--text-muted); color: #fff; }
+  .lu-chk:hover, .lu-chk:focus-visible { opacity: 1; outline: none; }
   .fav-btn:hover, .fav-btn:focus-visible { opacity: 1; outline: none; }
   .card.fav .fav-btn { color: #d99a00; opacity: 1; }
   .card.lu > .artrow .art-title { color: var(--text-muted); font-weight: 500; }
   .card.lu > .artrow .art-fr, .card.lu > .artrow .art-sub, .card.lu > .artrow > .dot { opacity: .55; }
   .card.lu > .artrow .art-new { opacity: .6; }
-  .lu-btn {
-    display: inline-block; margin: 10px 0 2px; background: none; border: 1px solid var(--border);
-    border-radius: 999px; padding: 4px 11px; font: inherit; font-size: 12px; color: var(--text-secondary); cursor: pointer;
-  }
-  .lu-btn:hover { background: var(--wash); }
   .chip.fav-chip[aria-pressed="true"] { border-color: #d99a00; }
   body.favoris .recent, body.favoris .abo, body.favoris .instal { display: none; }
   .card .body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .26s ease; }
@@ -536,8 +541,10 @@
   section.spec { margin-top: 26px; }
   .art-tags .b-txt { margin-left: 4px; }
   @media (max-width: 700px) {
-    .artrow { gap: 7px; padding: 6px 44px 6px 9px; }   /* place pour l'étoile des favoris à droite */
-    .fav-btn { right: 0; top: 0; width: 40px; }
+    .artrow { gap: 7px; padding: 6px 82px 6px 9px; }   /* place pour la coche « lu » et l'étoile à droite */
+    .fav-btn, .lu-chk { top: 0; width: 40px; }
+    .fav-btn { right: 0; }
+    .lu-chk { right: 40px; }
     .art-main { gap: 6px; }
     .art-title { font-size: 12.5px; }
     .art-tags .b-txt { display: none; }
@@ -635,8 +642,8 @@
     <div class="row">
       <span class="lab">Lecture</span>
       <button class="chip fav-chip" data-f="fav" aria-pressed="false" title="Les articles marqu&eacute;s d&rsquo;une &eacute;toile, toutes surspécialit&eacute;s et ann&eacute;es confondues">&#9733; Mes favoris &middot; <span id="nfav">0</span></button>
-      <button class="chip" data-f="lus" aria-pressed="false" title="Ne montrer que les articles dont la fiche n&rsquo;a pas encore &eacute;t&eacute; ouverte">Masquer les lus</button>
-      <span class="hint">l&rsquo;&eacute;toile et la lecture sont m&eacute;moris&eacute;es sur cet appareil</span>
+      <button class="chip" data-f="lus" aria-pressed="false" title="Ne montrer que les articles que vous n&rsquo;avez pas encore coch&eacute;s comme lus">Masquer les lus</button>
+      <span class="hint">la coche &laquo;&nbsp;lu&nbsp;&raquo; et l&rsquo;&eacute;toile sont m&eacute;moris&eacute;es sur cet appareil</span>
     </div>
   </div>
 
@@ -5860,24 +5867,27 @@
         if (state.favoris) applyFilters();
       });
       card.insertBefore(etoile, row);
-      // une fiche dépliée compte comme lue
-      const marquer = lu => {
+      // la coche « lu » : c'est le lecteur qui décide, déplier une fiche ne marque rien
+      const coche = document.createElement('button');
+      coche.type = 'button';
+      coche.className = 'lu-chk';
+      coche.innerHTML = '<span>\u2713</span>';
+      const nommerCoche = () => {
+        const lu = card.classList.contains('lu');
+        coche.setAttribute('aria-pressed', lu ? 'true' : 'false');
+        coche.title = lu ? 'Lu — toucher pour remettre en non lu' : 'Marquer comme lu';
+        coche.setAttribute('aria-label', coche.title);
+      };
+      nommerCoche();
+      coche.addEventListener('click', e => {
+        e.stopPropagation();
+        const lu = !card.classList.contains('lu');
         if (lu) lus.add(card.id); else lus.delete(card.id);
         card.classList.toggle('lu', lu);
-        garder('pc-lus', lus);
-        if (bouton) bouton.textContent = lu ? 'Marquer comme non lu' : 'Marquer comme lu';
-      };
-      const bodyin = card.querySelector('.bodyin');
-      let bouton = null;
-      if (bodyin) {
-        bouton = document.createElement('button');
-        bouton.type = 'button';
-        bouton.className = 'lu-btn';
-        bouton.textContent = card.classList.contains('lu') ? 'Marquer comme non lu' : 'Marquer comme lu';
-        bouton.addEventListener('click', e => { e.stopPropagation(); marquer(!card.classList.contains('lu')); });
-        bodyin.appendChild(bouton);
-      }
-      row.addEventListener('click', () => { if (card.classList.contains('exp') && !card.classList.contains('lu')) marquer(true); });
+        garder('pc-lus', lus); nommerCoche();
+        if (state.masquerLus) applyFilters();
+      });
+      card.insertBefore(coche, row);
     });
     compter();
     document.querySelectorAll('.chip[data-f="fav"], .chip[data-f="lus"]').forEach(chip => {

@@ -218,8 +218,9 @@ Autres règles de mise en page :
 - **Favoris et articles lus** (ajoutés le 06/09/2026) : construits par le script, mémorisés **sur
   l'appareil seulement** (`localStorage`, clés `pc-favoris` et `pc-lus`, listes d'ancres de cartes — la
   même ancre que les liens du bulletin, donc stable). Une étoile (`button.fav-btn`, hors du bouton de
-  ligne) à droite de chaque ligne ; une fiche dépliée marque la carte `lu` (titre et accroche grisés), un
-  bouton « Marquer comme non lu » en bas de la fiche l'annule. Deux puces dans la rangée « Lecture » des
+  ligne) à droite de chaque ligne, précédée d'une **coche « lu »** (`button.lu-chk`, cercle vide puis plein) :
+  c'est le lecteur qui décide, **déplier une fiche ne marque rien** (décision du 06/09/2026) ; la carte
+  cochée passe en `lu` (titre et accroche grisés), un second appui l'annule. Deux puces dans la rangée « Lecture » des
   filtres : « ★ Mes favoris · N » (n'affiche que les favoris, **toutes surspécialités et années
   confondues**, ouvre tous les tiroirs, masque les encarts comme une recherche) et « Masquer les lus ».
   Pas de recherche dans les favoris (décision du 06/09/2026). Rien ne quitte l'appareil, aucun compte.

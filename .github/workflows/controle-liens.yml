@@ -1,0 +1,38 @@
+# Contrôle mensuel des liens d'index.html (articles originaux, analyses, Radar).
+# Le 1er de chaque mois : outils/controle-liens.mjs sonde chaque adresse ; s'il
+# trouve des liens morts (404, 410, domaine disparu), il ouvre une issue GitHub
+# « Liens morts » avec la liste, que GitHub notifie au propriétaire. Les refus
+# d'éditeurs (403, 429) ne sont pas des liens morts et n'ouvrent rien.
+
+name: Contrôle des liens
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  controler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Sonder les liens
+        id: liens
+        continue-on-error: true
+        run: node outils/controle-liens.mjs --rapport=rapport-liens.md
+
+      - name: Ouvrir une issue s'il y a des liens morts
+        if: steps.liens.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create liens --color d03b3b --description "Liens morts relevés par le contrôle mensuel" --force
+          gh issue create --label liens --title "Liens morts — contrôle du $(date +%d/%m/%Y)" --body-file rapport-liens.md
+          echo "::error::Des liens sont morts : une issue a été ouverte"
+          exit 1

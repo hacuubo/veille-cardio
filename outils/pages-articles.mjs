@@ -49,7 +49,7 @@ const MOIS = { janvier: 1, février: 2, fevrier: 2, mars: 3, avril: 4, mai: 5, j
   septembre: 9, octobre: 10, novembre: 11, décembre: 12, decembre: 12 };
 
 /* ------------------------------------------------------------ utilitaires */
-const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', thinsp: ' ', ensp: ' ', emsp: ' ',
+const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0', thinsp: '\u2009', ensp: ' ', emsp: ' ',
   eacute: 'é', egrave: 'è', ecirc: 'ê', euml: 'ë', agrave: 'à', acirc: 'â', ccedil: 'ç', ugrave: 'ù', ucirc: 'û', uuml: 'ü',
   icirc: 'î', iuml: 'ï', ocirc: 'ô', ouml: 'ö', Eacute: 'É', Egrave: 'È', Agrave: 'À', Ccedil: 'Ç', laquo: '«', raquo: '»',
   middot: '·', hellip: '…', mdash: '—', ndash: '–', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“', deg: '°', times: '×',
@@ -60,7 +60,7 @@ const decoder = h => (h || '')
   .replace(/&([a-zA-Z0-9]+);/g, (m, n) => ENT[n] ?? m);
 const texte = h => decoder((h || '').replace(/<[^>]*>/g, ' ')).replace(/[ \t\r\n]+/g, ' ').trim();
 const echapper = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const attr = t => echapper(t).replace(/ /g, '&nbsp;');
+const attr = t => echapper(t);
 // même règle d'ancre que le script d'index.html (norm + slug) et outils/bulletin.mjs
 const slug = t => texte(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64).replace(/-+$/, '');

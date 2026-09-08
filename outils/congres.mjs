@@ -17,6 +17,14 @@
  *   PROCHAIN <sigle> | <ville> | <debut> → <fin> | niveau <n>   (les 6 à venir)
  *   A_VERIFIER <consigne>                      dates manquantes, non confirmées,
  *                                              ou édition suivante à chercher
+ *   REPORTE <sigle> : … jusqu'au <date>        vérification déjà faite sans résultat,
+ *                                              à refaire seulement à cette date
+ *   A_FAIRE <consigne>                         entretien ponctuel (janvier)
+ *
+ * Espacement des vérifications : quand la routine cherche des dates et ne trouve
+ * rien, elle écrit "prochaine_verification": "AAAA-MM-JJ" (aujourd'hui + 14 jours)
+ * sur l'entrée ; jusqu'à cette date la ligne sort en REPORTE et n'est pas à
+ * retraiter. Le champ se retire quand les dates sont trouvées et confirmées.
  * --------------------------------------------------------------------------- */
 
 import { readFileSync } from 'node:fs';
@@ -63,10 +71,14 @@ const prochains = dates.filter(c => c.debut > aujourdhui).sort((a, b) => a.debut
 prochains.forEach(c => console.log(`PROCHAIN ${c.sigle} | ${c.ville || '?'} | ${c.debut} → ${c.fin} | niveau ${c.niveau}${c.confirme ? '' : ' | À CONFIRMER'}`));
 
 /* ---- ce qu'il reste à vérifier ---- */
-const aVerifier = [];
+const aVerifier = [], reportes = [], aFaire = [];
+// une vérification faite récemment sans résultat n'est pas à refaire tous les matins
+const reporte = c => c.prochaine_verification && c.prochaine_verification > aujourdhui;
+const noter = (c, texte) => (reporte(c) ? reportes : aVerifier)
+  .push(reporte(c) ? `${c.sigle} : ${texte} — revérifier le ${c.prochaine_verification}` : `${c.sigle} : ${texte}`);
 for (const c of congres) {
-  if (!c.debut || !c.fin) aVerifier.push(`${c.sigle} : dates inconnues — les relever (${c.source})`);
-  else if (!c.confirme && c.debut > aujourdhui) aVerifier.push(`${c.sigle} : dates non confirmées sur le site officiel (${c.source})`);
+  if (!c.debut || !c.fin) noter(c, `dates inconnues — les relever (${c.source})`);
+  else if (!c.confirme && c.debut > aujourdhui) noter(c, `dates non confirmées sur le site officiel (${c.source})`);
 }
 // édition suivante à chercher : la dernière édition connue d'une famille est passée
 const familles = new Map();
@@ -77,10 +89,17 @@ for (const c of congres) {
 for (const [fam, c] of familles) {
   if (c.fin && c.fin < aujourdhui) {
     const annee = Number(c.fin.slice(0, 4)) + 1;
-    aVerifier.push(`famille ${fam} : chercher les dates de l'édition ${annee} (site officiel) et l'ajouter à outils/congres.json`);
+    const texte = `chercher les dates de l'édition ${annee} (site officiel) et l'ajouter à outils/congres.json`;
+    if (reporte(c)) reportes.push(`famille ${fam} : ${texte} — revérifier le ${c.prochaine_verification}`);
+    else aVerifier.push(`famille ${fam} : ${texte}`);
   }
 }
 if (jour === 'samedi' && aujourdhui.slice(5, 7) === '01' && Number(aujourdhui.slice(8, 10)) <= 7) {
   aVerifier.push('premier samedi de janvier : revérifier toutes les dates de l\'année sur les sites officiels');
+  // la page n'affiche que l'année en cours et la précédente : le reste s'enlève du HTML
+  const annee = Number(aujourdhui.slice(0, 4));
+  aFaire.push(`premier samedi de janvier : retirer d'index.html les groupes d'année antérieurs à ${annee - 1} (le script les masque déjà, les retirer allège la page) ; créer le groupe ${annee} d'une surspécialité au moment d'y insérer sa première carte`);
 }
 aVerifier.forEach(v => console.log('A_VERIFIER ' + v));
+reportes.forEach(v => console.log('REPORTE ' + v));
+aFaire.forEach(v => console.log('A_FAIRE ' + v));

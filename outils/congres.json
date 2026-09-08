@@ -55,7 +55,7 @@
       "ville": "Lisbonne", "debut": "2027-04-15", "fin": "2027-04-17", "confirme": true,
       "source": "https://www.escardio.org/events/congresses/esc-preventive-cardiology/" },
     { "famille": "cath", "sigle": "Care of the Athletic Heart 2027", "nom": "Care of the Athletic Heart 2027 (ACC)", "niveau": 2,
-      "ville": null, "debut": null, "fin": null, "confirme": false,
-      "source": "acc.org — dates à relever" }
+      "ville": null, "debut": null, "fin": null, "confirme": false, "prochaine_verification": "2026-09-22",
+      "source": "https://www.acc.org/education-and-meetings/meetings" }
   ]
 }

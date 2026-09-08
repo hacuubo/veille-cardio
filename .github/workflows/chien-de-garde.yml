@@ -1,0 +1,51 @@
+# Chien de garde : chaque matin, après l'heure d'envoi, vérifie indépendamment de
+# la routine que ce qui devait être publié l'a été (courriel du samedi, récapitulatif
+# de congrès, mise à jour quotidienne pendant un congrès). Voir outils/chien-de-garde.mjs.
+#
+# En cas de manque : e-mail d'alerte au propriétaire (secrets Gmail du bulletin,
+# GMAIL_ADRESSE / GMAIL_MOT_DE_PASSE_APPLICATION) et échec du workflow, que GitHub
+# notifie aussi. Sans les secrets, seule la notification GitHub reste.
+
+name: Chien de garde
+
+on:
+  schedule:
+    - cron: '0 8 * * *'      # 10:00 à Paris l'été, 09:00 l'hiver — après l'envoi de 08:00
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Date à vérifier (AAAA-MM-JJ, vide = aujourd'hui)"
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt (avec l'historique du jour)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+
+      - name: Vérifier ce qui devait être publié
+        id: garde
+        continue-on-error: true
+        env:
+          DATE: ${{ github.event.inputs.date }}
+        run: |
+          if [ -n "$DATE" ]; then node outils/chien-de-garde.mjs --date="$DATE" | tee verdict.txt
+          else node outils/chien-de-garde.mjs | tee verdict.txt; fi
+          exit ${PIPESTATUS[0]}
+
+      - name: Alerter
+        if: steps.garde.outcome == 'failure'
+        env:
+          GMAIL_ADRESSE: ${{ secrets.GMAIL_ADRESSE }}
+          GMAIL_MOT_DE_PASSE_APPLICATION: ${{ secrets.GMAIL_MOT_DE_PASSE_APPLICATION }}
+        run: |
+          python3 outils/alerte-courriel.py --sujet "ALERTE Pause Cardio — publication manquante" --corps verdict.txt
+          echo "::error::Publication manquante — voir verdict ci-dessus"
+          exit 1

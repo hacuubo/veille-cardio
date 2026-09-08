@@ -333,8 +333,8 @@ Règles de classement qui évitent les oublis constatés :
   - Les congrès de **niveau 2** (TCT, EuroPCR, HRS, EHRA, HFA, sessions de cardiologie du sport)
     n'ont pas de mode propre : leurs sorties sont reprises par la veille du samedi.
 - **Deux commits, pas un** (décision du 08/09/2026), dans tout mode qui publie : d'abord le site
-  (`index.html`, `outils/congres.json`, `journal/`), poussé aussitôt ; puis le bulletin (`bulletin/`),
-  poussé à son tour. Si la fabrication du bulletin échoue, le site est déjà en ligne.
+  (`index.html`, `fiche/`, `sitemap.xml`, `outils/congres.json`, `journal/`), poussé aussitôt ; puis le
+  bulletin (`bulletin/`), poussé à son tour. Si la fabrication du bulletin échoue, le site est déjà en ligne.
 - **Journal de veille** (`journal/AAAA-MM-JJ.md`, depuis le 08/09/2026) : chaque jour qui modifie le
   site, la routine écrit ce qu'elle a examiné, retenu et écarté, avec le motif. `node outils/moisson.mjs
   --json=F` puis `node outils/journal.mjs --squelette --moisson=F` dressent la liste des candidats ;
@@ -348,6 +348,18 @@ Règles de classement qui évitent les oublis constatés :
   « publications attendues » du Radar (`RADAR?`). Une ligne `DEFINITIF?` se traite en **mettant la
   carte à jour** (`outils/BRIEF-REVISION.md`, chaîne qualité), jamais en créant une seconde carte ;
   une ligne `RADAR?` retire l'attente du Radar et traite l'article comme candidat.
+- **Une page par article pour les moteurs de recherche** (`fiche/<ancre>/index.html`, depuis le
+  08/09/2026) : `node outils/pages-articles.mjs` fabrique, à partir des cartes d'`index.html`, une page
+  statique par article (titre d'origine, accroche, résumé, résultat principal, « En pratique », fiche
+  complète, liens ; description, canonical, Open Graph et JSON-LD pour Google) et tient le bloc
+  `<!--FICHES:DEBUT-->…<!--FICHES:FIN-->` de `sitemap.xml`. Ces pages ne servent qu'à être trouvées :
+  chacune renvoie vers le site principal, à la carte (`https://pausecardio.fr/#ancre`), et **le bouton
+  « Partager » du site continue de pointer vers le site principal, pas vers la page par article**
+  (décision du 08/09/2026). L'ancre est la même que celle du script d'`index.html` et de
+  `outils/bulletin.mjs` : trois endroits à ne jamais changer isolément. **La routine lance le script
+  après toute modification d'`index.html`, avant son premier commit** (`fiche/` et `sitemap.xml`
+  partent avec le site) ; le workflow `.github/workflows/fiches.yml` rattrape un oubli en régénérant et
+  poussant lui-même. Rien ne change sur la page principale. `--verifier` dit si `fiche/` est à jour.
 - **Chien de garde** (`.github/workflows/chien-de-garde.yml`, `outils/chien-de-garde.mjs`, depuis le
   08/09/2026) : indépendant de la routine, il vérifie chaque matin à 08:00 UTC que ce qui devait être
   publié l'a été — le courriel du samedi ou du congrès sur `main`, un commit du jour pendant un
@@ -500,6 +512,7 @@ sessions Sports & Exercise Cardiology (EAPC) et Care of the Athletic Heart.
 - 08/09/2026 — fiabilité et entretien : chien de garde quotidien, journal de veille dans `journal/`,
   deux commits le samedi, rapprochement des publications définitives et attendues dans la moisson,
   report des vérifications de calendrier, contrôle mensuel des liens, années calculées par le script
-  (passage à 2027 sans intervention), bouton « Partager » sur chaque fiche.
+  (passage à 2027 sans intervention), bouton « Partager » sur chaque fiche, une page statique par
+  article dans `fiche/` pour les moteurs de recherche.
 - Autres projets de Robin sur ce compte GitHub : `site-cardios` (site vitrine du cabinet, déployé sur
   Netlify) et `planning-indispo` (application d'indisponibilités des cardiologues, également sur Netlify).

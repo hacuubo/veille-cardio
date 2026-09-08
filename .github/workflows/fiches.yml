@@ -1,0 +1,38 @@
+# Pages par article (fiche/<ancre>/) : normalement régénérées par la routine avant
+# son premier commit. Ce workflow rattrape un oubli : à chaque modification
+# d'index.html sur main, il vérifie que fiche/ et sitemap.xml sont à jour et, sinon,
+# les régénère et les pousse.
+
+name: Pages par article
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  regenerer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Vérifier fiche/ et sitemap.xml
+        id: verif
+        continue-on-error: true
+        run: node outils/pages-articles.mjs --verifier
+
+      - name: Régénérer et pousser si nécessaire
+        if: steps.verif.outcome == 'failure'
+        run: |
+          node outils/pages-articles.mjs
+          git config user.name "pause-cardio-pages"
+          git config user.email "pages@users.noreply.github.com"
+          git add fiche sitemap.xml
+          git commit -m "Pages par article regenerees depuis index.html" || exit 0
+          git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)

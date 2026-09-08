@@ -396,6 +396,10 @@
   .btn:hover { background: var(--wash); }
   .btn.primary { background: var(--text-primary); color: var(--surface-1); border-color: var(--text-primary); }
   .btn.ghost { border-style: dashed; color: var(--text-muted); cursor: default; }
+  .btn.partage .ico { width: 15px; height: 15px; }
+  /* message bref en bas de l'écran (« Lien copié ») */
+  #toast { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 8px); background: var(--text-primary); color: var(--surface-1); padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 60; }
+  #toast.on { opacity: 1; transform: translate(-50%, 0); }
 
   .fiche { display: none; margin-top: 14px; border-top: 1px solid var(--grid); padding-top: 14px; }
   .card.open .fiche { display: block; }
@@ -5344,6 +5348,34 @@
     btn.innerHTML = card.classList.contains('open') ? '&#128196; Fermer la fiche' : '&#128196; Fiche de lecture';
   }
   function norm(s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+  // ---------- partager une fiche : titre, accroche et lien direct vers l'article ----------
+  // Sur téléphone, la feuille de partage du système (WhatsApp, SMS, mail…) ; ailleurs,
+  // le lien est copié. L'adresse est toujours celle du site, quelle que soit la page
+  // d'où l'on partage — la même que dans les courriels du bulletin.
+  const SITE_URL = 'https://pausecardio.fr/';
+  function texteDe(html) { const t = document.createElement('textarea'); t.innerHTML = html || ''; return t.value.replace(/\u00a0/g, ' '); }
+  function signaler(message) {
+    let t = document.getElementById('toast');
+    if (!t) { t = document.createElement('div'); t.id = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+    t.textContent = message;
+    t.classList.add('on');
+    clearTimeout(signaler.h);
+    signaler.h = setTimeout(() => t.classList.remove('on'), 2200);
+  }
+  function partager(card) {
+    const h3 = card.querySelector('h3');
+    const titre = h3 ? h3.textContent.trim() : 'Pause Cardio';
+    const accroche = texteDe(card.dataset.fr);
+    const url = SITE_URL + (card.id ? '#' + card.id : '');
+    const texte = (accroche ? accroche + ' \u2014 ' : '') + 'Pause Cardio';
+    if (navigator.share) {
+      navigator.share({ title: titre, text: texte, url }).catch(() => { /* partage annulé */ });
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => signaler('Lien copié'), () => window.prompt('Copiez ce lien :', url));
+    } else {
+      window.prompt('Copiez ce lien :', url);
+    }
+  }
   const SPECS = {
     rythmo: ['--series-1', 'Rythmologie'],
     interv: ['--series-2', 'Interventionnel & structurel'],
@@ -5355,6 +5387,36 @@
     sport:  ['--series-4', 'Cardiologie du sport · CFX/VO₂ max'],
     onco:   ['--series-9', 'Onco-cardiologie']
   };
+  // ---------- années affichées : l'année en cours et la précédente, rien d'autre ----------
+  // Les puces d'année se fabriquent à partir de la date du jour ; les cartes plus
+  // anciennes que l'an dernier disparaissent purement et simplement (décision du
+  // 08/09/2026). Au changement d'année il n'y a donc rien à modifier dans la page :
+  // la routine retire seulement les vieux groupes du HTML pour l'alléger.
+  const ANNEE = Number(new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris', year: 'numeric' }).format(new Date()));
+  const ANNEES = [String(ANNEE), String(ANNEE - 1)];
+  (function () {
+    document.querySelectorAll('article.card[data-spec]').forEach(c => {
+      if (c.dataset.year && !ANNEES.includes(c.dataset.year)) c.remove();
+    });
+    document.querySelectorAll('.year-h').forEach(y => {
+      if (y.dataset.year && !ANNEES.includes(y.dataset.year)) { y.remove(); return; }
+      y.classList.toggle('current', y.dataset.year === ANNEES[0]);
+    });
+    const modele = document.querySelector('.chip.yr');
+    if (modele) {
+      const rangee = modele.parentNode;
+      const hint = rangee.querySelector('.hint');
+      rangee.querySelectorAll('.chip.yr').forEach(c => c.remove());
+      ANNEES.forEach((a, i) => {
+        const b = modele.cloneNode(false);
+        b.dataset.v = a;
+        b.textContent = a;
+        b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+        rangee.insertBefore(b, hint);
+      });
+      if (hint) hint.textContent = 'cochez ' + ANNEES[1] + ' pour afficher aussi les sorties de l\u2019an dernier';
+    }
+  })();
   // une sortie est « nouvelle » pendant une semaine après sa PARUTION ;
   // la date est lue dans la ligne .meta (« JAMA · 5 août 2026 · … »).
   // Sans jour précis dans la ligne, pas de pastille : on ne devine pas.
@@ -5471,6 +5533,20 @@
       }
     }
 
+    // bouton « Partager » en fin de rangée d'actions, sur chaque fiche
+    const actions = bodyin.querySelector('.actions');
+    if (actions) {
+      const part = document.createElement('button');
+      part.type = 'button';
+      part.className = 'btn partage';
+      part.title = 'Envoyer cette fiche \u00e0 un confr\u00e8re';
+      part.innerHTML = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
+        + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/>'
+        + '<path d="M8 11H6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-2"/></svg>Partager';
+      part.addEventListener('click', () => partager(card));
+      actions.appendChild(part);
+    }
+
     const row = document.createElement('button');
     row.type = 'button';
     row.className = 'artrow';
@@ -5580,7 +5656,7 @@
   // le tri se fait par les tiroirs de surspécialité : ne restent que les années et la recherche
   // trois listes exclusives (décision du 06/09/2026) : « tout » = ni lu ni favori,
   // « favoris » et « lus » = uniquement ceux-là, toutes surspécialités et années confondues
-  const state = { annees: new Set(['2026']), q: '', vue: 'tout' };
+  const state = { annees: new Set([ANNEES[0]]), q: '', vue: 'tout' };
   function choisirVue(vue) {
     state.vue = vue;
     document.querySelectorAll('.chip[data-f="fav"], .chip[data-f="lus"]').forEach(c =>

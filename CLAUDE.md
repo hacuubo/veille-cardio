@@ -47,8 +47,13 @@ un article referme celui qui était déplié.
 - Années : deux puces — **seule l'année en cours est cochée par défaut** (décision du 29/08/2026),
   le lecteur coche 2025 s'il veut l'an dernier (ce ne sont pas des boutons exclusifs). Si les deux sont décochées, la page affiche le
   message « Aucune année sélectionnée ». Les puces et les en-têtes d'année ne portent que le millésime
-  (pas de mention « en cours »). Au passage à 2027, ajouter la puce de l'année en cours et retirer la
-  plus ancienne.
+  (pas de mention « en cours »). **Depuis le 08/09/2026 les deux puces sont fabriquées par le script à
+  partir de la date du jour** (année en cours, année précédente ; constantes `ANNEE` et `ANNEES`), et
+  les cartes plus anciennes que l'an dernier sont **retirées de la page au chargement**, purement et
+  simplement (compteurs, bandeau et favoris compris). Au changement d'année il n'y a donc rien à
+  modifier dans le HTML : le premier samedi de janvier, la routine retire seulement les vieux groupes
+  d'année du HTML pour alléger la page (ligne `A_FAIRE` de `congres.mjs`) et crée le groupe de la
+  nouvelle année dans une surspécialité au moment d'y insérer sa première carte.
 - Niveaux (`data-lvl`) : `crit` / `warn` / `watch`. Depuis le 29/08/2026 ils **ne s'affichent plus sur la
   plateforme** (badges masqués en CSS) mais restent obligatoires sur chaque carte : le bulletin et le
   courriel s'en servent pour leur tri, et ils gardent le classement éditorial. La seule mise en avant
@@ -227,6 +232,11 @@ Autres règles de mise en page :
   tiroirs ouverts, encarts masqués comme lors d'une recherche (`state.vue` : `tout` / `favoris` / `lus`,
   `choisirVue()`). Un lien direct vers une carte (bulletin, bandeau) bascule sur la liste qui la contient.
   Pas de recherche dédiée aux favoris. Rien ne quitte l'appareil, aucun compte.
+- **Bouton « Partager »** (ajouté le 08/09/2026) : posé par le script en fin de rangée `.actions` de
+  chaque fiche, jamais écrit dans le HTML des cartes. Sur téléphone il ouvre la feuille de partage du
+  système (WhatsApp, SMS, mail) avec le titre d'origine, l'accroche française et le lien direct
+  `https://pausecardio.fr/#ancre` (constante `SITE_URL` du script, la même adresse que dans les
+  courriels) ; ailleurs il copie le lien et affiche « Lien copié » (`#toast`).
 - **Tiroirs de surspécialité** : la tête de section (`.spec-h`) est cliquable (chevron à droite, `role`
   et `aria-expanded` posés par le script) ; l'état ouvert est porté par `section.spec.ouvert` et par
   l'ensemble `ouverts` du script. Trois règles à ne pas casser : les tiroirs ouverts sont **mémorisés
@@ -296,8 +306,8 @@ Règles de classement qui évitent les oublis constatés :
 
 ## Mise à jour
 
-- Automatique : la **routine Claude Code « Veille cardio »** (modèle **Opus 5**) s'exécute **tous les
-  jours à 05:00 UTC**. **Depuis le 05/09/2026 elle tourne dans une session persistante qui a le dépôt
+- Automatique : la **routine Claude Code « Veille cardio »** s'exécute **tous les jours à 05:00 UTC**
+  (elle ne fixe pas de modèle : elle tourne avec celui de la session liée). **Depuis le 05/09/2026 elle tourne dans une session persistante qui a le dépôt
   attaché et `main` comme branche de sortie** (session « Veille cardio — session de la routine
   quotidienne ») : la routine créée le 29/08 n'avait aucun dépôt attaché et n'a jamais pu pousser —
   d'où le samedi 05/09 sans courriel. Si on recrée la routine, il faut la lier à une session qui
@@ -322,12 +332,41 @@ Règles de classement qui évitent les oublis constatés :
   - `MODE RIEN` → elle termine sans rien modifier.
   - Les congrès de **niveau 2** (TCT, EuroPCR, HRS, EHRA, HFA, sessions de cardiologie du sport)
     n'ont pas de mode propre : leurs sorties sont reprises par la veille du samedi.
+- **Deux commits, pas un** (décision du 08/09/2026), dans tout mode qui publie : d'abord le site
+  (`index.html`, `outils/congres.json`, `journal/`), poussé aussitôt ; puis le bulletin (`bulletin/`),
+  poussé à son tour. Si la fabrication du bulletin échoue, le site est déjà en ligne.
+- **Journal de veille** (`journal/AAAA-MM-JJ.md`, depuis le 08/09/2026) : chaque jour qui modifie le
+  site, la routine écrit ce qu'elle a examiné, retenu et écarté, avec le motif. `node outils/moisson.mjs
+  --json=F` puis `node outils/journal.mjs --squelette --moisson=F` dressent la liste des candidats ;
+  la routine remplit Verdict et Motif de chaque ligne ; `node outils/journal.mjs --cloture` ajoute
+  les cartes du jour, le bilan du contrôle qualité et les fichiers du bulletin, et **refuse tant qu'un
+  candidat n'a pas de verdict**. Le journal part dans le premier commit. Le dépôt étant public, il ne
+  contient que des titres, des liens PubMed et des décisions éditoriales. Voir `journal/README.md`.
+- **Publications définitives et publications attendues** : en fin de rapport, `moisson.mjs` rapproche
+  les sorties PubMed des cartes présentées en congrès qui n'ont pas encore de lien vers l'article
+  (`DEFINITIF?`, avec une recherche ciblée par sigle d'essai, hors fenêtre de dates) et des lignes
+  « publications attendues » du Radar (`RADAR?`). Une ligne `DEFINITIF?` se traite en **mettant la
+  carte à jour** (`outils/BRIEF-REVISION.md`, chaîne qualité), jamais en créant une seconde carte ;
+  une ligne `RADAR?` retire l'attente du Radar et traite l'article comme candidat.
+- **Chien de garde** (`.github/workflows/chien-de-garde.yml`, `outils/chien-de-garde.mjs`, depuis le
+  08/09/2026) : indépendant de la routine, il vérifie chaque matin à 08:00 UTC que ce qui devait être
+  publié l'a été — le courriel du samedi ou du congrès sur `main`, un commit du jour pendant un
+  congrès. Sinon, e-mail d'alerte au propriétaire (secrets Gmail du bulletin) et échec du workflow,
+  notifié par GitHub. C'est ce qui aurait signalé le samedi 05/09 sans courriel.
+- **Contrôle mensuel des liens** (`.github/workflows/controle-liens.yml`, `outils/controle-liens.mjs`) :
+  le 1er du mois, chaque lien des cartes et du Radar est sondé ; les liens morts (404, 410, domaine
+  disparu) ouvrent une issue GitHub « Liens morts » avec la liste. Les refus d'éditeurs (403, 429)
+  sont classés « incertains » et n'ouvrent rien. Corriger un lien mort = remplacer l'adresse dans la
+  carte, sans toucher au texte.
 - **Entretien du calendrier, pour que ça roule d'une année sur l'autre** : `congres.mjs` imprime des
   lignes `A_VERIFIER` — dates inconnues, dates non confirmées, ou édition suivante à chercher quand la
   dernière édition connue d'une famille est passée, et revérification générale le premier samedi de
   janvier. La routine traite chaque ligne le jour même : elle cherche les dates **sur le site officiel
   du congrès** (champ `source`), les inscrit dans `outils/congres.json` avec `"confirme": true`, et
-  laisse `null` ce qu'elle ne trouve pas — jamais une date inventée.
+  laisse `null` ce qu'elle ne trouve pas — jamais une date inventée. **Quand elle ne trouve rien, elle
+  écrit `"prochaine_verification": "AAAA-MM-JJ"` (aujourd'hui + 14 jours) sur l'entrée** : jusqu'à
+  cette date la ligne sort en `REPORTE` et n'est pas à retraiter (depuis le 08/09/2026, pour ne pas
+  refaire la même recherche tous les matins). Le champ se retire quand les dates sont confirmées.
 - **Contexte de congrès sur les cartes** : quand une sortie est ajoutée pendant ou pour un congrès,
   la ligne `.meta` se termine par le sigle du congrès — « <b>NEJM</b> · 28 août 2026 · Essai
   randomisé · **ESC 2026** » — pour la distinguer des sorties ordinaires.
@@ -458,5 +497,9 @@ sessions Sports & Exercise Cardiology (EAPC) et Care of the Athletic Heart.
   2025–2026 sur les mêmes critères (essais pivots, recommandations HFA/AHA/ACC/ICOS, méta-analyses),
   moisson PubMed élargie aux revues d'oncologie (JACC CardioOncology, Lancet Oncology, JCO, JAMA Oncology,
   Annals of Oncology), prise en compte dans le bulletin et le courriel.
+- 08/09/2026 — fiabilité et entretien : chien de garde quotidien, journal de veille dans `journal/`,
+  deux commits le samedi, rapprochement des publications définitives et attendues dans la moisson,
+  report des vérifications de calendrier, contrôle mensuel des liens, années calculées par le script
+  (passage à 2027 sans intervention), bouton « Partager » sur chaque fiche.
 - Autres projets de Robin sur ce compte GitHub : `site-cardios` (site vitrine du cabinet, déployé sur
   Netlify) et `planning-indispo` (application d'indisponibilités des cardiologues, également sur Netlify).

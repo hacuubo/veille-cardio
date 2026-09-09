@@ -209,7 +209,9 @@ ${ficheHtml}
 
 /* --------------------------------------------------------------- écriture */
 const attendu = new Map(cartes.map(c => [c.ancre, page(c)]));
-const urls = cartes.map(c => `  <url>\n    <loc>${SITE}fiche/${c.ancre}/</loc>\n    <lastmod>${c.ajout || c.paru || aujourdhui}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`);
+// lastmod : la date d'ajout, sinon la date de parution ; jamais la date du jour, qui
+// changerait le sitemap tous les matins sans raison
+const urls = cartes.map(c => `  <url>\n    <loc>${SITE}fiche/${c.ancre}/</loc>\n${(c.ajout || c.paru) ? `    <lastmod>${c.ajout || c.paru}</lastmod>\n` : ''}    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`);
 const SITEMAP = join(RACINE, 'sitemap.xml');
 let sitemap = existsSync(SITEMAP) ? readFileSync(SITEMAP, 'utf8') : '';
 const bloc = `<!--FICHES:DEBUT-->\n${urls.join('\n')}\n  <!--FICHES:FIN-->`;

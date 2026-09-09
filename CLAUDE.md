@@ -59,8 +59,8 @@ un article referme celui qui était déplié.
   courriel s'en servent pour leur tri, et ils gardent le classement éditorial. La seule mise en avant
   visuelle est réservée aux **recommandations** : le script pose la classe `reco` (fond rosé) sur toute
   carte dont le `span.type` contient « Recommandation ». La pastille verte « nouveau » est conservée :
-  depuis le 01/09/2026 elle suit la **date de parution** lue dans la ligne `.meta` (7 jours), et non
-  plus la date d'ajout.
+  depuis le 09/09/2026 elle marque les cartes du **dernier courriel envoyé** (`bulletin/semaine.json`),
+  et non plus une fenêtre glissante de 7 jours (règle gardée en secours seulement).
 - Chaque carte porte `data-kw` : mots-clés **bilingues FR + EN** avec acronymes (FA/AF, CMH/HCM, IC/HF…),
   qui alimentent la barre de recherche.
 
@@ -166,14 +166,19 @@ Autres règles de mise en page :
   `span#maj-ligne` n'est qu'un texte de secours) ; le liséré rouge `.brand-rule` ; puis la
   seule ligne de descriptif (la même phrase que sur l'écran d'ouverture). Pas de tuiles de statistiques.
 - Sous le descriptif viennent **l'encart d'inscription replié**, la ligne repliée **« Ajouter l'appli
-  Pause Cardio »**, puis le bandeau **« Cette semaine »** (construit par le script : **toutes** les cartes **parues** depuis moins de 7 jours —
-  date de parution de la ligne `.meta` —, triées de la plus récente à la plus ancienne ; à défaut,
-  les dernières parutions). Il est **replié par défaut** — une seule ligne
-  « Cette semaine · N sorties · semaine 36 · 2026 » — le **numéro de semaine calendaire** (ISO) plutôt
-  qu'une date, les sorties ne paraissant pas un jour précis (décision du 02/09/2026) — avec un
-  chevron ; un clic déplie la liste, un second la replie. Pastille « nouveau » et bandeau se recalculent tout seuls à chaque chargement : la routine
-  n'a qu'à écrire des dates de parution justes dans `.meta`, rien d'autre à entretenir. Les lignes dépliées sont cliquables : elles ouvrent le tiroir de l'article et le déplient.
-  **Puis** les filtres — années et recherche. Rien d'autre, et pas de tuiles de statistiques.
+  Pause Cardio »**, puis le bandeau **« Cette semaine »**. **Depuis le 09/09/2026 il rappelle exactement
+  la liste du dernier courriel envoyé** : `outils/bulletin.mjs` écrit `bulletin/semaine.json` (sujet,
+  lundi de la semaine, ancres des articles dans l'ordre du courriel) chaque fois qu'un courriel part
+  (`--rappel` le samedi, `--congres` pour un récapitulatif ; jamais les matins de congrès), et le
+  script de la page le lit. Le bandeau change donc le samedi, après la routine, et reste identique
+  toute la semaine — **pas de semaine glissante**. Titre « Cette semaine · 35 sorties · semaine du
+  lundi 31 août », « Semaine calme · rappel · … » ou « Récapitulatif ESC 2026 · … ». La **pastille
+  verte « nouveau » suit la même liste**. En secours seulement (page ouverte en local, fichier
+  illisible), la règle précédente reste : cartes parues depuis moins de 7 jours d'après la ligne `.meta`.
+  `node outils/bulletin.mjs --semaine-seule` réécrit le fichier depuis la mémoire du dernier lot.
+  Le bandeau est **replié par défaut**, une seule ligne avec un chevron ; un clic déplie la liste, un
+  second la replie. Les lignes dépliées sont cliquables : elles ouvrent le tiroir de l'article et le
+  déplient. **Puis** les filtres — années et recherche. Rien d'autre, et pas de tuiles de statistiques.
 - **Encart d'inscription au bulletin** : construit par le script, en deux exemplaires bâtis par la même
   fonction — une ligne repliée « ✉ Recevoir par mail chaque semaine les dernières sorties, c'est ici. »
   (libellé arrêté le 01/09/2026) sous le bandeau « Cette semaine », et la version
@@ -439,7 +444,9 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   qui évite de re-signaler la semaine suivante les articles déjà annoncés.
 - **Ce qui fait foi, c'est la date de parution dans la revue** (décision du 04/09/2026), lue dans la
   ligne `.meta` de la carte : le bulletin et le courriel ne signalent que les articles **inconnus et
-  parus dans les 7 jours précédant la date du bulletin**. Un article ajouté après coup — rattrapage
+  parus dans la semaine écoulée**, du samedi précédent (jour du dernier courriel) au samedi de la
+  routine inclus (règle confirmée le 09/09/2026 ; le script imprime la ligne `FENETRE`). Tout article
+  déjà annoncé par un courriel précédent est retiré, même s'il tombe dans la fenêtre. Un article ajouté après coup — rattrapage
   d'une année, nouvelle surspécialité, reprise tardive — est **mémorisé sans être annoncé** (ligne
   `HORS_SEMAINE` dans la sortie du script) : s'il n'y a que cela, la semaine reste « calme ». Une carte
   sans jour dans `.meta` est écartée de la même façon : toujours écrire le jour pour une sortie de la

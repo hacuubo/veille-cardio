@@ -5565,12 +5565,7 @@
     title.textContent = h3 ? h3.textContent : '';
     const tags = document.createElement('span');
     tags.className = 'art-tags';
-    if (estRecent(card.dataset.paru)) {
-      const nv = document.createElement('span');
-      nv.className = 'art-new';
-      nv.textContent = 'nouveau';
-      tags.appendChild(nv);
-    }
+    // la pastille « nouveau » est posée par le bandeau « cette semaine » (même liste que le courriel)
     badges.forEach(b => {
       if (b.classList.contains('une')) { b.title = 'À la une'; b.textContent = '\u2605'; }
       else {
@@ -5777,62 +5772,45 @@
   qInput.addEventListener('input', () => { state.q = qInput.value; applyFilters(); });
   document.getElementById('qclear').addEventListener('click', () => { qInput.value = ''; state.q = ''; applyFilters(); qInput.focus(); });
 
-  // ---------- bandeau « cette semaine » : le dernier lot de sorties ----------
-  (function () {
+  // ---------- bandeau « cette semaine » : les sorties du dernier courriel ----------
+  // Le bandeau rappelle exactement la liste du dernier courriel envoyé
+  // (bulletin/semaine.json, écrit par outils/bulletin.mjs) et change donc le samedi,
+  // après la routine — pas de semaine glissante (décision du 09/09/2026). La pastille
+  // « nouveau » suit la même liste. Tant que le fichier n'est pas lu (page ouverte en
+  // local, réseau coupé), on montre en secours les sorties parues depuis moins de 7 jours.
+  const bandeau = (function () {
     const MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août',
                   'septembre','octobre','novembre','décembre'];
-    const RANG = { crit: 0, warn: 1, watch: 2 };
-    const NOM  = { crit: ['\u2605', 'Changement de pratique'],
-                   warn: ['\u25B2', 'À connaître'],
-                   watch: ['\u25CE', 'Veille'] };
+    const NOM  = { crit: ['★', 'Changement de pratique'],
+                   warn: ['▲', 'À connaître'],
+                   watch: ['◎', 'Veille'] };
+    const cartes = [...document.querySelectorAll('article.card[data-spec]')];
+    const filtres = document.getElementById('filters');
+    if (!cartes.length || !filtres) return null;
 
-    const cartes = [...document.querySelectorAll('article.card[data-spec]')].filter(c => c.dataset.paru);
-    if (!cartes.length) return;
-    const derniere = cartes.map(c => c.dataset.paru).sort().pop();
-    // toutes les sorties PARUES depuis moins de 7 jours ; à défaut, les dernières parutions
-    let lot = cartes.filter(c => estRecent(c.dataset.paru));
-    if (!lot.length) lot = cartes.filter(c => c.dataset.paru === derniere);
-    lot.sort((a, b) => b.dataset.paru.localeCompare(a.dataset.paru));
-    if (!lot.length) return;
-
-    // numéro de semaine calendaire (ISO) : les sorties ne paraissent pas un jour précis,
-    // on repère la semaine plutôt qu'une date
-    const semaineIso = iso => {
-      const d = new Date(iso + 'T12:00:00Z');
-      d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7 + 3);      // jeudi de la semaine
-      const an = d.getUTCFullYear();
-      const j4 = new Date(Date.UTC(an, 0, 4));
-      return [1 + Math.round(((d - j4) / 86400000 - 3 + (j4.getUTCDay() + 6) % 7) / 7), an];
-    };
-    const recente = estRecent(derniere);
-    const auj = new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
-    const [sem, anSem] = semaineIso(recente ? auj : derniere);
     const bloc = document.createElement('div');
     bloc.className = 'recent';
     const tete = document.createElement('button');
     tete.type = 'button';
     tete.className = 'recent-h';
     tete.setAttribute('aria-expanded', 'false');
-    tete.innerHTML = '<b>' + (recente ? 'Cette semaine' : 'Dernières parutions') + '</b>'
-      + '<span class="d">' + lot.length + (lot.length > 1 ? ' sorties' : ' sortie')
-      + ' \u00b7 semaine ' + sem + ' \u00b7 ' + anSem + '</span>'
-      + '<span class="chev">\u25B8</span>';
     tete.addEventListener('click', () => {
       const ouvert = bloc.classList.toggle('ouvert');
       tete.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
     });
+    const liste = document.createElement('div');
+    liste.className = 'r-liste';
     bloc.appendChild(tete);
+    bloc.appendChild(liste);
 
-    lot.forEach(carte => {
+    function ligne(carte) {
       const sp = SPECS[carte.dataset.spec] || ['--text-muted', ''];
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'r-item';
-
       const pastille = document.createElement('span');
       pastille.className = 'r-dot';
       pastille.style.background = 'var(' + sp[0] + ')';
-
       const txt = document.createElement('span');
       txt.className = 'r-txt';
       const t = carte.querySelector('.art-title');
@@ -5843,7 +5821,6 @@
         fr.innerHTML = carte.dataset.fr;
         txt.appendChild(fr);
       }
-
       const niv = document.createElement('span');
       niv.className = 'r-lvl ' + carte.dataset.lvl;
       const n = NOM[carte.dataset.lvl] || ['', ''];
@@ -5852,7 +5829,6 @@
       const mot = document.createElement('span');
       mot.className = 'r-word'; mot.textContent = n[1];
       niv.appendChild(sym); niv.appendChild(mot);
-
       b.appendChild(pastille); b.appendChild(txt); b.appendChild(niv);
       b.addEventListener('click', () => {
         // on lève les filtres qui pourraient masquer l'article, puis on l'ouvre
@@ -5868,12 +5844,39 @@
         if (!carte.classList.contains('exp')) carte.querySelector('.artrow').click();
         carte.scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
-      bloc.appendChild(b);
-    });
+      return b;
+    }
+
+    // remplit le bandeau et pose la pastille « nouveau » sur les mêmes cartes
+    function remplir(lot, titre, detail) {
+      tete.innerHTML = '<b>' + titre + '</b><span class="d">' + detail + '</span><span class="chev">▸</span>';
+      liste.innerHTML = '';
+      lot.forEach(carte => liste.appendChild(ligne(carte)));
+      document.querySelectorAll('.art-new').forEach(e => e.remove());
+      lot.forEach(carte => {
+        const tags = carte.querySelector('.art-tags');
+        if (!tags) return;
+        const nv = document.createElement('span');
+        nv.className = 'art-new';
+        nv.textContent = 'nouveau';
+        tags.insertBefore(nv, tags.firstChild);
+      });
+      bloc.style.display = lot.length ? '' : 'none';
+    }
+    const dateCourte = iso => { const [, m, j] = iso.split('-').map(Number); return j + ' ' + MOIS[m - 1]; };
+
+    // secours : les sorties parues depuis moins de 7 jours, à défaut les dernières parutions
+    const datees = cartes.filter(c => c.dataset.paru);
+    const derniere = datees.map(c => c.dataset.paru).sort().pop();
+    let lot = datees.filter(c => estRecent(c.dataset.paru));
+    if (!lot.length && derniere) lot = datees.filter(c => c.dataset.paru === derniere);
+    lot.sort((a, b) => b.dataset.paru.localeCompare(a.dataset.paru));
+    remplir(lot, derniere && estRecent(derniere) ? 'Cette semaine' : 'Dernières parutions',
+      lot.length + (lot.length > 1 ? ' sorties' : ' sortie'));
 
     // juste sous le descriptif : le lecteur voit les nouveautés avant les filtres
-    const filtres = document.getElementById('filters');
-    if (filtres) filtres.parentNode.insertBefore(bloc, filtres);
+    filtres.parentNode.insertBefore(bloc, filtres);
+    return { cartes, remplir, dateCourte };
   })();
 
   // ---------- mise en avant : seules les recommandations ressortent ----------
@@ -5916,6 +5919,24 @@
     }
     window.addEventListener('hashchange', allerA);
     allerA();
+  })();
+
+  // ---------- la liste du dernier courriel remplace la règle des 7 jours ----------
+  (async function () {
+    if (!bandeau || location.protocol === 'file:') return;
+    try {
+      const r = await fetch('bulletin/semaine.json', { cache: 'no-cache' });
+      if (!r.ok) return;
+      const s = await r.json();
+      const parAncre = new Map(bandeau.cartes.filter(c => c.id).map(c => [c.id, c]));
+      const lot = (s.ancres || []).map(a => parAncre.get(a)).filter(Boolean);
+      if (!lot.length) return;
+      const nb = lot.length + (lot.length > 1 ? ' sorties' : ' sortie');
+      const quand = s.lundi ? ' \u00b7 semaine du lundi ' + bandeau.dateCourte(s.lundi) : '';
+      if (s.congres) bandeau.remplir(lot, 'R\u00e9capitulatif ' + s.congres, nb);
+      else if (s.rappel) bandeau.remplir(lot, 'Semaine calme', 'rappel \u00b7 ' + nb + quand);
+      else bandeau.remplir(lot, 'Cette semaine', nb + quand);
+    } catch (e) { /* liste illisible : la règle de secours reste affichée */ }
   })();
 
   // ---------- favoris et articles lus : mémorisés sur l'appareil, par ancre d'article ----------

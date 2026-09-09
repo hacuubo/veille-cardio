@@ -15,7 +15,12 @@
  *               récents, sans rien mémoriser ni modifier le site
  *   --congres : bulletin et courriel prennent le titre « Récapitulatif des
  *               sorties du congrès "…" » (lendemain de la fin d'un congrès)
- *   --rappel  : s'il n'y a rien de neuf, écrit quand même le courriel du samedi
+ *   --rappel  : s'il n'y a rien de neuf, écrit quand même le courriel du samedi ;
+ *               avec ou sans nouveauté, ce drapeau signale « un courriel part » et
+ *               fait écrire bulletin/semaine.json (la liste du courriel, que le site
+ *               affiche dans son bandeau « Cette semaine »), comme --congres
+ *   --semaine-seule : réécrit bulletin/semaine.json depuis la mémoire (dernier lot),
+ *               sans rien produire d'autre
  *               (« Semaine calme »), qui rappelle les sorties du dernier bulletin
  * --------------------------------------------------------------------------- */
 
@@ -155,6 +160,40 @@ function poserAncres(articles) {
     pris.add(libre);
     a.ancre = libre;
   }
+}
+
+/* ------------------------------------------ la liste du courriel, pour le site */
+
+/** sujet du courriel en texte brut (le même que dans rendreCourriel, sans entités) */
+function sujetTexte(dateIso, { congres = '', rappel = false } = {}) {
+  const lundi = lundiDeLaSemaine(dateIso);
+  const lundiPrecedent = decaler(lundi, -7);
+  if (congres) return `Récapitulatif des sorties du congrès « ${congres} »`;
+  if (rappel) return `Semaine calme — rappel des sorties de la semaine du lundi ${enFrancaisCourt(lundiPrecedent)}`;
+  return `Les sorties de la semaine du lundi ${enFrancaisCourt(lundi)}`;
+}
+/**
+ * bulletin/semaine.json : la liste exacte des articles du courriel qui part, dans
+ * l'ordre du courriel (surspécialité, puis ordre de la page). Le script d'index.html
+ * la lit pour le bandeau « Cette semaine » et la pastille « nouveau » : le site
+ * rappelle ce que le courriel a annoncé, et change donc le samedi, pas au fil des
+ * jours (décision du 09/09/2026). Écrit seulement quand un courriel part vraiment
+ * (--rappel le samedi, --congres pour un récapitulatif), jamais les matins de congrès.
+ */
+function ecrireSemaine(lot, dateIso, { congres = '', rappel = false } = {}) {
+  const ordre = Object.keys(SPECS).flatMap(id => lot.filter(a => a.spec === id));
+  const lundi = lundiDeLaSemaine(dateIso);
+  const semaine = {
+    date: dateIso,
+    sujet: sujetTexte(dateIso, { congres, rappel }),
+    rappel: !!rappel,
+    congres: congres || '',
+    lundi: rappel ? decaler(lundi, -7) : lundi,
+    nb: ordre.length,
+    ancres: ordre.map(a => a.ancre),
+  };
+  writeFileSync(join(DOSSIER, 'semaine.json'), JSON.stringify(semaine, null, 1) + '\n');
+  console.log(`SEMAINE bulletin/semaine.json — ${ordre.length} article(s) : ${semaine.sujet}`);
 }
 
 /* --------------------------------------------------------- rendu du bulletin */
@@ -459,6 +498,13 @@ if (opt('init')) {
   process.exit(0);
 }
 
+if (opt('semaine-seule')) {
+  const lot = new Set(etat.dernier_lot || []);
+  const dernier = [...(etat.bulletins || [])].sort((a, b) => a.date.localeCompare(b.date)).pop();
+  ecrireSemaine(articles.filter(a => lot.has(a.cle)), valeur('date') || (dernier ? dernier.date : dateIso), { rappel: opt('rappel') });
+  process.exit(0);
+}
+
 if (opt('apercu')) {
   const lot = new Set(etat.dernier_lot || []);
   const echantillon = opt('rappel') && lot.size
@@ -472,16 +518,20 @@ if (opt('apercu')) {
 }
 
 /* Ce qui fait foi, c'est la DATE DE PARUTION dans la revue (ligne .meta), pas la
-   date d'ajout sur le site (décision du 04/09/2026) : le bulletin ne signale que ce
-   qui est paru dans les 7 jours précédant sa date. Un article ajouté après coup
-   (rattrapage, nouvelle surspécialité) ou sans jour lisible est mémorisé sans être
-   annoncé — la semaine reste « calme » s'il n'y a que cela. */
+   date d'ajout sur le site (décision du 04/09/2026). La semaine écoulée va du samedi
+   précédent (jour du dernier courriel) au samedi de la routine, inclus (règle
+   confirmée le 09/09/2026) ; tout article déjà annoncé par un courriel précédent
+   (mémoire etat.json) est retiré, même s'il est dans la fenêtre. Un article ajouté
+   après coup (rattrapage, nouvelle surspécialité) ou sans jour lisible est mémorisé
+   sans être annoncé — la semaine reste « calme » s'il n'y a que cela. */
 const FENETRE_JOURS = 7;
 const depuis   = decaler(dateIso, -FENETRE_JOURS);
 const connus   = new Set(etat.connus);
 const inconnus = articles.filter(a => !connus.has(a.cle));
 const nouveaux = inconnus.filter(a => { const p = dateParution(a); return p && p >= depuis && p <= dateIso; });
 const ecartes  = inconnus.filter(a => !nouveaux.includes(a));
+const dejaAnnonces = articles.filter(a => connus.has(a.cle) && dateParution(a) >= depuis).length;
+console.log(`FENETRE parutions du ${depuis} au ${dateIso} — ${nouveaux.length} nouveauté(s), ${dejaAnnonces} déjà annoncée(s) par un courriel précédent (retirées)`);
 for (const a of ecartes) {
   const p = dateParution(a);
   console.log(`HORS_SEMAINE ${p ? 'paru le ' + p : 'SANS JOUR dans .meta'} — mémorisé sans bulletin : ${brut(a.titre).slice(0, 80)}`);
@@ -501,6 +551,7 @@ if (!nouveaux.length) {
     }
     const nom = `courriel-${dateIso}.html`;
     writeFileSync(join(DOSSIER, nom), rendreCourriel(rappel, dateIso, { rappel: true }));
+    ecrireSemaine(rappel, dateIso, { rappel: true });
     console.log(`RAPPEL ${rappel.length} sortie(s) du dernier bulletin → bulletin/${nom}`);
     process.exit(0);
   }
@@ -512,6 +563,7 @@ const nomHtml = `bulletin-${dateIso}.html`;
 const nomPdf  = `bulletin-${dateIso}.pdf`;
 writeFileSync(join(DOSSIER, nomHtml), rendreBulletin(nouveaux, dateIso, congres));
 writeFileSync(join(DOSSIER, `courriel-${dateIso}.html`), rendreCourriel(nouveaux, dateIso, { congres }));
+if (opt('rappel') || congres) ecrireSemaine(nouveaux, dateIso, { congres });
 
 /* on garde aussi les clés des articles retirés du site : un article un jour supprimé
    puis remis ne doit pas être re-signalé comme une nouveauté. */

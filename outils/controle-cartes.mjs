@@ -57,12 +57,42 @@ function slug(titre) {
 }
 /** nombres d'un texte français (virgule décimale, milliers par espace) */
 function nombresFr(t) {
-  t = t.replace(/(?<=\d)[     ](?=\d{3}(?!\d))/g, '').replace(/,/g, '.');
+  // en français la virgule est le séparateur décimal : ne jamais la retirer ici,
+  // seulement les espaces de milliers (y compris insécables et fines).
+  t = t.replace(/(?<=\d)[\s\u00a0\u202f\u2009](?=\d{3}(?!\d))/g, '').replace(/,/g, '.');
   return new Set(t.match(/\d+(?:\.\d+)?/g) || []);
 }
+/**
+ * Nombres écrits en toutes lettres dans un résumé anglais : PubMed commence
+ * volontiers une phrase par « Eighty-seven randomised trials were included ».
+ * Sans cette lecture, le contrôle de fidélité refusait des chiffres pourtant
+ * exacts et bloquait la publication (constaté le 11/09/2026).
+ */
+const UNITES = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9,
+  ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17,
+  eighteen: 18, nineteen: 19 };
+const DIZAINES = { twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
+function nombresEnLettres(t) {
+  const out = new Set();
+  const mot = '(?:' + [...Object.keys(UNITES), ...Object.keys(DIZAINES), 'hundred', 'thousand', 'and'].join('|') + ')';
+  const re = new RegExp(`\\b${mot}(?:[\\s-]+${mot})*\\b`, 'gi');
+  for (const m of t.matchAll(re)) {
+    let total = 0, courant = 0, vu = false;
+    for (const w of m[0].toLowerCase().split(/[\s-]+/)) {
+      if (w === 'and') continue;
+      if (w in UNITES) { courant += UNITES[w]; vu = true; }
+      else if (w in DIZAINES) { courant += DIZAINES[w]; vu = true; }
+      else if (w === 'hundred') { courant = (courant || 1) * 100; vu = true; }
+      else if (w === 'thousand') { total += (courant || 1) * 1000; courant = 0; vu = true; }
+    }
+    if (vu && total + courant > 0) out.add(String(total + courant));
+  }
+  return out;
+}
+
 /** nombres d'un résumé anglais (point décimal, milliers par virgule/espace, « ·» du Lancet, « .45 ») */
 function nombresEn(t) {
-  t = t.replace(/(?<=\d)·(?=\d)/g, '.').replace(/(?<=\d)[     ,](?=\d{3}(?!\d))/g, '').replace(/(?<![\d.])\.(?=\d)/g, '0.');
+  t = t.replace(/(?<=\d)·(?=\d)/g, '.').replace(/(?<=\d)[\s\u00a0\u202f\u2009,](?=\d{3}(?!\d))/g, '').replace(/(?<![\d.])\.(?=\d)/g, '0.');
   return new Set(t.match(/\d+(?:\.\d+)?/g) || []);
 }
 function connu(n, autorises) {
@@ -213,7 +243,20 @@ for (const c of cible) {
 
 /* ------------------------------------------------------------ fidélité au résumé PubMed */
 if (opt('sources') && cible.length) {
-  const get = async u => { try { const r = await fetch(u); return r.ok ? await r.text() : ''; } catch { return ''; } };
+  // PubMed tolère 3 appels par seconde et coupe au-delà : sans ce frein, la
+  // plupart des recherches échouaient en silence sur un site de 150 cartes, et
+  // la fidélité n'était plus contrôlée du tout (constaté le 11/09/2026).
+  let dernierAppel = 0;
+  const get = async u => {
+    for (let essai = 0; essai < 3; essai++) {
+      const attente = 350 - (Date.now() - dernierAppel);
+      if (attente > 0) await new Promise(r => setTimeout(r, attente));
+      dernierAppel = Date.now();
+      try { const r = await fetch(u); if (r.ok) return await r.text(); } catch (e) { /* réseau : on retente */ }
+      await new Promise(r => setTimeout(r, 800 * (essai + 1)));
+    }
+    return '';
+  };
   const doiDe = liens => {
     for (const l of liens) {
       let x = l.match(/PIIS?(\d{4}-\d{3}[\dX])\((\d\d)\)(\d{5}-[\dX])/); if (x) return `10.1016/S${x[1]}(${x[2]})${x[3]}`;
@@ -231,19 +274,29 @@ if (opt('sources') && cible.length) {
     essais.push('"' + titreNu + '"[title]');
     essais.push(titreNu.split(' ').filter(w => w.length > 3).slice(0, 12).map(w => w + '[title]').join(' AND '));
     let resume = '';
-    for (const q of (pmid ? [] : essais)) {
+    // Le DOI identifie l'article sans ambiguïté ; la recherche par titre, elle,
+    // peut tomber sur un homonyme — deux méta-analyses de la même question
+    // portent parfois le même titre à un mot près. On exige donc, dans ce
+    // second cas, que le titre corresponde presque en entier.
+    for (const [i, q] of (pmid ? [] : essais).entries()) {
+      const parDoi = i === 0 && !!doi;
       const r = await get('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmax=3&term=' + encodeURIComponent(q));
       for (const id of [...r.matchAll(/<Id>(\d+)<\/Id>/g)].map(x => x[1])) {
         const x = await get('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&rettype=abstract&retmode=xml&id=' + id);
         const t = (x.match(/<ArticleTitle>([\s\S]*?)<\/ArticleTitle>/) || [])[1] || '';
-        if (norm(t).slice(0, 40) === norm(c.titre).slice(0, 40)) { pmid = id; resume = x; break; }
+        const a = norm(t), b = norm(c.titre);
+        const assezProche = parDoi
+          ? a.slice(0, 40) === b.slice(0, 40)
+          : (a === b || (a.length >= 60 && b.length >= 60 && (a.startsWith(b) || b.startsWith(a))));
+        if (assezProche) { pmid = id; resume = x; break; }
       }
       if (pmid) break;
     }
     if (pmid && !resume) resume = await get('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&rettype=abstract&retmode=xml&id=' + pmid);
     const abstract = [...resume.matchAll(/<AbstractText[^>]*>([\s\S]*?)<\/AbstractText>/g)].map(x => x[1].replace(/<[^>]+>/g, ' ')).join(' ');
     if (!abstract) { A(c, 'aucun résumé PubMed trouvé (recommandation, communiqué ou titre non indexé) : fidélité non contrôlable automatiquement'); continue; }
-    const autorises = new Set([...nombresEn(decoder(abstract)), ...Array.from({ length: 32 }, (_, i) => String(i)), '95', '100', '2024', '2025', '2026']);
+    const clair = decoder(abstract);
+    const autorises = new Set([...nombresEn(clair), ...nombresEnLettres(clair), ...Array.from({ length: 32 }, (_, i) => String(i)), '95', '100', '2024', '2025', '2026']);
     const texte = [c.fr, brut(c.sum), brut(c.cle), brut(c.fiche)].join(' ').replace(/\b\d{1,2}\s+[a-zéû]+\s+20\d\d/g, ' ');
     const manquants = [...nombresFr(texte)].filter(n => !/^(19|20)\d\d$/.test(n) && !connu(n, autorises)).sort();
     if (manquants.length) E(c, `chiffres absents du résumé PubMed ${pmid} : ${manquants.join(', ')} — vérifier sur l’article ou retirer`);

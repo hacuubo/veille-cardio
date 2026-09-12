@@ -153,7 +153,14 @@
     "inclisiranvsbempedoicacidforlowdensitylipoproteincholesterolloweringinhighriskpatientsthevictorionchallengetrial",
     "lipoproteinaandatheroscleroticcardiovasculardiseaseamongadultsaged20to100years",
     "digitaloutreachtoimprovestatinrefillsinpatientswithlowstatinadherencetheadhereascvdrandomizedclinicaltrial",
-    "safetyofwithdrawalofpharmacologicaltreatmentafterrecoveryfromher2therapyrelatedcardiacdysfunctionthehersafetrial"
+    "safetyofwithdrawalofpharmacologicaltreatmentafterrecoveryfromher2therapyrelatedcardiacdysfunctionthehersafetrial",
+    "exercisestressechocardiographyfordiagnosisofheartfailurewithpreservedejectionfractionamulticentrestudy",
+    "myeloperoxidaseinhibitionwithmitiperstatinheartfailurewithpreservedormildlyreducedejectionfractionarandomizedphase2btrial",
+    "infectiveendocarditisdiagnosisantibiotictherapyandmanagementascientificstatementfromtheamericanheartassociation",
+    "anupdatedevidenceassessmentofthegeneticcausesofdilatedcardiomyopathy",
+    "targetedvitamindsupplementationandmajoradversecardiovasculareventsaftermyocardialinfarctionthetargetdtrial",
+    "novartisannounceslpahorizonphaseiiitoplineresultsforpelacarseninpatientswithelevatedlpaandestablishedcardiovasculardiseasecvd",
+    "clinicalconsiderationsforthecareofthetacticalathletewithcardiovascularabnormalitiesascientificstatementfromtheamericancollegeofcardiologyandtheamericanheartassociation"
   ],
   "bulletins": [
     {
@@ -179,44 +186,22 @@
       "fichier": "bulletin-2026-09-05.pdf",
       "nb": 35,
       "crit": 11
+    },
+    {
+      "date": "2026-09-12",
+      "fichier": "bulletin-2026-09-12.pdf",
+      "nb": 7,
+      "crit": 1
     }
   ],
-  "derniere_execution": "2026-09-06",
+  "derniere_execution": "2026-09-12",
   "dernier_lot": [
-    "2026hrspacesscientificstatementontheuseofantiarrhythmicdrugsinunderstudiedclinicalscenarios",
-    "targetedleftventricularleadplacementinbiventricularpacingforheartfailureanationalmulticentredoubleblindrandomisedcontrolledtrialindenmark",
-    "pacemakerimplantationandatrioventricularnodeablationvspulmonaryveinisolationforelderlypatientswithpersistentatrialfibrillationtheablateversuspacetrial",
-    "immediateambulatoryelectrocardiographicmonitoringinsyncope",
-    "halfdoserivaroxabanvsantiplatelettherapyforpreventingsilentcerebralembolismafterleftatrialappendageocclusionthehaloscetrial",
-    "catheterablationforsymptomaticatrialfibrillationpvishamafarandomiseddoubleblindshamcontrolledmulticentretrial",
-    "lowvoltageablationinpersistentatrialfibrillationtheidealafrandomizedclinicaltrial",
-    "antithrombotictherapyafterpercutaneouscoronaryinterventioninpatientswithatrialfibrillationanindividualpatientdatanetworkmetaanalysis",
-    "increasingplasmapotassiumandriskofatrialfibrillationthepotcasttrial",
-    "dualantithrombotictherapyusingpotentantiplateletinhibitorsinatrialfibrillationandacutecoronarysyndromearandomizedcontrolledtrial",
-    "pulmonaryveinisolationusingpulsedfieldablationwithvswithoutposteriorwallisolationinpatientswithsymptomaticpersistentatrialfibrillationthepifpafpfarandomizedclinicaltrial",
-    "protocolbasedimplementationofearlyintensivelipidmanagementafteracutecoronarysyndromethebridgetrial",
-    "timingofpciinpatientsundergoingtranscatheteraorticvalveimplantation",
-    "targeteduseofcomputedtomographiccoronaryangiographyinacutechestpain",
-    "prasugrelversusticagrelorinacutecoronarysyndromes",
-    "milvexianwithantiplatelettherapyafteracutecoronarysyndromeevent",
-    "clopidogrelordualantiplatelettherapyinhighischemicriskpatients",
-    "aspirinomissionatthetimeofprimarypercutaneouscoronaryinterventioninstemi",
-    "shorttermanticoagulanttherapyandsubclinicalleafletthickeningintranscatheteraorticvalvesthenotion4trial",
-    "anticoagulationmonotherapyvsantiplateletmonotherapyaftertranscatheteraorticvalveimplanttheacasatavirandomizedclinicaltrial",
-    "safetyandefficacyofthe01hpathwayformyocardialinfarctionintheemergencydepartmentaninternationalpragmaticsteppedwedgeclusterrandomisedcontrolledtrial",
-    "ldlcholesterolloweringwithevolocumabbeforepercutaneouscoronaryinterventionforacutemyocardialinfarctiontheamundsenrandomizedclinicaltrial",
-    "pulmonarydenervationforheartfailurerelatedpulmonaryhypertension",
-    "tricuspidvalveinterventioninheartfailure",
-    "discontinuationofblockersinstablepatientswithpreviousmyocardialinfarctionpreservedleftventricularejectionfractionandnoheartfailureapooledanalysisofindividualpatientdata",
-    "effectivenessofnursecoordinateddigitalsupportedcollaborativecaremodelinreducinghospitalstayandmortalityamongpatientswithheartfailuretimehfclusterrctindia",
-    "oralrelaxinreceptoragonistazd5462inparticipantswithchronicheartfailureprimaryresultsfromtheluminaratrial",
-    "catheterdirectedthrombolysisinintermediatehighriskpulmonaryembolism",
-    "124ievuzamitidepositronemissiontomographycomputedtomographyfordiagnosingcardiacamyloidosistherevealnonrandomizedclinicaltrial",
-    "atorvastatincardiovasculareventsanddisabilityfreesurvivalinolderadults",
-    "effectsofevolocumabonmortalityoutcomesinpatientswithoutpreviousmyocardialinfarctionorstrokeaprespecifiedanalysisofthevesaliuscvrandomizedclinicaltrial",
-    "inclisiranvsbempedoicacidforlowdensitylipoproteincholesterolloweringinhighriskpatientsthevictorionchallengetrial",
-    "lipoproteinaandatheroscleroticcardiovasculardiseaseamongadultsaged20to100years",
-    "digitaloutreachtoimprovestatinrefillsinpatientswithlowstatinadherencetheadhereascvdrandomizedclinicaltrial",
-    "safetyofwithdrawalofpharmacologicaltreatmentafterrecoveryfromher2therapyrelatedcardiacdysfunctionthehersafetrial"
+    "exercisestressechocardiographyfordiagnosisofheartfailurewithpreservedejectionfractionamulticentrestudy",
+    "myeloperoxidaseinhibitionwithmitiperstatinheartfailurewithpreservedormildlyreducedejectionfractionarandomizedphase2btrial",
+    "infectiveendocarditisdiagnosisantibiotictherapyandmanagementascientificstatementfromtheamericanheartassociation",
+    "anupdatedevidenceassessmentofthegeneticcausesofdilatedcardiomyopathy",
+    "targetedvitamindsupplementationandmajoradversecardiovasculareventsaftermyocardialinfarctionthetargetdtrial",
+    "novartisannounceslpahorizonphaseiiitoplineresultsforpelacarseninpatientswithelevatedlpaandestablishedcardiovasculardiseasecvd",
+    "clinicalconsiderationsforthecareofthetacticalathletewithcardiovascularabnormalitiesascientificstatementfromtheamericancollegeofcardiologyandtheamericanheartassociation"
   ]
 }

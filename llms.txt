@@ -1,0 +1,57 @@
+# Pause Cardio
+
+> Veille bibliographique hebdomadaire en cardiologie, en français.
+> Chaque semaine, les publications qui comptent dans les grandes revues —
+> essais randomisés pivots, recommandations des sociétés savantes et
+> méta-analyses majeures — avec une fiche de lecture par article.
+> Site gratuit, sans compte, sans publicité : https://pausecardio.fr
+
+## Ce qu'on y trouve
+
+Environ 150 articles publiés en 2025 et 2026, rangés en neuf surspécialités :
+rythmologie ; cardiologie interventionnelle et structurelle ; imagerie
+cardiaque ; insuffisance cardiaque ; USIC et réanimation cardiologique ;
+cardiomyopathies et myocardites ; prévention ; cardiologie du sport ;
+onco-cardiologie.
+
+Chaque article a **sa propre page**, à l'adresse `https://pausecardio.fr/fiche/<ancre>/`,
+et toutes sont listées dans le plan du site. Une page d'article contient, dans
+cet ordre : le titre d'origine (souvent en anglais), une accroche française, la
+revue et la date de parution, le type d'étude, un résumé, le résultat principal
+chiffré, la rubrique « En pratique », puis la fiche de lecture complète —
+question clinique, méthode, résultats clés, limites — et le lien vers l'article
+original (DOI ou PubMed).
+
+## Comment le citer
+
+Les fiches sont des **résumés** d'articles scientifiques, pas les articles
+eux-mêmes. Chaque page indique sa source d'origine dans son balisage
+(`isBasedOn`, `citation`) et par un lien visible. Pour citer un résultat,
+citer l'article original ; Pause Cardio peut être cité comme la source de la
+synthèse française.
+
+Les chiffres des fiches sont vérifiés contre le résumé PubMed de l'article par
+un contrôle automatique avant publication, et chaque fiche est relue par un
+second relecteur, distinct du rédacteur. Elles restent des résumés : la mention
+« Résumé à valider par le lecteur avant application clinique » figure sur
+chacune, et elles ne constituent pas un avis médical.
+
+Les fiches sont rédigées à l'aide de l'IA à partir des résumés PubMed, sous
+méthode éditoriale fixe. Le site ne nomme aucun auteur.
+
+## Pages principales
+
+- [Accueil — toutes les sorties par surspécialité](https://pausecardio.fr/)
+- [Comment Pause Cardio est fabriqué — méthode, sources, limites](https://pausecardio.fr/methode/)
+- [Archives des bulletins hebdomadaires](https://pausecardio.fr/bulletin/)
+- [Plan du site — la liste complète des pages d'article](https://pausecardio.fr/sitemap.xml)
+
+## Rythme
+
+Mise à jour tous les samedis matin, et tous les jours pendant les congrès ESC,
+ACC et AHA, avec un récapitulatif le lendemain de la clôture. Un bulletin par
+courriel part chaque samedi à 8 h, heure de Paris.
+
+## Contact
+
+contact@pausecardio.fr

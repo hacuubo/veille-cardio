@@ -1,4 +1,71 @@
+# Pause Cardio — veille bibliographique en cardiologie
+# https://pausecardio.fr
+#
+# Tout est ouvert, aux moteurs de recherche comme aux assistants qui citent
+# leurs sources : le site n'existe que pour être trouvé et repris. Les blocs
+# nommés ci-dessous ne restreignent rien — ils disent explicitement « oui » aux
+# robots qui cherchent leur propre nom avant de passer leur chemin.
+
 User-agent: *
+Allow: /
+
+# Moteurs de recherche
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Qwantify
+Allow: /
+
+# Assistants et modèles de langue (réponses citées, résumés, recherche assistée)
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Bytespider
 Allow: /
 
 Sitemap: https://pausecardio.fr/sitemap.xml

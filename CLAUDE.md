@@ -467,6 +467,40 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   archives (le bulletin part par courriel ; `/bulletin/` reste accessible par adresse directe).
   Ne pas les retirer, `outils/bulletin.mjs` s'en sert toujours.
 
+## Être trouvé — moteurs de recherche et assistants (règle du 12/09/2026)
+
+Le site n'existe que pour être trouvé et repris. Quatre pièces, toutes à la racine, à ne pas retirer :
+
+- **`robots.txt`** : tout est ouvert. Les blocs nommés (Googlebot, Bingbot, mais aussi `GPTBot`,
+  `OAI-SearchBot`, `ClaudeBot`, `PerplexityBot`, `Google-Extended`, `Applebot-Extended`, `CCBot`…)
+  **ne restreignent rien** — `User-agent: * Allow: /` les couvrait déjà. Ils disent explicitement
+  « oui » aux robots qui cherchent leur propre nom. Ne jamais y écrire de `Disallow` sans demande
+  explicite : ce serait se retirer des réponses des assistants.
+- **`llms.txt`** : la fiche d'identité du site pour les modèles de langue (convention llmstxt.org) —
+  contenu, structure d'une page d'article, **comment le citer** (citer l'article original ; Pause
+  Cardio pour la synthèse française), limites, rythme.
+- **`methode/index.html`** : la page « Comment Pause Cardio est fabriqué » — sélection, rédaction,
+  double contrôle, rôle de l'IA, ce que les fiches ne sont pas, indépendance et vie privée. C'est la
+  page que Google lit pour juger du sérieux d'un site médical. **Écrite à la main, pas régénérée.**
+  Liée depuis le pied de page du tableau de bord et de chaque page d'article, et dans `sitemap.xml`.
+- **`404.html`** : page d'erreur maison, en `noindex, follow`.
+
+Sur chaque page : `<meta name="robots" content="index, follow, max-snippet:-1,
+max-image-preview:large, max-video-preview:-1">` — ce qui autorise un extrait long et une grande
+vignette plutôt qu'une ligne tronquée.
+
+**Données structurées** — accueil : `WebSite`, `Organization` (avec `knowsAbout`, `email`,
+`publishingPrinciples` vers `/methode/`), `CollectionPage`, `AboutPage`, `Periodical`. Page
+d'article : `Article` + `BreadcrumbList` ; l'`author` est **l'organisation, jamais une personne** ;
+`keywords` reprend le `data-kw` de la carte ; `isBasedOn` **et** `citation` pointent sur le DOI de
+l'article résumé.
+
+**Ne jamais déclarer une donnée structurée fausse** — pas de `SearchAction` tant que la recherche du
+site n'a pas d'adresse partageable (`?q=…`).
+
+Ces quatre pièces sont les mêmes que sur Pause AR (adoptées le 12/09/2026 sur les deux dépôts) :
+toute évolution de l'une doit être portée sur l'autre.
+
 ## Fréquentation du site
 
 Compteur **GoatCounter** (posé le 04/09/2026) : une balise `<script data-goatcounter=…>` juste avant

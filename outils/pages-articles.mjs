@@ -91,7 +91,7 @@ for (const m of html.matchAll(/<article class="card"([^>]*)>([\s\S]*?)<\/article
   const metaHtml = bloc(/<div class="meta">([\s\S]*?)<\/div>/);
   cartes.push({
     ancre: libre, spec: at('data-spec'), annee: at('data-year'), niveau: at('data-lvl'), ajout: at('data-ajout'),
-    fr: at('data-fr'), titre, titreHtml, type: texte(bloc(/<span class="type">([\s\S]*?)<\/span>/)),
+    fr: at('data-fr'), kw: at('data-kw'), titre, titreHtml, type: texte(bloc(/<span class="type">([\s\S]*?)<\/span>/)),
     metaHtml, meta: texte(metaHtml), paru: dateParution(metaHtml),
     sum: bloc(/<p class="sum">([\s\S]*?)<\/p>/), cle: bloc(/<div class="cle">([\s\S]*?)<\/div>/),
     verdict: (fiche.match(/<div class="verdict">([\s\S]*?)<\/div>/) || [])[1] || '',
@@ -143,14 +143,33 @@ function page(c) {
   if (!description) description = texte(c.sum);
   if (description.length > 158) description = description.slice(0, 155).replace(/\s+\S*$/, '') + '…';
   const original = c.liens.find(l => /article original|pubmed/i.test(l.libelle)) || c.liens.find(l => /doi\.org|pubmed/.test(l.href));
+  // Mots-cles bilingues de la carte : ils disent a un moteur — et a un assistant
+  // qui cite ses sources — de quoi parle la fiche, dans les deux langues.
+  const motsCles = texte(c.kw).split(/\s*,\s*/).map(x => x.trim()).filter(Boolean);
   const ld = {
-    '@context': 'https://schema.org', '@type': 'Article',
-    '@id': url + '#fiche', mainEntityOfPage: url, url,
-    headline: c.titre, description, inLanguage: 'fr',
-    ...(c.paru ? { datePublished: c.paru } : {}), ...(c.ajout ? { dateModified: c.ajout } : {}),
-    articleSection: nomSpec, isPartOf: { '@id': SITE + '#site' },
-    publisher: { '@id': SITE + '#org' },
-    ...(original ? { isBasedOn: original.href } : {}),
+    '@context': 'https://schema.org',
+    '@graph': [{
+      '@type': 'Article',
+      '@id': url + '#fiche', mainEntityOfPage: url, url,
+      headline: c.titre, description, inLanguage: 'fr',
+      ...(c.paru ? { datePublished: c.paru } : {}), ...(c.ajout ? { dateModified: c.ajout } : {}),
+      articleSection: nomSpec, isPartOf: { '@id': SITE + '#site' },
+      publisher: { '@id': SITE + '#org' },
+      // L'auteur est l'organisation, jamais une personne : le site ne nomme personne.
+      author: { '@id': SITE + '#org' },
+      image: SITE + 'icone/partage.png',
+      ...(motsCles.length ? { keywords: motsCles } : {}),
+      // isBasedOn ET citation : la fiche resume un article, elle ne le remplace pas.
+      ...(original ? { isBasedOn: original.href, citation: original.href } : {}),
+    }, {
+      '@type': 'BreadcrumbList',
+      '@id': url + '#fil',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Pause Cardio', item: SITE },
+        ...(nomSpec ? [{ '@type': 'ListItem', position: 2, name: nomSpec, item: SITE + '#' + c.spec }] : []),
+        { '@type': 'ListItem', position: nomSpec ? 3 : 2, name: c.titre },
+      ],
+    }],
   };
   const ficheHtml = c.corpsFiche.replace(/<h4>/g, '<h2>').replace(/<\/h4>/g, '</h2>');
   const boutons = [`<a class="btn primaire" href="${attr(surLeSite)}">Voir sur Pause Cardio</a>`]
@@ -162,6 +181,7 @@ function page(c) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${attr(c.titre)} — Pause Cardio</title>
 <meta name="description" content="${attr(description)}">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 <link rel="canonical" href="${attr(url)}">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Pause Cardio">
@@ -199,7 +219,7 @@ ${ficheHtml}
 </main>
 <footer>
 <p><b>Pause Cardio</b> — chaque semaine, l’essentiel des publications qui comptent en cardiologie&nbsp;: essais pivots, recommandations et grandes méta-analyses.</p>
-<p><a href="${SITE}">Retrouver toutes les sorties sur pausecardio.fr</a></p>
+<p><a href="${SITE}">Retrouver toutes les sorties sur pausecardio.fr</a> &middot; <a href="${SITE}methode/">Comment ces fiches sont faites</a></p>
 </footer>
 <script data-goatcounter="https://pausecardio.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>

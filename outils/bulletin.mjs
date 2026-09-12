@@ -21,6 +21,10 @@
  *               affiche dans son bandeau « Cette semaine »), comme --congres
  *   --semaine-seule : réécrit bulletin/semaine.json depuis la mémoire (dernier lot),
  *               sans rien produire d'autre
+ *
+ * Fenêtre : parutions du samedi précédent au jour du bulletin (7 jours), plus une
+ * tolérance de 3 jours en amont pour un article jamais annoncé et repéré
+ * tardivement (ligne RATTRAPAGE) ; tout article déjà annoncé est retiré.
  *               (« Semaine calme »), qui rappelle les sorties du dernier bulletin
  * --------------------------------------------------------------------------- */
 
@@ -525,11 +529,20 @@ if (opt('apercu')) {
    après coup (rattrapage, nouvelle surspécialité) ou sans jour lisible est mémorisé
    sans être annoncé — la semaine reste « calme » s'il n'y a que cela. */
 const FENETRE_JOURS = 7;
+// tolérance : un article paru dans les 3 jours qui précèdent la fenêtre, jamais annoncé
+// (repéré tardivement — communiqué, indexation PubMed en retard), part quand même, en
+// RATTRAPAGE ; au-delà, c'est un rattrapage ancien, mémorisé sans être annoncé
+const RATTRAPAGE_JOURS = 3;
 const depuis   = decaler(dateIso, -FENETRE_JOURS);
+const depuisRattrapage = decaler(depuis, -RATTRAPAGE_JOURS);
 const connus   = new Set(etat.connus);
 const inconnus = articles.filter(a => !connus.has(a.cle));
-const nouveaux = inconnus.filter(a => { const p = dateParution(a); return p && p >= depuis && p <= dateIso; });
+const nouveaux = inconnus.filter(a => { const p = dateParution(a); return p && p >= depuisRattrapage && p <= dateIso; });
 const ecartes  = inconnus.filter(a => !nouveaux.includes(a));
+for (const a of nouveaux) {
+  const p = dateParution(a);
+  if (p < depuis) console.log(`RATTRAPAGE paru le ${p}, avant la fenêtre mais jamais annoncé — inclus : ${brut(a.titre).slice(0, 80)}`);
+}
 const dejaAnnonces = articles.filter(a => connus.has(a.cle) && dateParution(a) >= depuis).length;
 console.log(`FENETRE parutions du ${depuis} au ${dateIso} — ${nouveaux.length} nouveauté(s), ${dejaAnnonces} déjà annoncée(s) par un courriel précédent (retirées)`);
 for (const a of ecartes) {

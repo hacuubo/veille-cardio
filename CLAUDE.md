@@ -446,7 +446,11 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   ligne `.meta` de la carte : le bulletin et le courriel ne signalent que les articles **inconnus et
   parus dans la semaine écoulée**, du samedi précédent (jour du dernier courriel) au samedi de la
   routine inclus (règle confirmée le 09/09/2026 ; le script imprime la ligne `FENETRE`). Tout article
-  déjà annoncé par un courriel précédent est retiré, même s'il tombe dans la fenêtre. Un article ajouté après coup — rattrapage
+  déjà annoncé par un courriel précédent est retiré, même s'il tombe dans la fenêtre. **Tolérance de
+  3 jours en amont** (depuis le 12/09/2026) : un article paru juste avant la fenêtre, jamais annoncé
+  et repéré tardivement (communiqué, indexation PubMed en retard) part quand même, signalé par une
+  ligne `RATTRAPAGE` — premier cas, le communiqué Lp(a)HORIZON du 4 septembre manqué par la veille
+  du 5. Au-delà de 3 jours, c'est un rattrapage ancien, mémorisé sans être annoncé. Un article ajouté après coup — rattrapage
   d'une année, nouvelle surspécialité, reprise tardive — est **mémorisé sans être annoncé** (ligne
   `HORS_SEMAINE` dans la sortie du script) : s'il n'y a que cela, la semaine reste « calme ». Une carte
   sans jour dans `.meta` est écartée de la même façon : toujours écrire le jour pour une sortie de la

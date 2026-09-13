@@ -423,6 +423,24 @@ ajouté — de quoi être lu en deux minutes ou transféré aux 10 cardiologues 
   secret `BREVO_CLE_API` (Settings → Secrets → Actions) ; sans lui l'envoi est ignoré sans erreur.
   Le pied du courriel doit garder le lien `{{ unsubscribe }}`, que Brevo remplace chez chaque
   destinataire. `--apercu` produit aussi `courriel-apercu.html`, jamais envoyé.
+
+- **Authentification du domaine chez Brevo — sans elle, les courriels tombent en indésirables**
+  (règle du 13/09/2026). Trois enregistrements DNS concourent à la réputation d'un expéditeur, et
+  seuls les deux premiers étaient posés :
+  - **SPF** : le `v=spf1` du domaine doit contenir `include:spf.brevo.com` **en plus** de
+    `include:mx.ovh.com`, dans **un seul et unique** enregistrement SPF, et rester sous 10 résolutions
+    DNS (`include`, `a`, `mx`, `ptr`, `exists` comptent chacun pour une).
+  - **DMARC** : un `TXT` sur `_dmarc.<domaine>`. `p=none` au départ ; ne passer à `p=quarantine` que
+    lorsque DKIM et SPF alignent.
+  - **DKIM** : l'enregistrement donné par Brevo (Expéditeurs, domaines & IP dédiées → Domaines →
+    Authentifier ce domaine). **C'est celui qui manquait sur les deux sites le 13/09/2026, et c'est
+    lui qui décide.** Sans DKIM aligné sur le domaine, Brevo signe avec sa propre clé : la signature
+    est valable mais elle ne porte pas le nom du domaine affiché dans le « De : ». Le domaine publie
+    alors un DMARC que rien ne satisfait — combinaison que Gmail et Outlook traitent comme suspecte,
+    d'où les confirmations d'inscription classées en indésirables. Le `TXT brevo-code:…` vérifie
+    seulement la propriété du domaine : **il ne remplace pas le DKIM**.
+  Vérifier après coup que l'enregistrement est bien publié, sans se fier au cache d'un résolveur :
+  interroger directement les serveurs de noms du domaine (`ns111.ovh.net`, `dns111.ovh.net`).
 - **Gabarit du courriel** (refondu le 01/09/2026) : sujet et en-tête « Les sorties de la semaine du
   lundi … » (le lundi de la semaine couverte), articles **rangés par surspécialité** comme sur la
   plateforme — en-tête au nom de la surspécialité dans sa couleur, puis ses articles dans l'ordre de

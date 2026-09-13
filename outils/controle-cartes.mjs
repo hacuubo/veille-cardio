@@ -147,14 +147,25 @@ const erreurs = [], avert = [];
 const E = (c, msg) => erreurs.push(`ERREUR ${c.ancre} : ${msg}`);
 const A = (c, msg) => avert.push(`AVERTISSEMENT ${c.ancre} : ${msg}`);
 
+// Attention : en JavaScript, \b ne connait que l'alphabet ASCII. Apres un « é » il n'y a
+// PAS de frontiere de mot, si bien que /\b[ée]vidence\b/ ne s'est jamais declenchee sur
+// « évidence » — seulement sur « evidence » (constate le 13/09/2026). Pour un mot qui
+// commence ou finit par une lettre accentuee, ecrire (?<![A-Za-zÀ-ÿ]) … (?![A-Za-zÀ-ÿ]).
 const INTERDITS = [
   [/\bvs\.?\b/i, '« vs » — écrire « contre »'],
   [/Au cabinet/i, '« Au cabinet » — la rubrique s’appelle « En pratique »'],
   [/r[ée]dig[ée]e? par Claude|par Claude|\bClaude\b/i, 'mention de Claude — interdite dans le contenu'],
-  [/\b(Rodez|Aveyron|notre centre|notre cabinet|chez nous)\b/i, 'référence géographique ou personnelle'],
+  // Regle generalisee le 13/09/2026 : la version de Pause AR couvrait deja « en France »,
+  // « notre service », « dans nos murs »… et n'avait jamais ete reportee ici. Deux cartes
+  // portaient « en France » sans que le controle s'en emeuve.
+  // Ne pas y ajouter de noms de pays : « essai conduit en Suisse », « 55 hopitaux
+  // au Canada » sont des faits de l'etude, pas un contexte de pratique (essaye le
+  // 13/09/2026, deux faux positifs immediats).
+  [/\b(Rodez|Aveyron|notre (centre|service|h[ôo]pital|unit[ée]|[ée]quipe|cabinet)|chez nous|en France|dans nos murs|la pratique fran[çc]aise)\b/i, 'référence géographique ou personnelle'],
   [/\b(r[ée]volution(ne)?|enterr[ée]e?s?|game[- ]changer|spectaculaire|bouleverse|confirme d[ée]finitivement)\b/i, 'effet journalistique ou conclusion excessive'],
   [/\b(en termes de|au niveau de)\b/i, 'calque de l’anglais'],
-  [/\b[ée]vidence\b/i, '« évidence » — écrire « preuve » ou « données »'],
+  // « mettre / mis en évidence » est du francais correct : seul le calque de l'anglais est vise.
+  [/(?<![A-Za-zÀ-ÿ])(?<!en )[ée]vidence(?![A-Za-zÀ-ÿ])/i, '« évidence » — écrire « preuve » ou « données »'],
   [/\b(supporte|supportent)\b/i, '« supporter » — écrire « étayer »'],
   [/\b(conditions? cardiaques?|conditions? cliniques?)\b/i, '« condition » — écrire « affection »'],
   [/\bcontr[ôo]les?\b(?= (?:appari[ée]s|sains|historiques))/i, '« contrôles » — écrire « témoins »'],
@@ -231,6 +242,10 @@ for (const c of cible) {
     if (/[^\u00a0\u202f]%/.test(t)) A(c, `${k} : « % » sans espace insécable`);
     if (/\bHR\s*=?\s*\d/.test(t) && !/IC\s*95/.test(t) && k !== 'accroche') A(c, `${k} : un HR sans intervalle de confiance`);
     if (/"[^"]+"/.test(t)) A(c, `${k} : guillemets droits — écrire « »`);
+    if (/[A-Za-zÀ-ÿ]'[A-Za-zÀ-ÿ]/.test(t)) A(c, `${k} : apostrophe droite — écrire l’apostrophe typographique`);
+    // Le lecteur n'a pas le resume PubMed sous les yeux : une fiche qui s'y refere
+    // laisse voir la methode de travail au lieu de dire ce que l'article montre.
+    if (/(?<![A-Za-zÀ-ÿ])le r[ée]sum[ée](?![A-Za-zÀ-ÿ])/i.test(t)) A(c, `${k} : renvoi au « résumé » de l’article — le lecteur ne l’a pas`);
   }
 
   // -- cohérence des chiffres entre présentations

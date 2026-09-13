@@ -19,6 +19,16 @@ Avant de considérer un texte comme terminé, deux questions :
 
 ## 2. Règles de langue
 
+- **Ne jamais renvoyer le lecteur au « résumé » de l'article** (règle du 13/09/2026). Écrire « le résumé
+  ne précise pas la durée de suivi » laisse voir la méthode de travail au lieu de dire ce que l'article
+  montre : le lecteur n'a pas ce résumé sous les yeux, et il croit qu'on parle de la fiche. Dire ce qui
+  manque sans nommer la source : « la durée de suivi n'est pas rapportée ». `controle-cartes.mjs` le
+  signale désormais en avertissement.
+- **Une phrase qui annonce une comparaison nomme ses deux bras juste après le verbe** (règle du
+  13/09/2026), et décrit la population ensuite. C'était la cause de la moitié des phrases illisibles
+  trouvées lors de la reprise du stock : « a comparé, chez des patients …, le traitement A au traitement
+  B » oblige à relire dès que la description dépasse dix mots. Écrire « a comparé A et B chez … », ou
+  couper en deux phrases.
 - **Pas de calque de l'anglais** : ni faux amis (« évidence » pour preuve, « sévère » pour grave quand le
   français dit grave, « supporter » pour étayer, « contrôle » pour témoin, « conditions » pour affections,
   « éligible » pour admissible…), ni tournures artificielles (« a été associé avec », « en termes de »,

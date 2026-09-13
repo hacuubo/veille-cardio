@@ -566,6 +566,18 @@ sessions Sports & Exercise Cardiology (EAPC) et Care of the Athletic Heart.
 
 ## Historique
 
+- 13/09/2026 — **reprise de langue de tout le stock** : les 160 cartes passées par la troisième passe
+  de la chaîne qualité (`outils/BRIEF-LANGUE.md`), par lots de 12, chaque lot confié à un relecteur
+  distinct qui n'avait pas la source. 157 cartes réécrites, 3 laissées telles quelles, **aucune
+  refusée** par le garde-fou de `outils/revision/langue-appliquer.py`. 583 corrections, et **26 doutes
+  de fond signalés sans être tranchés**, consignés dans `revision/2026-09-13/journal.md`.
+  Deux **références géographiques** en ligne depuis l'origine (« en France ») que le contrôle
+  automatique ne voyait pas : sa règle était restée `Rodez|Aveyron|notre centre|notre cabinet|chez
+  nous`, la version généralisée de Pause AR n'ayant jamais été reportée ici. Corrigé, sans y ajouter
+  de noms de pays — « essai conduit en Suisse » est un fait de l'étude, pas un contexte de pratique.
+  Et `\b` ne connaissant que l'ASCII en JavaScript, `/\b[ée]vidence\b/` ne s'était jamais
+  déclenchée sur « évidence ».
+
 - 19/08/2026 — création du tableau de bord, puis « édition zéro » : rattrapage complet 2025–2026,
   66 sorties dont 11 en changement de pratique probable.
 - 21/08/2026 — bulletin PDF hebdomadaire (`outils/faire-bulletin.sh`) et envoi par e-mail.

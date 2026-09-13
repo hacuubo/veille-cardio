@@ -94,13 +94,23 @@ l'article, chez quels patients et dans quelles circonstances l'activité électr
 observée, la fréquence réellement rapportée sans généraliser entre sous-groupes, et ce que ces
 observations permettent — ou non — de conclure sur l'implantation d'un défibrillateur.
 
-## 7. Méthode de révision (deux passes)
+## 7. Méthode de révision (trois passes)
 
 1. **Passe de réécriture** : le rédacteur reçoit la carte, le résumé PubMed et cette charte ; il réécrit
    accroche, résumé, résultat principal et fiche, sans toucher au titre, aux liens ni aux références.
 2. **Passe de contrôle**, par un relecteur distinct : fidélité à la source (chiffres, groupes, critères,
    degré de certitude), cohérence entre les champs, respect de la charte. Il valide, corrige ou renvoie.
-3. Un contrôle automatique refuse tout chiffre absent de la carte d'origine et du résumé PubMed, sauf
+3. **Passe de langue** (ajoutée le 13/09/2026), par un **troisième** agent, distinct des deux autres et
+   à qui l'on ne donne **pas** la source : il lit en cardiologue francophone, chaque phrase à voix
+   haute, et ne corrige que la langue — calques de l'anglais, style télégraphique, phrases qui se
+   démontent, typographie, musique d'ensemble. Il ne touche à aucun chiffre ni à aucun fait ; une
+   phrase qui lui paraît fausse est **signalée**, pas corrigée, et repart au relecteur de fidélité.
+   Voir `outils/BRIEF-LANGUE.md`.
+
+   Pourquoi une passe séparée : un relecteur qui vérifie des chiffres lit pour contrôler, pas pour
+   entendre. Tant que la langue n'était que le quatrième critère d'une relecture scientifique, des
+   tournures maladroites sont passées — exactes, mais pénibles à lire.
+4. Un contrôle automatique refuse tout chiffre absent de la carte d'origine et du résumé PubMed, sauf
    correction factuelle documentée.
-4. Les versions précédentes sont conservées (`revision/AAAA-MM-JJ/avant/`) avec un journal des
+5. Les versions précédentes sont conservées (`revision/AAAA-MM-JJ/avant/`) avec un journal des
    modifications, des corrections factuelles sourcées et des passages laissés « à vérifier ».

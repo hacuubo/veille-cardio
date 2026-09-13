@@ -1,0 +1,58 @@
+# Prévenir les moteurs dès la publication (IndexNow).
+#
+# Sans ça, il faut attendre que le robot passe de lui-même — des jours sur un site
+# neuf. Ici, dès qu'une carte arrive sur « main », les adresses concernées sont
+# annoncées à Bing, Yandex, Seznam et Naver, qui partagent le même point d'entrée.
+# Ça compte doublement : l'index de Bing alimente les réponses de ChatGPT et de
+# Copilot, donc une fiche reprise vite est une fiche citable vite.
+#
+# Google ne participe pas à IndexNow : pour lui, c'est sitemap.xml et son propre
+# rythme qui font foi. Ce workflow ne le remplace pas.
+#
+# La clé vit dans le dépôt, au vu de tous (fichier <clé>.txt à la racine), et ce
+# n'est pas une négligence : le protocole exige qu'elle soit servie publiquement
+# par le site, c'est ainsi que le moteur vérifie qui annonce les adresses.
+#
+# Ce workflow n'échoue jamais : prévenir un moteur est un confort, pas une
+# condition de publication.
+
+name: Prévenir les moteurs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'fiche/**'
+      - 'methode/**'
+  workflow_dispatch:
+    inputs:
+      tout:
+        description: "Annoncer TOUTES les adresses du plan du site (true) au lieu des cartes du jour"
+        required: false
+        default: 'false'
+      essai:
+        description: "Essai à blanc (true = ne rien envoyer)"
+        required: false
+        default: 'false'
+
+permissions:
+  contents: read
+
+jobs:
+  annoncer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Annoncer les adresses
+        continue-on-error: true
+        env:
+          TOUT: ${{ github.event.inputs.tout }}
+          ESSAI: ${{ github.event.inputs.essai }}
+        run: |
+          OPTS=""
+          [ "$TOUT" = "true" ] && OPTS="$OPTS --tout"
+          [ "$ESSAI" = "true" ] && OPTS="$OPTS --essai"
+          node outils/indexnow.mjs $OPTS

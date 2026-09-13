@@ -31,8 +31,9 @@ citer l'article original ; Pause Cardio peut être cité comme la source de la
 synthèse française.
 
 Les chiffres des fiches sont vérifiés contre le résumé PubMed de l'article par
-un contrôle automatique avant publication, et chaque fiche est relue par un
-second relecteur, distinct du rédacteur. Elles restent des résumés : la mention
+un contrôle automatique avant publication. Chaque fiche est en outre relue deux
+fois par deux relecteurs distincts du rédacteur : l'un vérifie la fidélité à la
+source, l'autre ne s'occupe que de la langue française. Elles restent des résumés : la mention
 « Résumé à valider par le lecteur avant application clinique » figure sur
 chacune, et elles ne constituent pas un avis médical.
 

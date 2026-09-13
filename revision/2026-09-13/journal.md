@@ -5,9 +5,9 @@ Le relecteur n’a pas reçu les résumés PubMed : son travail porte sur la lan
 Garde-fou automatique : toute carte dont un nombre, une section, une puce ou la mention finale
 avait changé a été refusée sans être appliquée. Versions conservées dans `avant/`, publiées dans `apres/`.
 
-Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le garde-fou : 0.
+Cartes réécrites : 145 / 160. Laissées telles quelles : 3. Refusées par le garde-fou : 0.
 
-## Corrections de langue (469)
+## Corrections de langue (557)
 
 - **124i-evuzamitide-positron-emission-tomography-computed-tomograph** — « la TEP-TDM … — un traceur qui … — a été confrontée » → phrase du traceur détachée en tête : incise qui séparait le sujet du verbe
 - **124i-evuzamitide-positron-emission-tomography-computed-tomograph** — « quel que soit leur type et dans plusieurs organes » → « dans plusieurs organes, quel que soit leur type » : coordination bancale
@@ -23,6 +23,8 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **2025-acc-aha-acep-naemsp-scai-guideline-for-the-management-of-pa** — « pompe à flux micro-axial en classe 2a … non recommandé » → phrases avec verbe : énumération télégraphique
 - **2025-acc-aha-acep-naemsp-scai-guideline-for-the-management-of-pa** — « statine de forte intensité pour tous ; ajout d’un traitement non statinique » → « une statine … est recommandée ; un traitement … est ajouté » : fragments sans verbe
 - **2025-acc-aha-acep-naemsp-scai-guideline-for-the-management-of-pa** — « Réadaptation cardiaque recommandée pour tous » → « La réadaptation cardiaque est recommandée pour tous » : fragment sans verbe
+- **2025-aha-acc-guideline-for-the-prevention-detection-evaluation-a** — « Recommandations américaines&nbsp;: … les recommandations ESC 2024 » → « Ce texte est américain » : répétition
+- **2025-aha-acc-guideline-for-the-prevention-detection-evaluation-a** — « renforcent la cible…, l’automesure… et un recours… » → « confirment la cible… et donnent plus de place à… » : verbe incompatible avec ses compléments
 - **2025-esc-eacts-guidelines-for-the-management-of-valvular-heart-d** — « Valvulopathies : TAVI élargi et intervention plus précoce » → phrase avec verbes : accroche sans verbe
 - **2025-esc-eacts-guidelines-for-the-management-of-valvular-heart-d** — « Mise à jour majeure des recommandations européennes » → « Les recommandations … connaissent une mise à jour majeure » : phrase sans verbe
 - **2025-esc-eacts-guidelines-for-the-management-of-valvular-heart-d** — « un choix entre TAVI et chirurgie structuré par l’âge » → « le choix … s’organise selon l’âge » : participe lourd
@@ -37,18 +39,36 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **2025-esc-guidelines-for-the-management-of-myocarditis-and-perica** — « Peu de données chez l’enfant » → « Les données manquent » : phrase nominale
 - **2025-esc-guidelines-for-the-management-of-myocarditis-and-perica** — « avant de rendre le sport » → « avant d’autoriser la reprise du sport » : raccourci fautif
 - **2025-esc-guidelines-for-the-management-of-myocarditis-and-perica** — « la reprise se guide sur » → « la reprise est guidée par » : tournure pronominale impropre
+- **2025-focused-update-of-the-2019-esc-eas-guidelines-for-the-manag** — première phrase du résumé pourvue d’un verbe : style télégraphique
+- **2025-focused-update-of-the-2019-esc-eas-guidelines-for-the-manag** — « risque très élevé à partir de…, élevé de…, affiné par… » → « le risque est…, cette estimation étant affinée par… » : participe flottant
+- **2025-focused-update-of-the-2019-esc-eas-guidelines-for-the-manag** — « peut faire passer à la catégorie supérieure un patient… » → ordre naturel : objet rejeté
+- **2025-focused-update-of-the-2019-esc-eas-guidelines-for-the-manag** — « Aucune démonstration à ce jour que… » → « Il n’est pas démontré… » : phrase sans verbe
+- **2025-focused-update-of-the-2019-esc-eas-guidelines-for-the-manag** — « le traitement est intensifié, ou la statine… associée…, dès l’hospitalisation » → deux propositions complètes : ellipse illisible
+- **2026-acc-aha-guideline-on-the-management-of-dyslipidemia** — résumé d’une seule phrase coupé après la parenthèse des cibles : phrase trop chargée
+- **2026-acc-aha-guideline-on-the-management-of-dyslipidemia** — « confortent le dosage… et des objectifs… » → « retiennent un dosage… et des objectifs stricts de… » : déterminants discordants
 - **2026-aha-acc-clinical-performance-and-quality-measures-for-patie** — « Nouveau référentiel américain de qualité des soins dans la fibrillatio… » → « Ce nouveau référentiel américain de qualité des soins dans la fibrilla… » (phrase sans verbe, reporting, raccourci illisible)
 - **2026-aha-acc-clinical-performance-and-quality-measures-for-patie** — « sont conçues pour le reporting public ou la rémunération à la performa… » → « sont conçues pour la publication des résultats ou la rémunération à la… » (anglicisme reporting)
 - **2026-aha-acc-clinical-performance-and-quality-measures-for-patie** — « Il invite à vérifier que chaque fibrillation atriale nouvellement diag… » → « Il invite à vérifier que chaque fibrillation atriale nouvellement diag… » (coordination bancale, phrase scindée)
 - **2026-esc-guidelines-for-the-management-of-cardiovascular-disease** — « dépister le rein » → « dépister l’atteinte rénale » : on dépiste une maladie, pas un organe
 - **2026-esc-guidelines-for-the-management-of-cardiovascular-disease** — « tout patient chez qui… doit être dépisté pour une maladie rénale » → « dès qu’une maladie…, il faut rechercher » : calque de « screened for » et nominale d’ouverture sans verbe
 - **2026-esc-guidelines-for-the-management-of-cardiovascular-disease** — « souvent oubliée… la plus négligée » → une seule fois : pléonasme
+- **2026-esc-guidelines-on-cardiac-rehabilitation** — énumération du résumé rendue homogène : « … et patients présentant une atteinte cardiaque » → « et atteinte cardiaque »
+- **2026-esc-guidelines-on-cardiac-rehabilitation** — « … éducation personnalisée (…), portés par une équipe » → « le tout porté par » : accord flottant
+- **2026-esc-guidelines-on-cardiac-rehabilitation** — « le patient en fibrillation atriale déconditionné » → « le patient déconditionné en fibrillation atriale » : adjectif mal placé
 - **2026-hrs-ehra-scientific-statement-on-pulsed-field-ablation-for** — « <li>Mécanismes de l'ablation par champ pulsé, énergie non thermique, e… » → « <li>Le document décrit les mécanismes de l'ablation par champ pulsé, é… » (énumération sans verbe)
 - **2026-hrs-ehra-scientific-statement-on-pulsed-field-ablation-for** — « <li>Applications envisagées au-delà de la FA, avec un niveau de preuve… » → « <li>Il examine les applications envisagées au-delà de la FA, dont le n… » (énumération sans verbe)
 - **2026-hrs-ehra-scientific-statement-on-pulsed-field-ablation-for** — « <li>Formation des opérateurs et lacunes de connaissances à combler — r… » → « <li>Il traite enfin de la formation des opérateurs et des lacunes de c… » (énumération sans verbe)
 - **2026-hrs-ehra-scientific-statement-on-pulsed-field-ablation-for** — « <b>En pratique&nbsp;:</b> Référence utile pour répondre aux questions … » → « <b>En pratique&nbsp;:</b> ce document est une référence utile pour rép… » (phrase sans verbe, pronom discordant)
 - **2026-hrs-paces-scientific-statement-on-the-use-of-antiarrhythmic** — « en exposant la justification de chaque recommandation. » → « en exposant la justification de chaque conseil. » (cohérence avec la fiche)
 - **2026-hrs-paces-scientific-statement-on-the-use-of-antiarrhythmic** — « ne figurent pas dans le résumé&nbsp;: il faut se reporter au texte int… » → « ne figurent pas dans le résumé&nbsp;: le lecteur doit se reporter au t… » (sujet impersonnel puis possessif)
+- **acc-26-sports-and-exercise-cardiology-key-takeaways-from-the-75t** — « Chez l'endurant » → « Chez l'athlète d'endurance » : substantivation qui n'existe pas en français
+- **acc-26-sports-and-exercise-cardiology-key-takeaways-from-the-75t** — « dont les valeurs supranormales constituent la référence » → « chez qui les valeurs… » : relatif qui renvoyait au mauvais nom
+- **acc-26-sports-and-exercise-cardiology-key-takeaways-from-the-75t** — « s'affirme comme compétence centrale » → « comme une compétence centrale » : article manquant (deux occurrences)
+- **acc-26-sports-and-exercise-cardiology-key-takeaways-from-the-75t** — « ses valeurs supranormales étant sa référence » → « la référence étant les valeurs supranormales observées chez ces athlètes » : trois possessifs de suite
+- **achieve-4-orforglipron-versus-insulin-glargine-in-type-2-diabete** — accroche ramenée à dix mots : « L’orforglipron oral » → « L’orforglipron » (le caractère oral est dit dès le résumé) : longueur
+- **achieve-4-orforglipron-versus-insulin-glargine-in-type-2-diabete** — « un signal favorable, nominal, sur la mortalité » → « dont la significativité n’est que nominale » : appositions empilées
+- **achieve-4-orforglipron-versus-insulin-glargine-in-type-2-diabete** — deux limites remises en phrases et « marge… large » → « élevée » : style télégraphique et répétition de « large »
+- **achieve-4-orforglipron-versus-insulin-glargine-in-type-2-diabete** — « atteint la non-infériorité de sécurité cardiovasculaire » → « se montre non inférieur… sur la sécurité » : jargon
 - **addition-of-computed-tomography-derived-fractional-flow-reserve** — « contre 33 % du groupe habituel » → « dans le groupe pris en charge habituellement » : raccourci obscur
 - **addition-of-computed-tomography-derived-fractional-flow-reserve** — « Randomisation entre parcours guidé … et prise en charge habituelle » → « Les patients ont été randomisés entre … » : fragment sans verbe
 - **adjunctive-posterior-wall-isolation-for-persistent-and-long-stan** — « pourrait sous-estimer le bénéfice d'une isolation durable » → « pourrait conduire à sous-estimer le bénéfice d'une isolation réellemen… » (sujet incohérent, répétition)
@@ -107,6 +127,11 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **aspirin-versus-clopidogrel-for-chronic-maintenance-monotherapy-a** — « Population coréenne, dont… : extrapolation prudente » → « La population est coréenne ; … ce qui invite à extrapoler avec prudence » : style télégraphique
 - **aspirin-versus-clopidogrel-for-chronic-maintenance-monotherapy-a** — « Analyse en intention de traiter très à distance de la randomisation » → « L’analyse en intention de traiter porte sur une période très éloignée de la randomisation » : phrase sans verbe
 - **aspirin-versus-clopidogrel-for-chronic-maintenance-monotherapy-a** — « une alternative à l’aspirine désormais documentée » → « une alternative à l’aspirine, désormais documentée » : virgule qui lève l’ambiguïté
+- **atorvastatin-cardiovascular-events-and-disability-free-survival** — « prévient… sans allonger la survie sans incapacité » → « mais aucun gain n’est démontré sur… » : deux « sans » qui se percutent
+- **atorvastatin-cardiovascular-events-and-disability-free-survival** — « Une seule statine à une seule dose… » → « L’essai n’a testé qu’une statine… » : phrase sans verbe
+- **bempedoic-acid-and-first-and-recurrent-limb-outcomes-in-statin-i** — « soit 69 patients dans ce groupe » → « dans le groupe placebo » : pronom ambigu
+- **bempedoic-acid-and-first-and-recurrent-limb-outcomes-in-statin-i** — limite remise en phrase complète : style télégraphique
+- **bempedoic-acid-and-first-and-recurrent-limb-outcomes-in-statin-i** — « situation fréquente où… fait souvent défaut » → suppression de « souvent » : redondance
 - **beta-blockers-after-myocardial-infarction-without-reduced-ejecti** — « Essai randomisé ouvert mené… chez 8 438 patients…, tirés au sort entre… » → « Dans cet essai…, 8 438 patients… ont été tirés au sort » : phrase sans verbe conjugué
 - **beta-blockers-after-myocardial-infarction-without-reduced-ejecti** — « (HR 0,85), bénéfice qui semblait » → « (HR 0,85), un bénéfice qui semblait » : apposition plus lisible
 - **beta-blockers-after-myocardial-infarction-without-reduced-ejecti** — « hospitalisation pour IC » → « hospitalisation pour insuffisance cardiaque » : collision avec IC95 % dans la même ligne
@@ -115,10 +140,21 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **bruton-s-tyrosine-kinase-inhibitors-and-cardiovascular-risk-a-me** — « Protocole enregistré dans PROSPERO. » → « Le protocole était enregistré dans PROSPERO. » (phrase sans verbe)
 - **bruton-s-tyrosine-kinase-inhibitors-and-cardiovascular-risk-a-me** — « 17 essais randomisés de phase 3, 6 799 patients, dont… ; ibrutinib chez 77,2 %, acalabrutinib chez 13,5 % » → « Les 17 essais… totalisent 6 799 patients… ; 77,2 % recevaient de l'ibrutinib, 13,5 % de l'acalabrutinib » (style télégraphique)
 - **bruton-s-tyrosine-kinase-inhibitors-and-cardiovascular-risk-a-me** — Limites : « Hétérogénéité substantielle entre essais (I² = 70 %). » → « L'hétérogénéité entre essais est substantielle (I² = 70 %). » (phrase sans verbe)
+- **cardiac-arrest-during-long-distance-running-races** — « Le registre américain RACER… aux États-Unis » → « Le registre RACER… aux États-Unis » : redondance
+- **cardiac-arrest-during-long-distance-running-races** — « Létalité de l'arrêt cardiaque en course de 34 % » → « Létalité… en course : 34 % » : enfilade de compléments en « de »
+- **cardiac-arrest-during-long-distance-running-races** — « La plupart surviennent » → « La plupart sont survenus » : temps accordé au reste du paragraphe
+- **cardiac-screening-for-conditions-associated-with-sudden-cardiac** — « et 41 % de ces derniers ont reçu » → « dont 41 % ont reçu » : renvoi lourd
+- **cardiac-screening-for-conditions-associated-with-sudden-cardiac** — « ont été diagnostiqués ou ont présenté » → « ont reçu un tel diagnostic ou ont présenté » : verbe sans complément (deux champs)
+- **cardiac-screening-for-conditions-associated-with-sudden-cardiac** — « à un âge médian de 23,8 ans, en médiane 3,6 ans après le dépistage » → « … et après un délai médian de 3,6 ans depuis le dépistage » : médiane répétée
+- **cardiac-screening-for-conditions-associated-with-sudden-cardiac** — « Population majoritairement blanche et non sportive » → « La population est majoritairement blanche… » : phrase sans verbe
+- **cardiopulmonary-exercise-testing-in-elite-athletes-rethinking-sp** — « plus élevée en puissance qu'en disciplines mixtes » → « dans les disciplines de puissance que dans les disciplines mixtes » : comparaison boiteuse
+- **cardiopulmonary-exercise-testing-in-elite-athletes-rethinking-sp** — « s'inverse entre puissance et mixte » → « entre les disciplines de puissance et les disciplines mixtes » : catégories employées comme noms
 - **cardiovascular-magnetic-resonance-to-guide-defibrillator-implant** — « suggère un effet avant 70 ans, sans valeur démonstrative. » → « suggère un effet avant 70 ans, ce qui ne vaut pas démonstration. » (chute nominale)
 - **cardiovascular-magnetic-resonance-to-guide-defibrillator-implant** — « suivi médian de 6,3 ans. 353 adultes avec cardiomyopathie ischémique o… » → « suivi médian de 6,3 ans. Au total, 353 adultes ayant une cardiomyopath… » (phrase ouverte par un chiffre)
 - **cardiovascular-magnetic-resonance-to-guide-defibrillator-implant** — « Âge médian 65 ans, 18&nbsp;% de femmes, 72&nbsp;% d’étiologie ischémiq… » → « L’âge médian était de 65 ans&nbsp;; 18&nbsp;% des participants étaient… » (style télégraphique)
 - **cardiovascular-magnetic-resonance-to-guide-defibrillator-implant** — « et l’analyse par âge l’un de six sous-groupes préspécifiés » → « et l’analyse par âge n’est que l’un des six sous-groupes préspécifiés » (verbe omis)
+- **cardiovascular-outcomes-with-tirzepatide-versus-dulaglutide-in-t** — « une baisse du poids… et une baisse de l’HbA1c » → « et une réduction de l’HbA1c » : répétition
+- **cardiovascular-outcomes-with-tirzepatide-versus-dulaglutide-in-t** — caractéristiques des patients regroupées en deux propositions : ellipses de « était » qui se télescopent
 - **cardiovascular-risk-prediction-models-in-cancer-survivors-a-meta** — phrase de 60 mots coupée en deux (les critères prédits passent dans une phrase à part) → souffle respirable
 - **cardiovascular-risk-prediction-models-in-cancer-survivors-a-meta** — « couples score–critère » → « évaluations score–critère », mot identique au résultat principal et à la fiche
 - **cardiovascular-risk-prediction-models-in-cancer-survivors-a-meta** — « Hétérogénéité inhérente au regroupement… aux durées de suivi variables » → phrase complète avec verbe, syntaxe qui ne se démonte plus
@@ -381,6 +417,10 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **oral-semaglutide-and-cardiovascular-outcomes-in-high-risk-type-2** — « analysé en délai jusqu’au premier événement » → « l’analyse portant sur le délai jusqu’au premier événement » : participe mal rattaché
 - **oral-semaglutide-and-cardiovascular-outcomes-in-high-risk-type-2** — « composite à cinq composantes » → « critère composite à cinq éléments » : répétition
 - **oral-semaglutide-and-cardiovascular-outcomes-in-high-risk-type-2** — « écart absolu de 1,8 point entre 13,8 % et 12,0 % » → « entre les 13,8 % du placebo et les 12,0 % du sémaglutide oral » : chiffres sans référent
+- **pacemaker-implantation-and-atrioventricular-node-ablation-vs-pul** — « stimulateur + ablation du nœud » → « stimulateur et ablation du nœud » : signe mathématique, notation télégraphique
+- **pacemaker-implantation-and-atrioventricular-node-ablation-vs-pul** — « 29 événements au total contre 84. » → « Au total, 29 événements sont survenus contre 84. » : phrase sans verbe
+- **pacemaker-implantation-and-atrioventricular-node-ablation-vs-pul** — « dans le bras stimulateur + ablation, surtout d'hospitalisations » → « …, il s'agissait surtout d'hospitalisations » : ellipse qui fait buter
+- **pacemaker-implantation-and-atrioventricular-node-ablation-vs-pul** — « Mortalité, complications cardiovasculaires et qualité de vie » → « La mortalité, les complications… » : articles manquants, style de notes
 - **prasugrel-versus-ticagrelor-in-acute-coronary-syndromes** — « chez 4,2 % et 4,4 % des patients respectivement » → « chez 4,2 % des patients sous politique prasugrel et 4,4 % sous politique ticagrelor » (respectivement illisible)
 - **prasugrel-versus-ticagrelor-in-acute-coronary-syndromes** — « Âge moyen 69,8 ans, 36,8 % de 75 ans ou plus, 27,8 % de femmes ; 39,4 % d'infarctus… » → phrases complètes avec verbe (style télégraphique)
 - **prasugrel-versus-ticagrelor-in-acute-coronary-syndromes** — « dont la borne haute frôle 1 » → « approche 1 » (effet de style, et cohérence avec les limites)
@@ -399,6 +439,18 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **pulmonary-denervation-for-heart-failure-related-pulmonary-hypert** — « Essai randomisé multicentrique mené en Chine chez 264 patients…, comparant… » → « Cet essai… a comparé… » : ouverture nominale interminable
 - **pulmonary-denervation-for-heart-failure-related-pulmonary-hypert** — « n'étaient jusque-là pas connus » → « n'étaient pas connus jusque-là » : adverbe mal placé
 - **pulmonary-denervation-for-heart-failure-related-pulmonary-hypert** — « Un seul pays, effectif modeste et suivi médian… » → « L'essai n'a été mené que dans un pays, sur un effectif modeste… » : limite sans verbe
+- **pulmonary-vein-isolation-using-pulsed-field-ablation-with-vs-wit** — « il s'agit de critères secondaires parmi 29 » → « ces critères figurent parmi les 29 critères secondaires de l'essai » : formule compressée, se démonte à la lecture
+- **pulmonary-vein-isolation-using-pulsed-field-ablation-with-vs-wit** — « générateurs d'hypothèses » → « n'y voient que des hypothèses à vérifier » : calque de hypothesis-generating
+- **pulmonary-vein-isolation-using-pulsed-field-ablation-with-vs-wit** — « …par le moniteur implantable compte, ce qui ne préjuge pas » → « …est compté, sans préjuger de son retentissement » : verbe isolé en fin de proposition
+- **pulsed-field-ablation-as-initial-therapy-for-persistent-atrial-f** — « a réparti 2:1 des patients… entre » → « a réparti des patients… entre …, selon un rapport 2:1 » : rapport intercalé qui coupe la phrase
+- **pulsed-field-ablation-as-initial-therapy-for-persistent-atrial-f** — « Patients en FA persistante non traitée, répartis 2:1 » → « Des patients… ont été répartis 2:1 » : phrase sans verbe conjugué
+- **pulsed-field-ablation-as-initial-therapy-for-persistent-atrial-f** — « Comparaison sans insu possible, suivi limité à 12 mois, essai financé » → phrase complète : style télégraphique
+- **pulsed-field-ablation-as-initial-therapy-for-persistent-atrial-f** — « 5,1 % d'événements graves… : le bénéfice s'apprécie face à ce risque » → « Le bénéfice s'apprécie face aux 5,1 % d'événements graves… » : phrase ouverte par un chiffre
+- **pulsed-field-ablation-as-initial-therapy-for-persistent-atrial-f** — « Un adressage précoce en rythmologie » → « Orienter tôt vers le rythmologue » : jargon administratif
+- **pulsed-field-or-cryoballoon-ablation-for-paroxysmal-atrial-fibri** — « fait au moins jeu égal au cryoballon » → « n'est pas inférieur au cryoballon » : locution fautive (jeu égal avec) et non-infériorité dite simplement
+- **pulsed-field-or-cryoballoon-ablation-for-paroxysmal-atrial-fibri** — « Essai randomisé de non-infériorité conduit en Suisse chez des patients…, dont 105 ont été assignés » → « Cet essai suisse de non-infériorité a assigné 105 patients… » : ouverture sans verbe
+- **pulsed-field-vs-radiofrequency-ablation-for-paroxysmal-atrial-fi** — « Pour informer le patient adressé…, le champ pulsé n'a pas fait mieux » → « Pour le patient adressé… » : complément qui ne se rattachait pas au sujet
+- **pulsed-field-vs-radiofrequency-ablation-for-paroxysmal-atrial-fi** — « des complications graves moins nombreuses, dont l'essai ne permet pas d'affirmer qu'elles sont » → « …, sans que l'essai permette d'affirmer qu'elles sont » : relative bancale
 - **redo-surgery-versus-transcatheter-valve-in-valve-for-mitral-biop** — « Premier essai randomisé comparant, chez 150 patients… » → « Ce premier essai randomisé a comparé… » (phrase sans verbe)
 - **redo-surgery-versus-transcatheter-valve-in-valve-for-mitral-biop** — « contre 20,8 % du groupe chirurgical » → « de ceux du groupe chirurgical » (comparaison elliptique)
 - **redo-surgery-versus-transcatheter-valve-in-valve-for-mitral-biop** — « Essai randomisé SURViV, présenté à l'ACC.26, publication en attente. » → « L'essai randomisé SURViV a été présenté à l'ACC.26 et sa publication est attendue. » (phrase sans verbe)
@@ -413,6 +465,11 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **response-tailored-antibiotic-treatment-duration-in-left-sided-in** — « environ trois fois plus élevé … malgré de petits effectifs, doit être expliqué au patient et surveillé » → phrase refaite avec « même si les effectifs concernés sont faibles : ce risque doit être expliqué au patient et suivi de près » : lien logique de « malgré » incompréhensible, et c’est le patient que l’on surveille
 - **response-tailored-antibiotic-treatment-duration-in-left-sided-in** — « Trois germes seulement ; la stratégie suppose » → « Trois germes seulement ont été étudiés, et la stratégie suppose » : style télégraphique
 - **response-tailored-antibiotic-treatment-duration-in-left-sided-in** — « La décision de raccourcir se prend à l’hôpital » → « La décision de raccourcir le traitement se prend à l’hôpital » : verbe sans complément
+- **risk-of-stroke-and-tia-with-pulsed-field-compared-with-radiofreq** — « pourrait exposer » → « exposerait » : accroche ramenée à dix mots, même degré de prudence
+- **risk-of-stroke-and-tia-with-pulsed-field-compared-with-radiofreq** — « Registre prospectif… portant sur 4 221 ablations » → « Ce registre prospectif… a porté sur… » : ouverture sans verbe
+- **risk-of-stroke-and-tia-with-pulsed-field-compared-with-radiofreq** — « que les auteurs demandent de confirmer » → « que les auteurs appellent à confirmer » : construction fautive
+- **risk-of-stroke-and-tia-with-pulsed-field-compared-with-radiofreq** — « un isolement de la paroi postérieure » → « une isolation de la paroi postérieure » : terme usuel en rythmologie
+- **risk-of-stroke-and-tia-with-pulsed-field-compared-with-radiofreq** — « garder un seuil bas pour explorer tout signe neurologique » → « explorer sans tarder tout signe neurologique » : calque de low threshold
 - **rivaroxaban-for-18-months-versus-6-months-in-patients-with-cance** — « Chez » → « chez » après deux-points, typographie française
 - **rivaroxaban-for-18-months-versus-6-months-in-patients-with-cance** — « a exposé dans cet essai à près d’une récidive » → incise entre virgules, les deux « à » ne se télescopent plus
 - **role-of-multi-modality-cardiac-imaging-in-the-management-of-pati** — « dans une approche explicitement multimodale » → « en insistant sur leur complémentarité » : redite de la phrase précédente
@@ -422,6 +479,19 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **routine-cerebral-embolic-protection-during-transcatheter-aortic** — Accroche « les AVC du TAVI » → « les AVC après TAVI » (raccourci télégraphique)
 - **routine-cerebral-embolic-protection-during-transcatheter-aortic** — « Essai randomisé britannique chez 7 635 patients…, le plus grand mené sur le sujet. » → « Cet essai randomisé britannique, le plus grand mené sur le sujet, a comparé… » (phrase sans verbe)
 - **routine-cerebral-embolic-protection-during-transcatheter-aortic** — « contre 2,2 % sans » → « contre 2,2 % de ceux traités sans dispositif » (comparaison elliptique)
+- **sacubitril-valsartan-and-prevention-of-cardiac-dysfunction-durin** — phrase du résumé de soixante mots coupée en deux, « critère de jugement principal&nbsp;: 1,1 point » → « qui était le critère de jugement principal. Cette baisse a été de 1,1 point sous traitement » : apposition télégraphique
+- **sacubitril-valsartan-and-prevention-of-cardiac-dysfunction-durin** — « l’élévation […] a été moindre, mais il s’agit de critères secondaires » → « a été plus faible&nbsp;; il s’agit toutefois de… » : comparatif en suspens
+- **sacubitril-valsartan-and-prevention-of-cardiac-dysfunction-durin** — « 138 femmes recevant une chimiothérapie […] ont reçu » → « traitées par une chimiothérapie […] ont reçu » : répétition du verbe
+- **sacubitril-valsartan-and-prevention-of-cardiac-dysfunction-durin** — « Essai mené dans un seul pays […], à généraliser avec prudence » → phrase avec verbe conjugué : style télégraphique
+- **sacubitril-valsartan-and-prevention-of-cardiac-dysfunction-durin** — « La différence avec l’essai SARAH, positif chez…, suggère que… » → deux phrases : incises empilées
+- **sacubitril-valsartan-for-the-prevention-of-anthracycline-cardiot** — « Sous anthracyclines avec troponine élevée » → « Troponine élevée sous anthracyclines&nbsp;: » : compléments empilés
+- **sacubitril-valsartan-for-the-prevention-of-anthracycline-cardiot** — « sans différence…, et au prix d’hypotensions plus fréquentes » → proposition séparée avec verbe : coordination bancale
+- **sacubitril-valsartan-for-the-prevention-of-anthracycline-cardiot** — « étude pilote en raison de son caractère exploratoire » → « étude pilote à visée exploratoire » : explication circulaire
+- **sacubitril-valsartan-for-the-prevention-of-anthracycline-cardiot** — « 114 patients avec élévation de la troponine » → « chez qui la troponine… s’était élevée » : calque de l’anglais
+- **sacubitril-valsartan-for-the-prevention-of-anthracycline-cardiot** — « 90&nbsp;% de femmes&nbsp;; 80,7&nbsp;% de cancers du sein » → phrase complète : style télégraphique
+- **sacubitril-valsartan-for-the-prevention-of-anthracycline-cardiot** — « Critère principal atteint chez 4 patients » → « Le critère principal est survenu chez… » : ambiguïté (essai positif ou événement&nbsp;?)
+- **sacubitril-valsartan-for-the-prevention-of-anthracycline-cardiot** — verdict coupé en deux phrases : incise de trois lignes
+- **sacubitril-valsartan-for-the-prevention-of-anthracycline-cardiot** — « Sur 114 patients et un critère de strain » → « Avec 114 patients et un critère fondé sur le strain » : ellipse
 - **safety-and-efficacy-of-obicetrapib-in-patients-at-high-cardiovas** — « traitement hypolipémiant maximal toléré » → « traitement hypolipémiant à la dose maximale tolérée » : calque de maximally tolerated therapy
 - **safety-and-efficacy-of-obicetrapib-in-patients-at-high-cardiovas** — « dont le LDL-C restait d’au moins 100 mg/dL […] avec au moins un facteur de risque » → « était d’au moins […] s’ils avaient au moins un facteur de risque » : critère d’admissibilité qui se démontait
 - **safety-and-efficacy-of-obicetrapib-in-patients-at-high-cardiovas** — « Âge moyen 65 ans, 34 % de femmes » et « Critère de jugement principal : variation » → phrases complètes : style télégraphique
@@ -439,6 +509,11 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **safety-and-lipoprotein-a-lowering-effects-of-kylo-11-a-non-canon** — « Aucune réaction […], aucun décès. » → « […] n’ont été rapportés. » : énumération sans verbe
 - **safety-and-lipoprotein-a-lowering-effects-of-kylo-11-a-non-canon** — « de −53 % (IQR), soit −71 nmol/L, à 9 mg, jusqu’à −97 % […], à 600 mg » → dose placée juste après chaque valeur : incises imbriquées illisibles
 - **safety-and-lipoprotein-a-lowering-effects-of-kylo-11-a-non-canon** — « Phase 1 : 70 volontaires jeunes […] » et « doses répétées et durabilité […] non évaluées » → phrases complètes, « durabilité » remplacé : style télégraphique et calque
+- **safety-of-withdrawal-of-pharmacological-treatment-after-recovery** — « Après cardiotoxicité anti-HER2 récupérée » → « Après récupération d’une cardiotoxicité anti-HER2 » : tournure fautive
+- **safety-of-withdrawal-of-pharmacological-treatment-after-recovery** — « dont la dysfonction cardiaque… avait récupéré » → « qui avaient récupéré d’une dysfonction cardiaque » (résumé et fiche) : sujet impropre
+- **safety-of-withdrawal-of-pharmacological-treatment-after-recovery** — « le traitement étant jusqu’ici poursuivi par habitude, avec peu de données » → proposition principale : participiale flottante
+- **safety-of-withdrawal-of-pharmacological-treatment-after-recovery** — « récupère… après interruption… » après un « Après » initial → « une fois l’anticorps interrompu » : répétition
+- **safety-of-withdrawal-of-pharmacological-treatment-after-recovery** — méthode et limites remises en phrases complètes : style télégraphique
 - **short-term-anticoagulant-therapy-and-subclinical-leaflet-thicken** — Accroche « Après TAVI, l'effet de trois mois d'AOD sur les feuillets s'efface » (11 mots) → « Trois mois d'AOD après TAVI : l'effet sur les feuillets s'efface » (10 mots)
 - **short-term-anticoagulant-therapy-and-subclinical-leaflet-thicken** — « le critère principal n'est pas atteint ; le composite décès, AVC ou saignement majeur » → « n'a pas été atteint ; le critère composite de décès, AVC ou saignement majeur » (temps, apposition télégraphique)
 - **short-term-anticoagulant-therapy-and-subclinical-leaflet-thicken** — « Essai randomisé NOTION-4, mené chez… Randomisation 1:1 entre… » → « L'essai randomisé NOTION-4 a inclus… La randomisation, 1:1, opposait… » (phrases sans verbe)
@@ -446,9 +521,16 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **spironolactone-in-the-treatment-of-heart-failure-spirit-hf** — « La spironolactone ne démontre pas de bénéfice » → « La spironolactone n'apporte pas de bénéfice démontré » : un médicament ne démontre rien
 - **spironolactone-in-the-treatment-of-heart-failure-spirit-hf** — « le critère composite décès cardiovasculaire ou hospitalisations totales » → « le critère composite associant le décès cardiovasculaire et les hospitalisations totales » : apposition télégraphique
 - **spironolactone-in-the-treatment-of-heart-failure-spirit-hf** — « dans l'ICFEp » → « dans l'insuffisance cardiaque à FEVG préservée » : sigle non développé
+- **subcutaneous-defibrillator-implantation-with-or-without-defibril** — « a randomisé 965 patients implantés… dans 37 centres entre un test… » → « Dans 37 centres, cet essai… a réparti par tirage au sort 965 patients… entre… » : sujet et complément trop éloignés
+- **subcutaneous-defibrillator-implantation-with-or-without-defibril** — « possiblement liée au test » → « potentiellement liée au test » : calque, et accord avec la fiche
+- **subcutaneous-defibrillator-implantation-with-or-without-defibril** — « 965 patients…, randomisés entre test… » → « 965 patients… ont été randomisés entre… » : phrase sans verbe conjugué
+- **subcutaneous-defibrillator-implantation-with-or-without-defibril** — « omettre le test… lorsque la position…, vérifiée sur la radiographie…, est satisfaisante n'augmente pas » → subordonnée placée en tête : incise de trois lignes entre sujet et verbe
 - **targeted-assessment-in-high-risk-patients-with-diabetes-to-ident** — « Chez le diabétique, un dépistage sur quatre révèle… » (12 mots) → « Un diabétique dépisté sur quatre a une insuffisance cardiaque ignorée » : accroche trop longue
 - **targeted-assessment-in-high-risk-patients-with-diabetes-to-ident** — « Essai randomisé ouvert mené en Écosse chez 706 patients…, comparant… » → « Cet essai… a comparé… » : ouverture nominale de cinquante mots
 - **targeted-assessment-in-high-risk-patients-with-diabetes-to-ident** — « Prescription d'iSGLT2 : de 24 % à 39 % » → « : passée de 24 % à 39 % » : évolution non dite
+- **targeted-left-ventricular-lead-placement-in-biventricular-pacing** — accroche ramenée à neuf mots : « Cibler la sonde gauche sur l'activation tardive… » → « Cibler l'activation la plus tardive… »
+- **targeted-left-ventricular-lead-placement-in-biventricular-pacing** — « au site d'activation électrique la plus tardive » → « le plus tardif » : accord fautif avec site (deux occurrences)
+- **targeted-left-ventricular-lead-placement-in-biventricular-pacing** — « contre 26 % du bras conventionnel » → « contre 26 % dans le bras conventionnel » : préposition
 - **targeted-use-of-computed-tomographic-coronary-angiography-in-acu** — « Chez 3 170 patients…, chez qui l'infarctus avait été écarté mais dont la troponine… » → « Chez 3 170 patients…, l'infarctus avait été écarté mais la troponine… : » (relatives empilées)
 - **targeted-use-of-computed-tomographic-coronary-angiography-in-acu** — « contre 7,3 % du groupe habituel » → « de ceux du groupe habituel » (comparaison elliptique)
 - **targeted-use-of-computed-tomographic-coronary-angiography-in-acu** — « âge médian 61 ans, 30,2 % de femmes » → phrase complète (style télégraphique)
@@ -475,17 +557,25 @@ Cartes réécrites : 121 / 160. Laissées telles quelles : 3. Refusées par le g
 - **vutrisiran-in-patients-with-transthyretin-amyloidosis-with-cardi** — « Essai HELIOS-B… randomisés entre vutrisiran (…) et placebo pendant jusqu’à 36 mois » → phrases avec verbe et « pendant une durée pouvant atteindre » : nominale surchargée, « pendant jusqu’à » fautif
 - **vutrisiran-in-patients-with-transthyretin-amyloidosis-with-cardi** — « décès + événements » → « et » : signe mathématique télégraphique
 - **vutrisiran-in-patients-with-transthyretin-amyloidosis-with-cardi** — « …, et l’essai ne compare pas… » → point-virgule et « d’ailleurs » : coordination bâtarde
+- **years-algorithm-for-diagnosis-of-suspected-pulmonary-embolism-in** — accroche ramenée à neuf mots : « Chez le patient cancéreux » → « Cancer actif&nbsp;: » : longueur
+- **years-algorithm-for-diagnosis-of-suspected-pulmonary-embolism-in** — « 1,8&nbsp;% ont présenté… ou un décès » → « le critère principal — … — est survenu chez 1,8&nbsp;% » : « présenter un décès » impossible
+- **years-algorithm-for-diagnosis-of-suspected-pulmonary-embolism-in** — « décès lié à l’embolie à 90 jours » → « dans les 90 jours » : deux « à » qui se télescopent
+- **years-algorithm-for-diagnosis-of-suspected-pulmonary-embolism-in** — « Recrutement…, dans 21 hôpitaux…, aux urgences…, de patients avec cancer actif » → phrase reconstruite : complément d’objet rejeté en fin de phrase
+- **years-algorithm-for-diagnosis-of-suspected-pulmonary-embolism-in** — trois limites remises en phrases avec verbe : style télégraphique
+- **years-algorithm-for-diagnosis-of-suspected-pulmonary-embolism-in** — « dans l’attente de sa reprise dans les textes » → « en attendant que les recommandations l’intègrent » : pronom sans référent clair
 - **zeus-ziltivekimab-in-people-with-ascvd-ckd-and-inflammation-topl** — « patients associant maladie athéroscléreuse » → « patients cumulant maladie athéroscléreuse » (harmonisé avec la fiche)
 - **zeus-ziltivekimab-in-people-with-ascvd-ckd-and-inflammation-topl** — « alors que l’IL-6 libre et la hsCRP ont bien baissé » → « alors que l’IL-6 libre et la hsCRP avaient bien baissé » (concordance des temps)
 - **zeus-ziltivekimab-in-people-with-ascvd-ckd-and-inflammation-topl** — « <b>En pratique&nbsp;:</b> Ces résultats vont à l’encontre de l’hypothè… » → « <b>En pratique&nbsp;:</b> ces résultats vont à l’encontre de l’hypothè… » (incise inutile, capitale après deux-points)
 
-## Doutes de fond signalés, laissés en l’état (24)
+## Doutes de fond signalés, laissés en l’état (26)
 
 - **aficamten-or-metoprolol-monotherapy-for-obstructive-hypertrophic** — « En monothérapie, l’aficamten surpasse le bêtabloquant dans la CMH obstructive » — L’accroche dit « le bêtabloquant » alors que la fiche précise que le seul comparateur était le métoprolol et que l’essai ne renseigne pas sur les autres bêtabloquants. Généralisation à trancher par le relecteur de fidélité.
 - **anticoagulation-monotherapy-vs-antiplatelet-monotherapy-after-tr** — « la marge de non-infériorité préspécifiée a été jugée large lors de la discussion de l’essai » — jugement attribué à une « discussion » non identifiée ; vérifier la source de cette appréciation et de la marge plus stricte appliquée a posteriori.
 - **antithrombotic-therapy-after-percutaneous-coronary-intervention** — « Le passage de la double à la simple antiagrégation était recommandé à 1 jour (1–3) dans le groupe AOD + inhibiteur P2Y12 et à 3 jours (1–7) dans le groupe AVK + simple antiagrégation. » — Les parenthèses (1–3) et (1–7) ne sont pas explicitées : le lecteur ne peut pas savoir s'il s'agit d'un intervalle interquartile, d'une étendue ou de la fenêtre autorisée par les protocoles. Je n'ai pas la source et ne tranche pas ; à clarifier par le relecteur de fidélité.
+- **atorvastatin-cardiovascular-events-and-disability-free-survival** — « Et cela prolonge-t-il la survie sans démence ni incapacité physique, ce qui compte le plus à cet âge ? » — « ce qui compte le plus à cet âge » est un jugement de valeur affirmé sans nuance ; je ne le corrige pas, mais il relève du fond.
 - **beta-blockers-after-myocardial-infarction-without-reduced-ejecti** — « Chaque composante va dans le même sens : décès toutes causes 161 contre 153 (HR 1,06), réinfarctus 143 contre 143 (HR 1,01), hospitalisation pour insuffisance cardiaque 39 contre 44 (HR 0,89) » — Le HR de 0,89 pour l’hospitalisation pour insuffisance cardiaque ne va pas dans la même direction que ceux des deux autres composantes ; la formule « va dans le même sens » semble vouloir dire « aucune composante ne diffère ». Point de fond laissé tel quel.
 - **bruton-s-tyrosine-kinase-inhibitors-and-cardiovascular-risk-a-me** — « Hétérogénéité substantielle entre essais (I² = 70 %). » — La même information figure à l'identique dans « Résultats clés » et dans « Limites ». Je n'ai pas pu supprimer une puce (nombre de <li> imposé) : à trancher par le rédacteur, l'une des deux pourrait accueillir une autre limite.
+- **cardiac-arrest-during-long-distance-running-races** — « Résumé : « Une réanimation plus précoce et un rythme initial ventriculaire étaient associés à la survie. » — Fiche : « Une durée de réanimation plus courte et un rythme initial de tachyarythmie ventriculaire étaient associés à la survie. » » — Le résumé parle d'une réanimation plus précoce, la fiche d'une durée de réanimation plus courte : ce n'est pas la même chose. Je n'ai pas tranché, l'un des deux doit être corrigé sur la source.
 - **champion-af-and-closure-af-reconciling-contrasting-results** — « les deux grands essais randomisés de 2026 sur la fermeture percutanée de l’auricule gauche, CHAMPION-AF et CLOSURE-AF » — CLOSURE-AF est daté de novembre 2025 sur sa propre carte (NEJM, AHA 2025) : parler des « essais randomisés de 2026 » pour les deux est peut-être inexact. Formule laissée telle quelle dans le résumé et dans la question clinique de la fiche.
 - **clinical-care-of-family-members-of-patients-with-dilated-cardiom** — « une IRM cardiaque est conseillée à l’évaluation initiale (résumé) / Une IRM cardiaque est conseillée à l’évaluation initiale chez les porteurs symptomatiques d’un de ces variants (fiche) » — Le résumé conseille l’IRM initiale chez les porteurs d’un variant à haut risque rythmique sans restriction, la fiche la réserve aux porteurs symptomatiques. À trancher par le relecteur de fidélité.
 - **efficacy-and-safety-of-baxdrostat-in-uncontrolled-and-resistant** — « Le baxdrostat n’est pas encore commercialisé. » — La mention « en France » était interdite par la charte&nbsp;; la formulation retenue est plus générale. À confirmer par le relecteur de fidélité que le baxdrostat n’est commercialisé nulle part à ce jour, sinon supprimer la phrase.

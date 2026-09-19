@@ -160,7 +160,11 @@
     "anupdatedevidenceassessmentofthegeneticcausesofdilatedcardiomyopathy",
     "targetedvitamindsupplementationandmajoradversecardiovasculareventsaftermyocardialinfarctionthetargetdtrial",
     "novartisannounceslpahorizonphaseiiitoplineresultsforpelacarseninpatientswithelevatedlpaandestablishedcardiovasculardiseasecvd",
-    "clinicalconsiderationsforthecareofthetacticalathletewithcardiovascularabnormalitiesascientificstatementfromtheamericancollegeofcardiologyandtheamericanheartassociation"
+    "clinicalconsiderationsforthecareofthetacticalathletewithcardiovascularabnormalitiesascientificstatementfromtheamericancollegeofcardiologyandtheamericanheartassociation",
+    "ultrashortvsstandarddurationdualantiplatelettherapyinacutecoronarysyndromepatientsundergoingpciametaanalysis",
+    "intracoronaryimagingguidedpercutaneouscoronaryinterventionanupdatedmetaanalysisofrandomizedtrials",
+    "efficacyandsafetyofsemaglutideaccordingtofrailtystatusaposthocanalysisoftheselectrandomizedclinicaltrial",
+    "wholegrainconsumptionandcardiometabolicriskametaanalysisofrandomizedtrials"
   ],
   "bulletins": [
     {
@@ -192,16 +196,19 @@
       "fichier": "bulletin-2026-09-12.pdf",
       "nb": 7,
       "crit": 1
+    },
+    {
+      "date": "2026-09-19",
+      "fichier": "bulletin-2026-09-19.pdf",
+      "nb": 4,
+      "crit": 0
     }
   ],
-  "derniere_execution": "2026-09-12",
+  "derniere_execution": "2026-09-19",
   "dernier_lot": [
-    "exercisestressechocardiographyfordiagnosisofheartfailurewithpreservedejectionfractionamulticentrestudy",
-    "myeloperoxidaseinhibitionwithmitiperstatinheartfailurewithpreservedormildlyreducedejectionfractionarandomizedphase2btrial",
-    "infectiveendocarditisdiagnosisantibiotictherapyandmanagementascientificstatementfromtheamericanheartassociation",
-    "anupdatedevidenceassessmentofthegeneticcausesofdilatedcardiomyopathy",
-    "targetedvitamindsupplementationandmajoradversecardiovasculareventsaftermyocardialinfarctionthetargetdtrial",
-    "novartisannounceslpahorizonphaseiiitoplineresultsforpelacarseninpatientswithelevatedlpaandestablishedcardiovasculardiseasecvd",
-    "clinicalconsiderationsforthecareofthetacticalathletewithcardiovascularabnormalitiesascientificstatementfromtheamericancollegeofcardiologyandtheamericanheartassociation"
+    "ultrashortvsstandarddurationdualantiplatelettherapyinacutecoronarysyndromepatientsundergoingpciametaanalysis",
+    "intracoronaryimagingguidedpercutaneouscoronaryinterventionanupdatedmetaanalysisofrandomizedtrials",
+    "efficacyandsafetyofsemaglutideaccordingtofrailtystatusaposthocanalysisoftheselectrandomizedclinicaltrial",
+    "wholegrainconsumptionandcardiometabolicriskametaanalysisofrandomizedtrials"
   ]
 }

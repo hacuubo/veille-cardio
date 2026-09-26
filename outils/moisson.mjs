@@ -18,6 +18,12 @@
  *   --max=N     : nombre de résultats par requête (défaut 60)
  *   --json=F    : écrit aussi la moisson dans le fichier F (sert au journal de veille,
  *                 voir outils/journal.mjs)
+ *   --sans-flux : ne lit pas les flux RSS des revues (voir ci-dessous)
+ *
+ * En complément de PubMed, les flux RSS des grandes revues (liste dans outils/flux.json,
+ * lecture par outils/flux.mjs) : un article mis en ligne par la revue mais pas encore
+ * indexé par PubMed sort en ligne FLUX, avec son PMID quand PubMed le connaît déjà
+ * sous une autre date. Un flux qui ne répond pas est signalé (FLUX_MUET) et ignoré.
  *
  * En fin de rapport, deux rapprochements automatiques :
  *   DEFINITIF?  une sortie PubMed ressemble à une carte déjà en ligne présentée en
@@ -33,6 +39,7 @@
 import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { lireFlux } from './flux.mjs';
 
 const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE   = join(RACINE, 'index.html');
@@ -48,6 +55,7 @@ const opt = (nom, defaut) => {
 };
 const TOUT = args.includes('--tout');
 const BRUT = args.includes('--brut');
+const SANS_FLUX = args.includes('--sans-flux');
 
 // ce qui n'a pas sa place dans une veille clinique
 const BRUIT = /(Editorial|^Comment$|Comment,|Letter|Published Erratum|Retract|News|Biography|Autobiography|Historical Article|Portrait)/i;
@@ -269,6 +277,10 @@ async function detailler(pmids) {
 const parSpec = [];
 let totalNouveaux = 0, totalConnus = 0;
 const vus = new Set();
+// les flux RSS se lisent pendant que PubMed répond
+const fluxPromesse = SANS_FLUX ? null
+  : lireFlux({ depuis: DEPUIS, jusqu: JUSQU, specs: SEUL ? { [SEUL]: SPECS[SEUL] } : SPECS, brut: BRUT })
+      .catch(e => ({ articles: [], muets: [{ nom: 'tous les flux', url: '', raison: e.message || String(e) }], nombreFlux: 0 }));
 
 for (const [code, spec] of Object.entries(SPECS)) {
   if (SEUL && SEUL !== code) continue;
@@ -297,7 +309,7 @@ for (const [code, spec] of Object.entries(SPECS)) {
 const ligne = '─'.repeat(72);
 console.log(ligne);
 console.log(`MOISSON PubMed du ${DEPUIS} au ${JUSQU}`);
-console.log(`${totalNouveaux} sortie(s) à examiner · ${totalConnus} déjà sur le site`);
+console.log(`${totalNouveaux} sortie(s) à examiner · ${totalConnus} déjà sur le site${SANS_FLUX ? '' : ' · flux RSS des revues en complément (section en fin de rapport)'}`);
 console.log(ligne);
 
 for (const s of parSpec) {
@@ -363,6 +375,49 @@ if (enAttente.length || attendues.length) {
   }
 }
 
+/* -------------------------------------- flux RSS des revues, en complément */
+
+// Ce que les flux annoncent et que la moisson PubMed n'a pas donné : on écarte ce qui
+// est déjà sur le site, ce que PubMed a rendu dans cette moisson (même DOI ou même
+// titre), puis on demande à PubMed s'il connaît déjà l'article sous une autre date ;
+// s'il le connaît et qu'il faisait partie de la moisson, ce n'est pas un complément.
+const flux = { articles: [], muets: [], nombreFlux: 0 };
+if (fluxPromesse) {
+  const lu = await fluxPromesse;
+  flux.muets = lu.muets; flux.nombreFlux = lu.nombreFlux;
+  const doisVus = new Set(tous.map(a => (a.doi || '').toLowerCase()).filter(Boolean));
+  const titresVus = new Set(tous.map(a => cle(a.titre)));
+  for (const a of lu.articles) {
+    if (SEUL && a.spec !== SEUL) continue;
+    if (a.doi && doisVus.has(a.doi.toLowerCase())) continue;
+    if (titresVus.has(cle(a.titre)) || dejaVu(a.titre)) continue;
+    // PubMed connaît-il déjà l'article (par DOI, sinon par titre exact) ? S'il l'a indexé,
+    // ses types d'article servent à écarter éditoriaux, commentaires et nouvelles
+    let pmid = '', types = '', datePubmed = '';
+    try {
+      const term = a.doi ? `"${a.doi}"[aid]` : `"${a.titre.replace(/"/g, '')}"[ti]`;
+      const xml = await pubmed('esearch.fcgi', { db: 'pubmed', retmax: '2', term });
+      pmid = (xml.match(/<Id>(\d+)<\/Id>/) || [])[1] || '';
+      if (pmid) {
+        const d = (await detailler([pmid]))[0] || {};
+        types = d.types || ''; datePubmed = d.date || '';
+      }
+    } catch (e) { /* PubMed injoignable : on garde l'article tel que le flux le donne */ }
+    if (pmid && vusIci.has(pmid)) continue;
+    if (pmid && !BRUT && BRUIT.test(types)) continue;
+    flux.articles.push({ ...a, pmid, types, datePubmed, specNom: (SPECS[a.spec] || {}).nom || (a.spec === 'cardio' ? 'Cardiologie — surspécialité à préciser' : a.spec) });
+  }
+  console.log(`\n## Flux RSS des grandes revues  —  ${flux.articles.length} sortie(s) vue(s) dans les flux et absente(s) de la moisson PubMed (${flux.nombreFlux} flux lus, ${flux.muets.length} muet(s))`);
+  for (const m of flux.muets) console.log(`   FLUX_MUET ${m.nom} — ${m.raison}${m.url ? ' — ' + m.url : ''}`);
+  if (!flux.articles.length) console.log('   (rien de plus que PubMed)');
+  for (const a of flux.articles) {
+    console.log(`\n   FLUX    ${a.revue} · ${a.date || 'date illisible'} · ${a.specNom}`);
+    console.log(`            ${a.titre}`);
+    console.log(`            ${a.pmid ? 'PMID ' + a.pmid + ' (indexé par PubMed' + (a.datePubmed ? ' le ' + a.datePubmed : '') + ', hors des requêtes de la moisson' + (a.types ? ' · ' + a.types : '') + ')' : 'pas encore sur PubMed'}${a.doi ? ' · https://doi.org/' + a.doi : ''}`);
+    if (!a.doi) console.log(`            ${a.lien}`);
+  }
+}
+
 const JSON_SORTIE = opt('json', '');
 if (JSON_SORTIE) {
   writeFileSync(JSON_SORTIE, JSON.stringify({
@@ -370,6 +425,8 @@ if (JSON_SORTIE) {
     specs: parSpec.map(s => ({ code: s.code, nom: s.nom, articles: s.articles })),
     definitifs: definitifs.map(d => ({ carte: d.c.titre, congres: d.c.congres, pourquoi: d.pourquoi, pmid: d.a.pmid, doi: d.a.doi, titre: d.a.titre, revue: d.a.revue })),
     attendues: parues.map(p => ({ attendu: p.att.nom, pourquoi: p.pourquoi, pmid: p.a.pmid, doi: p.a.doi, titre: p.a.titre, revue: p.a.revue })),
+    flux: flux.articles.map(a => ({ revue: a.revue, flux: a.flux, titre: a.titre, lien: a.lien, doi: a.doi, date: a.date, pmid: a.pmid, types: a.types, spec: a.spec, specNom: a.specNom })),
+    flux_muets: flux.muets,
   }, null, 1), 'utf8');
   console.log(`\nMoisson écrite dans ${JSON_SORTIE}`);
 }

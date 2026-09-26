@@ -230,7 +230,7 @@ Autres règles de mise en page :
   Ne pas y remettre de deuxième carte « publié à … » : ce qui est paru va dans les sections.
 - **Encart « Rythme de mise à jour »** (`section.rythme`, ajouté le 01/09/2026) : juste avant le pied
   de page, après l'encart d'inscription déplié. Texte fixe et discret qui explique le fonctionnement :
-  samedi matin (veille + bulletin 8 h, même semaine calme), mise à jour quotidienne pendant ESC, ACC
+  samedi matin (veille + bulletin 7 h, même semaine calme), mise à jour quotidienne pendant ESC, ACC
   et AHA avec récapitulatif le lendemain de la clôture, autres congrès repris le samedi. À modifier
   seulement si le rythme change.
 - **Couleurs** : la surspécialité ne sert plus que de fin liséré à gauche de la carte (et de couleur du
@@ -305,9 +305,20 @@ La sélection ne part **jamais de la mémoire** : elle part d'une récolte syst�
    de surspécialité pour les seuls essais randomisés, recommandations et méta-analyses — et marque d'un
    `★` ce qui relève de ces trois catégories. Il signale ce qui est déjà sur le site (comparaison sur le
    titre, préfixe compris, pour rattraper les recommandations à sous-titre à rallonge).
-2. **Passer en revue chaque ligne `NOUVEAU`**, pas seulement les `★`. Un article écarté doit l'être en
-   connaissance de cause, pas par omission.
-3. Compléter par ce que PubMed ne voit pas encore : Hot Lines de congrès (ESC, ACC, AHA, TCT, EuroPCR,
+   **En complément, il lit les flux RSS des grandes revues** (depuis le 26/09/2026 ; liste dans
+   `outils/flux.json`, lecture par `outils/flux.mjs`, en parallèle des requêtes PubMed) : NEJM, NEJM
+   Evidence, The Lancet, JAMA, JAMA Cardiology, Circulation, JACC, Nature Medicine — l'European Heart
+   Journal et le BMJ n'offrent pas de flux accessible, PubMed les couvre. Un article annoncé par sa
+   revue mais pas encore indexé par PubMed, ou indexé sans tomber dans les requêtes de la moisson,
+   sort en ligne **`FLUX`** en fin de rapport, avec son PMID quand PubMed le connaît, et rejoint le
+   journal de veille dans son propre tableau (mêmes colonnes Verdict et Motif, exigées à la clôture).
+   Éditoriaux, courriers, réponses, podcasts et nouvelles sont écartés d'avance (étiquettes Lancet,
+   type de DOI NEJM, types PubMed). Un flux qui ne répond pas sort en `FLUX_MUET` et n'arrête rien ;
+   `--sans-flux` s'en passe. Adresses vérifiées le 26/09/2026 : si un flux reste muet plusieurs
+   semaines, chercher la nouvelle adresse sur le site de la revue et corriger `outils/flux.json`.
+2. **Passer en revue chaque ligne `NOUVEAU` et chaque ligne `FLUX`**, pas seulement les `★`. Un article
+   écarté doit l'être en connaissance de cause, pas par omission.
+3. Compléter par ce que ni PubMed ni les flux ne voient encore : Hot Lines de congrès (ESC, ACC, AHA, TCT, EuroPCR,
    HFA, HRS, EHRA), communiqués topline, relais TCTMD / ACC.org / Cardio-online.
 4. Dire dans le compte rendu combien de candidats ont été examinés et combien retenus.
 
@@ -322,8 +333,11 @@ Règles de classement qui évitent les oublis constatés :
 
 ## Mise à jour
 
-- Automatique : la **routine Claude Code « Veille cardio »** s'exécute **tous les jours à 05:00 UTC**
-  (elle ne fixe pas de modèle : elle tourne avec celui de la session liée). **Depuis le 05/09/2026 elle tourne dans une session persistante qui a le dépôt
+- Automatique : la **routine Claude Code « Veille cardio »** s'exécute **tous les jours à 03:30 UTC**
+  (05:30 à Paris l'été, 04:30 l'hiver — décision du 26/09/2026, pour que le courriel du samedi parte
+  à **07:00** : la routine met 15 à 30 minutes, l'heure est en UTC et ne suit pas l'heure d'été, d'où
+  cette marge ; jusque-là elle tournait à 05:00 UTC pour un envoi à 08:00). Elle ne fixe pas de
+  modèle : elle tourne avec celui de la session liée. **Depuis le 05/09/2026 elle tourne dans une session persistante qui a le dépôt
   attaché et `main` comme branche de sortie** (session « Veille cardio — session de la routine
   quotidienne ») : la routine créée le 29/08 n'avait aucun dépôt attaché et n'a jamais pu pousser —
   d'où le samedi 05/09 sans courriel. Si on recrée la routine, il faut la lier à une session qui
@@ -334,7 +348,7 @@ Règles de classement qui évitent les oublis constatés :
   définitif arrêté le 01/09/2026) :
   - `MODE SAMEDI` → veille hebdomadaire complète, mise à jour du site et du Radar, puis
     `bash outils/faire-bulletin.sh --rappel` : **le courriel du samedi part toutes les semaines sans
-    exception**, à 08:00. S'il y a du nouveau, c'est « Les sorties de la semaine du lundi … » ; s'il
+    exception**, à 07:00 (08:00 jusqu'au 26/09/2026). S'il y a du nouveau, c'est « Les sorties de la semaine du lundi … » ; s'il
     n'y a rien, c'est « Semaine calme — rappel des sorties de la semaine du lundi … », même gabarit,
     qui dit proprement qu'aucune sortie d'ampleur n'est parue et rappelle les sorties du dernier
     bulletin (mémorisées dans `bulletin/etat.json`, clé `dernier_lot`).
@@ -398,8 +412,8 @@ Règles de classement qui évitent les oublis constatés :
 - **Contexte de congrès sur les cartes** : quand une sortie est ajoutée pendant ou pour un congrès,
   la ligne `.meta` se termine par le sigle du congrès — « <b>NEJM</b> · 28 août 2026 · Essai
   randomisé · **ESC 2026** » — pour la distinguer des sorties ordinaires.
-- **Horaires d'envoi** (`outils/envoyer-courriel.mjs`) : bulletin du samedi à **08:00**, récapitulatif
-  de congrès à **07:50**, heure de Paris ; la campagne Brevo est programmée quand le courriel est
+- **Horaires d'envoi** (`outils/envoyer-courriel.mjs`) : bulletin du samedi à **07:00** (depuis le
+  26/09/2026 ; 08:00 auparavant), récapitulatif de congrès à **07:50**, heure de Paris ; la campagne Brevo est programmée quand le courriel est
   poussé avant l'heure, envoyée immédiatement sinon (tests à la main).
 - **Une fois `index.html` à jour, toujours lancer `bash outils/faire-bulletin.sh`** (voir la section
   suivante) : c'est ce qui fabrique le bulletin PDF de la semaine.
@@ -580,13 +594,19 @@ Dès qu'un nouveau bulletin arrive sur `main`, GitHub l'envoie par e-mail avec l
 
 ## Sources de veille
 
-NEJM, Lancet, Circulation, European Heart Journal, JACC, JAMA / JAMA Cardiology, NEJM Evidence ;
+NEJM, Lancet, Circulation, European Heart Journal, JACC, JAMA / JAMA Cardiology, NEJM Evidence
+(par PubMed et, pour toutes sauf l'EHJ, par leur flux RSS — `outils/flux.json`) ;
 recommandations ESC (escardio.org) et ACC/AHA ; relais TCTMD, Cardio-online (français), Medscape,
 ACC.org journal scans. Congrès (calendrier tenu dans `outils/congres.json`, deux niveaux — 1 :
 ESC, ACC, AHA avec couverture quotidienne et récapitulatif ; 2 : repris le samedi) : ESC, ACC, AHA, HRS, EHRA, TCT, EuroPCR, HFA, et pour le sport les
 sessions Sports & Exercise Cardiology (EAPC) et Care of the Athletic Heart.
 
 ## Historique
+
+- 26/09/2026 — **flux RSS des grandes revues** en complément de la moisson PubMed (`outils/flux.mjs`,
+  `outils/flux.json`, lignes `FLUX` de la moisson et tableau dédié du journal de veille), et
+  **courriel du samedi avancé à 07:00** : routine décalée de 05:00 à 03:30 UTC, heure cible de
+  `outils/envoyer-courriel.mjs`, textes du site, de la page méthode et de `llms.txt` mis à jour.
 
 - 13/09/2026 — **reprise de langue de tout le stock** : les 160 cartes passées par la troisième passe
   de la chaîne qualité (`outils/BRIEF-LANGUE.md`), par lots de 12, chaque lot confié à un relecteur

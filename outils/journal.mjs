@@ -10,8 +10,10 @@
  *   node outils/journal.mjs --squelette --moisson=fichier.json [--date=AAAA-MM-JJ]
  *       Écrit journal/<date>.md à partir de la moisson (node outils/moisson.mjs
  *       --json=fichier.json) : un tableau par surspécialité avec chaque candidat
- *       NOUVEAU et deux colonnes à remplir, Verdict et Motif, plus les
- *       rapprochements DEFINITIF?/RADAR? et les rubriques à compléter.
+ *       NOUVEAU et deux colonnes à remplir, Verdict et Motif, un tableau des
+ *       articles vus seulement dans les flux RSS des revues (lignes FLUX de la
+ *       moisson), plus les rapprochements DEFINITIF?/RADAR? et les rubriques à
+ *       compléter.
  *       La routine remplit ensuite le fichier à la main (chaque ligne).
  *
  *   node outils/journal.mjs --cloture [--date=AAAA-MM-JJ]
@@ -49,7 +51,7 @@ if (args.includes('--squelette')) {
   const m = JSON.parse(readFileSync(chemin, 'utf8'));
   const l = [];
   l.push(`# Journal de veille — ${enFrancais(aujourdhui)}`, '');
-  l.push(`Moisson PubMed du ${m.depuis} au ${m.jusqu}. Chaque candidat NOUVEAU reçoit un verdict : retenu (crit / warn / watch), écarté, déjà en ligne, ou mis à jour. Un candidat écarté l'est en connaissance de cause, avec son motif.`, '');
+  l.push(`Moisson PubMed du ${m.depuis} au ${m.jusqu}, complétée par les flux RSS des grandes revues. Chaque candidat NOUVEAU reçoit un verdict : retenu (crit / warn / watch), écarté, déjà en ligne, ou mis à jour. Un candidat écarté l'est en connaissance de cause, avec son motif.`, '');
   let total = 0;
   for (const s of m.specs) {
     const neufs = s.articles.filter(a => !a.deja);
@@ -59,6 +61,19 @@ if (args.includes('--squelette')) {
     for (const a of neufs) {
       total++;
       l.push(`| ${a.fort ? '★' : ''} | ${cellule(a.revue)} · ${cellule(a.date)} | ${cellule(a.titre)} | [${a.pmid}](https://pubmed.ncbi.nlm.nih.gov/${a.pmid}/) |  |  |`);
+    }
+    l.push('');
+  }
+  const flux = m.flux || [];
+  l.push(`## Vus dans les flux RSS des revues, absents de la moisson PubMed — ${flux.length} candidat(s)`, '');
+  if (m.flux_muets && m.flux_muets.length) l.push(...m.flux_muets.map(f => `- FLUX_MUET ${cellule(f.nom)} — ${cellule(f.raison)}`), '');
+  if (!flux.length) l.push('(rien de plus que PubMed)', '');
+  else {
+    l.push('| Surspécialité | Revue · date | Titre | Lien | Verdict | Motif |', '|---|---|---|---|---|---|');
+    for (const a of flux) {
+      total++;
+      const lien = a.pmid ? `[${a.pmid}](https://pubmed.ncbi.nlm.nih.gov/${a.pmid}/)` : a.doi ? `[DOI](https://doi.org/${a.doi})` : `[revue](${a.lien})`;
+      l.push(`| ${cellule(a.specNom || a.spec)} | ${cellule(a.revue)} · ${cellule(a.date || '?')} | ${cellule(a.titre)} | ${lien} |  |  |`);
     }
     l.push('');
   }
@@ -84,7 +99,8 @@ if (args.includes('--cloture')) {
   // chaque candidat doit avoir un verdict
   const sansVerdict = [];
   for (const ligne of texte.split('\n')) {
-    if (!/^\| .*\| \[\d+\]\(https:\/\/pubmed/.test(ligne)) continue;
+    // une ligne de candidat : six cellules, un lien en quatrième (PMID, DOI ou page de la revue)
+    if (!/^\| .*\| \[[^\]]+\]\(https?:\/\/[^)]+\) \|/.test(ligne)) continue;
     const cases = ligne.split('|').map(x => x.trim());
     if (!cases[5]) sansVerdict.push(cases[3].slice(0, 80));
   }

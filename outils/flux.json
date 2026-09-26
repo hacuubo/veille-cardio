@@ -1,0 +1,24 @@
+{
+  "_note": [
+    "Flux RSS des grandes revues, lus par outils/flux.mjs en complément de la moisson PubMed",
+    "(outils/moisson.mjs). Ils servent de filet : un article mis en ligne par la revue mais pas",
+    "encore indexé par PubMed apparaît ici. Chaque entrée : revue = nom PubMed (comme dans",
+    "MAJEURES), nom = libellé lisible, url = adresse du flux. Un flux qui ne répond pas est",
+    "signalé et ignoré, jamais bloquant. Vérifiés le 26/09/2026.",
+    "Sans flux accessible à cette date : European Heart Journal (Oxford Academic ne publie plus",
+    "d'adresse de flux qui réponde) et BMJ (flux retirés par l'éditeur) — couverts par PubMed."
+  ],
+  "flux": [
+    { "revue": "N Engl J Med",       "nom": "NEJM — numéro courant",            "url": "https://www.nejm.org/action/showFeed?type=etoc&feed=rss&jc=nejm" },
+    { "revue": "NEJM Evid",          "nom": "NEJM Evidence",                    "url": "https://evidence.nejm.org/action/showFeed?type=etoc&feed=rss&jc=evid" },
+    { "revue": "Lancet",             "nom": "The Lancet — Online First",        "url": "https://www.thelancet.com/rssfeed/lancet_online.xml" },
+    { "revue": "Lancet",             "nom": "The Lancet — numéro courant",      "url": "https://www.thelancet.com/rssfeed/lancet_current.xml" },
+    { "revue": "JAMA",               "nom": "JAMA — Online First",              "url": "https://jamanetwork.com/rss/site_3/onlineFirst_67.xml" },
+    { "revue": "JAMA",               "nom": "JAMA — numéro courant",            "url": "https://jamanetwork.com/rss/site_3/67.xml" },
+    { "revue": "JAMA Cardiol",       "nom": "JAMA Cardiology — Online First",   "url": "https://jamanetwork.com/rss/site_192/onlineFirst_184.xml" },
+    { "revue": "JAMA Cardiol",       "nom": "JAMA Cardiology — numéro courant", "url": "https://jamanetwork.com/rss/site_192/184.xml" },
+    { "revue": "Circulation",        "nom": "Circulation — mis en ligne avant impression", "url": "https://www.ahajournals.org/action/showFeed?type=axatoc&feed=rss&jc=circ" },
+    { "revue": "J Am Coll Cardiol",  "nom": "JACC — ScienceDirect",             "url": "https://rss.sciencedirect.com/publication/science/07351097" },
+    { "revue": "Nat Med",            "nom": "Nature Medicine",                  "url": "https://www.nature.com/nm.rss" }
+  ]
+}

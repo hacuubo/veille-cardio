@@ -10,7 +10,7 @@ name: Chien de garde
 
 on:
   schedule:
-    - cron: '0 8 * * *'      # 10:00 à Paris l'été, 09:00 l'hiver — après l'envoi de 08:00
+    - cron: '0 8 * * *'      # 10:00 à Paris l'été, 09:00 l'hiver — après l'envoi de 07:00
   workflow_dispatch:
     inputs:
       date:

@@ -164,7 +164,9 @@
     "ultrashortvsstandarddurationdualantiplatelettherapyinacutecoronarysyndromepatientsundergoingpciametaanalysis",
     "intracoronaryimagingguidedpercutaneouscoronaryinterventionanupdatedmetaanalysisofrandomizedtrials",
     "efficacyandsafetyofsemaglutideaccordingtofrailtystatusaposthocanalysisoftheselectrandomizedclinicaltrial",
-    "wholegrainconsumptionandcardiometabolicriskametaanalysisofrandomizedtrials"
+    "wholegrainconsumptionandcardiometabolicriskametaanalysisofrandomizedtrials",
+    "clopidogrelmonotherapyversusaspirinmonotherapyinfemalesandmalesafterpercutaneouscoronaryinterventionasexstratifiedanalysisofthesmartchoice3trial",
+    "intracranialhaemorrhagefollowingtenecteplasefibrinolysisforacutemyocardialinfarction"
   ],
   "bulletins": [
     {
@@ -202,13 +204,17 @@
       "fichier": "bulletin-2026-09-19.pdf",
       "nb": 4,
       "crit": 0
+    },
+    {
+      "date": "2026-09-26",
+      "fichier": "bulletin-2026-09-26.pdf",
+      "nb": 2,
+      "crit": 0
     }
   ],
-  "derniere_execution": "2026-09-19",
+  "derniere_execution": "2026-09-26",
   "dernier_lot": [
-    "ultrashortvsstandarddurationdualantiplatelettherapyinacutecoronarysyndromepatientsundergoingpciametaanalysis",
-    "intracoronaryimagingguidedpercutaneouscoronaryinterventionanupdatedmetaanalysisofrandomizedtrials",
-    "efficacyandsafetyofsemaglutideaccordingtofrailtystatusaposthocanalysisoftheselectrandomizedclinicaltrial",
-    "wholegrainconsumptionandcardiometabolicriskametaanalysisofrandomizedtrials"
+    "clopidogrelmonotherapyversusaspirinmonotherapyinfemalesandmalesafterpercutaneouscoronaryinterventionasexstratifiedanalysisofthesmartchoice3trial",
+    "intracranialhaemorrhagefollowingtenecteplasefibrinolysisforacutemyocardialinfarction"
   ]
 }

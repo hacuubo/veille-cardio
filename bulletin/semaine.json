@@ -1,14 +1,12 @@
 {
- "date": "2026-09-19",
- "sujet": "Les sorties de la semaine du lundi 14 septembre",
+ "date": "2026-09-26",
+ "sujet": "Les sorties de la semaine du lundi 21 septembre",
  "rappel": false,
  "congres": "",
- "lundi": "2026-09-14",
- "nb": 4,
+ "lundi": "2026-09-21",
+ "nb": 2,
  "ancres": [
-  "ultrashort-vs-standard-duration-dual-antiplatelet-therapy-in-acu",
-  "intracoronary-imaging-guided-percutaneous-coronary-intervention",
-  "efficacy-and-safety-of-semaglutide-according-to-frailty-status-a",
-  "whole-grain-consumption-and-cardiometabolic-risk-a-meta-analysis"
+  "clopidogrel-monotherapy-versus-aspirin-monotherapy-in-females-an",
+  "intracranial-haemorrhage-following-tenecteplase-fibrinolysis-for"
  ]
 }

@@ -1,12 +1,19 @@
 {
- "date": "2026-09-26",
- "sujet": "Les sorties de la semaine du lundi 21 septembre",
+ "date": "2026-10-03",
+ "sujet": "Les sorties de la semaine du lundi 28 septembre",
  "rappel": false,
  "congres": "",
- "lundi": "2026-09-21",
- "nb": 2,
+ "lundi": "2026-09-28",
+ "nb": 9,
  "ancres": [
-  "clopidogrel-monotherapy-versus-aspirin-monotherapy-in-females-an",
-  "intracranial-haemorrhage-following-tenecteplase-fibrinolysis-for"
+  "impact-of-undertreated-antithrombotic-therapy-on-adverse-patient",
+  "no-touch-vs-conventional-vein-grafts-in-coronary-surgery-seven-y",
+  "stenting-technique-and-clinical-outcome-in-true-bifurcation-pci",
+  "2026-icardio-alliance-global-implementation-guidelines-on-heart",
+  "cardiovascular-safety-of-orforglipron-versus-insulin-glargine-in",
+  "food-and-health-nutrition-for-prevention-and-management-of-cardi",
+  "retatrutide-a-triple-hormone-receptor-agonist-for-treatment-of-o",
+  "2026-aha-acc-acs-asnc-hrs-sca-scct-scmr-svm-guideline-for-periop",
+  "implementation-of-cardiac-magnetic-resonance-imaging-in-everyday"
  ]
 }

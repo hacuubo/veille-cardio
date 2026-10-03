@@ -166,7 +166,16 @@
     "efficacyandsafetyofsemaglutideaccordingtofrailtystatusaposthocanalysisoftheselectrandomizedclinicaltrial",
     "wholegrainconsumptionandcardiometabolicriskametaanalysisofrandomizedtrials",
     "clopidogrelmonotherapyversusaspirinmonotherapyinfemalesandmalesafterpercutaneouscoronaryinterventionasexstratifiedanalysisofthesmartchoice3trial",
-    "intracranialhaemorrhagefollowingtenecteplasefibrinolysisforacutemyocardialinfarction"
+    "intracranialhaemorrhagefollowingtenecteplasefibrinolysisforacutemyocardialinfarction",
+    "impactofundertreatedantithrombotictherapyonadversepatientoutcomesascientificstatementfromtheamericanheartassociation",
+    "notouchvsconventionalveingraftsincoronarysurgerysevenyearclinicaloutcomesoftheswedegraftrandomizedclinicaltrial",
+    "stentingtechniqueandclinicaloutcomeintruebifurcationpciinsightsfromtheoctobertrial",
+    "implementationofcardiacmagneticresonanceimagingineverydaycardiologypractice",
+    "2026icardioallianceglobalimplementationguidelinesonheartfailure",
+    "cardiovascularsafetyoforforglipronversusinsulinglargineinadultswithtype2diabetesatincreasedcardiovascularriskachieve4aphase3eventdrivenrandomisedopenlabelnoninferiorityactivecomparatortrial",
+    "foodandhealthnutritionforpreventionandmanagementofcardiovasculardisease2026accscientificstatementareportoftheamericancollegeofcardiology",
+    "retatrutideatriplehormonereceptoragonistfortreatmentofobesity",
+    "2026ahaaccacsasnchrsscascctscmrsvmguidelineforperioperativecardiovascularmanagementfornoncardiacsurgeryareportoftheamericancollegeofcardiologyamericanheartassociationjointcommitteeonclinicalpracticeguidelines"
   ],
   "bulletins": [
     {
@@ -210,11 +219,24 @@
       "fichier": "bulletin-2026-09-26.pdf",
       "nb": 2,
       "crit": 0
+    },
+    {
+      "date": "2026-10-03",
+      "fichier": "bulletin-2026-10-03.pdf",
+      "nb": 9,
+      "crit": 0
     }
   ],
-  "derniere_execution": "2026-09-26",
+  "derniere_execution": "2026-10-03",
   "dernier_lot": [
-    "clopidogrelmonotherapyversusaspirinmonotherapyinfemalesandmalesafterpercutaneouscoronaryinterventionasexstratifiedanalysisofthesmartchoice3trial",
-    "intracranialhaemorrhagefollowingtenecteplasefibrinolysisforacutemyocardialinfarction"
+    "impactofundertreatedantithrombotictherapyonadversepatientoutcomesascientificstatementfromtheamericanheartassociation",
+    "notouchvsconventionalveingraftsincoronarysurgerysevenyearclinicaloutcomesoftheswedegraftrandomizedclinicaltrial",
+    "stentingtechniqueandclinicaloutcomeintruebifurcationpciinsightsfromtheoctobertrial",
+    "implementationofcardiacmagneticresonanceimagingineverydaycardiologypractice",
+    "2026icardioallianceglobalimplementationguidelinesonheartfailure",
+    "cardiovascularsafetyoforforglipronversusinsulinglargineinadultswithtype2diabetesatincreasedcardiovascularriskachieve4aphase3eventdrivenrandomisedopenlabelnoninferiorityactivecomparatortrial",
+    "foodandhealthnutritionforpreventionandmanagementofcardiovasculardisease2026accscientificstatementareportoftheamericancollegeofcardiology",
+    "retatrutideatriplehormonereceptoragonistfortreatmentofobesity",
+    "2026ahaaccacsasnchrsscascctscmrsvmguidelineforperioperativecardiovascularmanagementfornoncardiacsurgeryareportoftheamericancollegeofcardiologyamericanheartassociationjointcommitteeonclinicalpracticeguidelines"
   ]
 }

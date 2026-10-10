@@ -20,6 +20,12 @@
   </url>
   <!--FICHES:DEBUT-->
   <url>
+    <loc>https://pausecardio.fr/fiche/biventricular-vs-conduction-system-pacing-after-atrioventricular/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/impact-of-undertreated-antithrombotic-therapy-on-adverse-patient/</loc>
     <lastmod>2026-10-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -184,6 +190,18 @@
   </url>
   <url>
     <loc>https://pausecardio.fr/fiche/pulsed-field-or-cryoballoon-ablation-for-paroxysmal-atrial-fibri/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/lipid-burden-and-efficacy-of-preventive-pci-of-vulnerable-athero/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/percutaneous-coronary-intervention-using-sirolimus-eluting-ballo/</loc>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -539,6 +557,12 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://pausecardio.fr/fiche/complexity-of-coronary-artery-disease-in-infarct-related-cardiog/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/intracranial-haemorrhage-following-tenecteplase-fibrinolysis-for/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -687,6 +711,18 @@
   </url>
   <url>
     <loc>https://pausecardio.fr/fiche/vutrisiran-in-patients-with-transthyretin-amyloidosis-with-cardi/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/intensive-vs-standard-blood-pressure-lowering-in-people-with-and/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/optimizing-blood-pressure-care-in-patients-with-resistant-hypert/</loc>
+    <lastmod>2026-10-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

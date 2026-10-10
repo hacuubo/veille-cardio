@@ -175,7 +175,13 @@
     "cardiovascularsafetyoforforglipronversusinsulinglargineinadultswithtype2diabetesatincreasedcardiovascularriskachieve4aphase3eventdrivenrandomisedopenlabelnoninferiorityactivecomparatortrial",
     "foodandhealthnutritionforpreventionandmanagementofcardiovasculardisease2026accscientificstatementareportoftheamericancollegeofcardiology",
     "retatrutideatriplehormonereceptoragonistfortreatmentofobesity",
-    "2026ahaaccacsasnchrsscascctscmrsvmguidelineforperioperativecardiovascularmanagementfornoncardiacsurgeryareportoftheamericancollegeofcardiologyamericanheartassociationjointcommitteeonclinicalpracticeguidelines"
+    "2026ahaaccacsasnchrsscascctscmrsvmguidelineforperioperativecardiovascularmanagementfornoncardiacsurgeryareportoftheamericancollegeofcardiologyamericanheartassociationjointcommitteeonclinicalpracticeguidelines",
+    "biventricularvsconductionsystempacingafteratrioventricularnodeablationforheartfailurewithatrialfibrillationtheconductaftrial",
+    "lipidburdenandefficacyofpreventivepciofvulnerableatheroscleroticcoronaryplaquesposthocanalysisfromthepreventtrial",
+    "percutaneouscoronaryinterventionusingsirolimuselutingballoonsinpatientsathighbleedingrisktheselutiondenovohbrsubstudy",
+    "complexityofcoronaryarterydiseaseininfarctrelatedcardiogenicshockandmultivesseldiseaseasubstudyofthedangershocktrial",
+    "intensivevsstandardbloodpressureloweringinpeoplewithandwithoutchronickidneydiseaseasystematicreviewandmetaanalysis",
+    "optimizingbloodpressurecareinpatientswithresistanthypertension2026accexpertconsensusdecisionpathwayareportoftheamericancollegeofcardiologysolutionsetoversightcommittee"
   ],
   "bulletins": [
     {
@@ -225,18 +231,21 @@
       "fichier": "bulletin-2026-10-03.pdf",
       "nb": 9,
       "crit": 0
+    },
+    {
+      "date": "2026-10-10",
+      "fichier": "bulletin-2026-10-10.pdf",
+      "nb": 6,
+      "crit": 0
     }
   ],
-  "derniere_execution": "2026-10-03",
+  "derniere_execution": "2026-10-10",
   "dernier_lot": [
-    "impactofundertreatedantithrombotictherapyonadversepatientoutcomesascientificstatementfromtheamericanheartassociation",
-    "notouchvsconventionalveingraftsincoronarysurgerysevenyearclinicaloutcomesoftheswedegraftrandomizedclinicaltrial",
-    "stentingtechniqueandclinicaloutcomeintruebifurcationpciinsightsfromtheoctobertrial",
-    "implementationofcardiacmagneticresonanceimagingineverydaycardiologypractice",
-    "2026icardioallianceglobalimplementationguidelinesonheartfailure",
-    "cardiovascularsafetyoforforglipronversusinsulinglargineinadultswithtype2diabetesatincreasedcardiovascularriskachieve4aphase3eventdrivenrandomisedopenlabelnoninferiorityactivecomparatortrial",
-    "foodandhealthnutritionforpreventionandmanagementofcardiovasculardisease2026accscientificstatementareportoftheamericancollegeofcardiology",
-    "retatrutideatriplehormonereceptoragonistfortreatmentofobesity",
-    "2026ahaaccacsasnchrsscascctscmrsvmguidelineforperioperativecardiovascularmanagementfornoncardiacsurgeryareportoftheamericancollegeofcardiologyamericanheartassociationjointcommitteeonclinicalpracticeguidelines"
+    "biventricularvsconductionsystempacingafteratrioventricularnodeablationforheartfailurewithatrialfibrillationtheconductaftrial",
+    "lipidburdenandefficacyofpreventivepciofvulnerableatheroscleroticcoronaryplaquesposthocanalysisfromthepreventtrial",
+    "percutaneouscoronaryinterventionusingsirolimuselutingballoonsinpatientsathighbleedingrisktheselutiondenovohbrsubstudy",
+    "complexityofcoronaryarterydiseaseininfarctrelatedcardiogenicshockandmultivesseldiseaseasubstudyofthedangershocktrial",
+    "intensivevsstandardbloodpressureloweringinpeoplewithandwithoutchronickidneydiseaseasystematicreviewandmetaanalysis",
+    "optimizingbloodpressurecareinpatientswithresistanthypertension2026accexpertconsensusdecisionpathwayareportoftheamericancollegeofcardiologysolutionsetoversightcommittee"
   ]
 }

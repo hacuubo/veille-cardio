@@ -1,19 +1,16 @@
 {
- "date": "2026-10-03",
- "sujet": "Les sorties de la semaine du lundi 28 septembre",
+ "date": "2026-10-10",
+ "sujet": "Les sorties de la semaine du lundi 5 octobre",
  "rappel": false,
  "congres": "",
- "lundi": "2026-09-28",
- "nb": 9,
+ "lundi": "2026-10-05",
+ "nb": 6,
  "ancres": [
-  "impact-of-undertreated-antithrombotic-therapy-on-adverse-patient",
-  "no-touch-vs-conventional-vein-grafts-in-coronary-surgery-seven-y",
-  "stenting-technique-and-clinical-outcome-in-true-bifurcation-pci",
-  "2026-icardio-alliance-global-implementation-guidelines-on-heart",
-  "cardiovascular-safety-of-orforglipron-versus-insulin-glargine-in",
-  "food-and-health-nutrition-for-prevention-and-management-of-cardi",
-  "retatrutide-a-triple-hormone-receptor-agonist-for-treatment-of-o",
-  "2026-aha-acc-acs-asnc-hrs-sca-scct-scmr-svm-guideline-for-periop",
-  "implementation-of-cardiac-magnetic-resonance-imaging-in-everyday"
+  "biventricular-vs-conduction-system-pacing-after-atrioventricular",
+  "lipid-burden-and-efficacy-of-preventive-pci-of-vulnerable-athero",
+  "percutaneous-coronary-intervention-using-sirolimus-eluting-ballo",
+  "complexity-of-coronary-artery-disease-in-infarct-related-cardiog",
+  "intensive-vs-standard-blood-pressure-lowering-in-people-with-and",
+  "optimizing-blood-pressure-care-in-patients-with-resistant-hypert"
  ]
 }

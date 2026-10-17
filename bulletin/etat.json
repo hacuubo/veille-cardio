@@ -181,7 +181,12 @@
     "percutaneouscoronaryinterventionusingsirolimuselutingballoonsinpatientsathighbleedingrisktheselutiondenovohbrsubstudy",
     "complexityofcoronaryarterydiseaseininfarctrelatedcardiogenicshockandmultivesseldiseaseasubstudyofthedangershocktrial",
     "intensivevsstandardbloodpressureloweringinpeoplewithandwithoutchronickidneydiseaseasystematicreviewandmetaanalysis",
-    "optimizingbloodpressurecareinpatientswithresistanthypertension2026accexpertconsensusdecisionpathwayareportoftheamericancollegeofcardiologysolutionsetoversightcommittee"
+    "optimizingbloodpressurecareinpatientswithresistanthypertension2026accexpertconsensusdecisionpathwayareportoftheamericancollegeofcardiologysolutionsetoversightcommittee",
+    "antiplatelettherapyinthemanagementofatheroscleroticcardiovasculardisease2026accscientificstatementareportoftheamericancollegeofcardiology",
+    "digoxininpatientswithsymptomaticrheumaticheartdiseasearandomizedclinicaltrial",
+    "multidisciplinaryapproachtoantiplateletmanagementincoronarysyndromesascientificstatementfromtheamericanheartassociation",
+    "earlydischargestrategyincludingsubcutaneousfurosemideinhospitalizedheartfailure",
+    "exerciseprescriptionsforcardiovascularhealthinadults2026accscientificstatementareportoftheamericancollegeofcardiology"
   ],
   "bulletins": [
     {
@@ -237,15 +242,18 @@
       "fichier": "bulletin-2026-10-10.pdf",
       "nb": 6,
       "crit": 0
+    },
+    {
+      "date": "2026-10-17",
+      "fichier": "bulletin-2026-10-17.pdf",
+      "nb": 3,
+      "crit": 0
     }
   ],
-  "derniere_execution": "2026-10-10",
+  "derniere_execution": "2026-10-17",
   "dernier_lot": [
-    "biventricularvsconductionsystempacingafteratrioventricularnodeablationforheartfailurewithatrialfibrillationtheconductaftrial",
-    "lipidburdenandefficacyofpreventivepciofvulnerableatheroscleroticcoronaryplaquesposthocanalysisfromthepreventtrial",
-    "percutaneouscoronaryinterventionusingsirolimuselutingballoonsinpatientsathighbleedingrisktheselutiondenovohbrsubstudy",
-    "complexityofcoronaryarterydiseaseininfarctrelatedcardiogenicshockandmultivesseldiseaseasubstudyofthedangershocktrial",
-    "intensivevsstandardbloodpressureloweringinpeoplewithandwithoutchronickidneydiseaseasystematicreviewandmetaanalysis",
-    "optimizingbloodpressurecareinpatientswithresistanthypertension2026accexpertconsensusdecisionpathwayareportoftheamericancollegeofcardiologysolutionsetoversightcommittee"
+    "multidisciplinaryapproachtoantiplateletmanagementincoronarysyndromesascientificstatementfromtheamericanheartassociation",
+    "earlydischargestrategyincludingsubcutaneousfurosemideinhospitalizedheartfailure",
+    "exerciseprescriptionsforcardiovascularhealthinadults2026accscientificstatementareportoftheamericancollegeofcardiology"
   ]
 }

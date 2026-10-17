@@ -1,16 +1,13 @@
 {
- "date": "2026-10-10",
- "sujet": "Les sorties de la semaine du lundi 5 octobre",
+ "date": "2026-10-17",
+ "sujet": "Les sorties de la semaine du lundi 12 octobre",
  "rappel": false,
  "congres": "",
- "lundi": "2026-10-05",
- "nb": 6,
+ "lundi": "2026-10-12",
+ "nb": 3,
  "ancres": [
-  "biventricular-vs-conduction-system-pacing-after-atrioventricular",
-  "lipid-burden-and-efficacy-of-preventive-pci-of-vulnerable-athero",
-  "percutaneous-coronary-intervention-using-sirolimus-eluting-ballo",
-  "complexity-of-coronary-artery-disease-in-infarct-related-cardiog",
-  "intensive-vs-standard-blood-pressure-lowering-in-people-with-and",
-  "optimizing-blood-pressure-care-in-patients-with-resistant-hypert"
+  "multidisciplinary-approach-to-antiplatelet-management-in-coronar",
+  "early-discharge-strategy-including-subcutaneous-furosemide-in-ho",
+  "exercise-prescriptions-for-cardiovascular-health-in-adults-2026"
  ]
 }

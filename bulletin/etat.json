@@ -186,7 +186,11 @@
     "digoxininpatientswithsymptomaticrheumaticheartdiseasearandomizedclinicaltrial",
     "multidisciplinaryapproachtoantiplateletmanagementincoronarysyndromesascientificstatementfromtheamericanheartassociation",
     "earlydischargestrategyincludingsubcutaneousfurosemideinhospitalizedheartfailure",
-    "exerciseprescriptionsforcardiovascularhealthinadults2026accscientificstatementareportoftheamericancollegeofcardiology"
+    "exerciseprescriptionsforcardiovascularhealthinadults2026accscientificstatementareportoftheamericancollegeofcardiology",
+    "weightlossinolderpatientswithpersistentatrialfibrillationtheloseafrandomizedclinicaltrial",
+    "immediateversusstagedcompleterevascularizationinmultivesseldiseaseandstemiametaanalysisofrandomizedtrials",
+    "coronaryarterydiseasemanagementinpatientswithsevereaorticstenosisundergoingtranscatheteraorticvalveimplantationasystematicreviewandmetaanalysisofrandomisedcontrolledtrials",
+    "icarefasterimprovingcarebyfasterriskstratificationthroughuseofhighsensitivitypointofcaretroponininpatientspresentingwithpossibleacutecoronarysyndromeintheemergencydepartmentasteppedwedgeclusterrandomizedtrial"
   ],
   "bulletins": [
     {
@@ -248,12 +252,17 @@
       "fichier": "bulletin-2026-10-17.pdf",
       "nb": 3,
       "crit": 0
+    },
+    {
+      "date": "2026-10-24",
+      "fichier": "bulletin-2026-10-24.pdf",
+      "nb": 2,
+      "crit": 0
     }
   ],
-  "derniere_execution": "2026-10-17",
+  "derniere_execution": "2026-10-24",
   "dernier_lot": [
-    "multidisciplinaryapproachtoantiplateletmanagementincoronarysyndromesascientificstatementfromtheamericanheartassociation",
-    "earlydischargestrategyincludingsubcutaneousfurosemideinhospitalizedheartfailure",
-    "exerciseprescriptionsforcardiovascularhealthinadults2026accscientificstatementareportoftheamericancollegeofcardiology"
+    "coronaryarterydiseasemanagementinpatientswithsevereaorticstenosisundergoingtranscatheteraorticvalveimplantationasystematicreviewandmetaanalysisofrandomisedcontrolledtrials",
+    "icarefasterimprovingcarebyfasterriskstratificationthroughuseofhighsensitivitypointofcaretroponininpatientspresentingwithpossibleacutecoronarysyndromeintheemergencydepartmentasteppedwedgeclusterrandomizedtrial"
   ]
 }

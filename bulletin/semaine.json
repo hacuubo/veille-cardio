@@ -1,13 +1,12 @@
 {
- "date": "2026-10-17",
- "sujet": "Les sorties de la semaine du lundi 12 octobre",
+ "date": "2026-10-24",
+ "sujet": "Les sorties de la semaine du lundi 19 octobre",
  "rappel": false,
  "congres": "",
- "lundi": "2026-10-12",
- "nb": 3,
+ "lundi": "2026-10-19",
+ "nb": 2,
  "ancres": [
-  "multidisciplinary-approach-to-antiplatelet-management-in-coronar",
-  "early-discharge-strategy-including-subcutaneous-furosemide-in-ho",
-  "exercise-prescriptions-for-cardiovascular-health-in-adults-2026"
+  "coronary-artery-disease-management-in-patients-with-severe-aorti",
+  "icare-faster-improving-care-by-faster-risk-stratification-throug"
  ]
 }

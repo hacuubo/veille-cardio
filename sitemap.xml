@@ -20,6 +20,12 @@
   </url>
   <!--FICHES:DEBUT-->
   <url>
+    <loc>https://pausecardio.fr/fiche/weight-loss-in-older-patients-with-persistent-atrial-fibrillatio/</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/biventricular-vs-conduction-system-pacing-after-atrioventricular/</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>monthly</changefreq>
@@ -190,6 +196,24 @@
   </url>
   <url>
     <loc>https://pausecardio.fr/fiche/pulsed-field-or-cryoballoon-ablation-for-paroxysmal-atrial-fibri/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/coronary-artery-disease-management-in-patients-with-severe-aorti/</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/icare-faster-improving-care-by-faster-risk-stratification-throug/</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/immediate-versus-staged-complete-revascularization-in-multivesse/</loc>
+    <lastmod>2026-10-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

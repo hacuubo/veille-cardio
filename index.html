@@ -6532,11 +6532,45 @@
     clearTimeout(signaler.h);
     signaler.h = setTimeout(() => t.classList.remove('on'), 2200);
   }
+  // ---------- mesure d'audience : les gestes du lecteur, comptés sans cookie ----------
+  // GoatCounter ne voit que les ouvertures de page ; le site tenant sur une seule page, on
+  // lui signale aussi les gestes qui comptent, comme des « événements » anonymes (rien
+  // n'identifie le lecteur). Noms en usage, regroupés par outils/frequentation.mjs :
+  //   fiche/<ancre>  original/<ancre>  analyse/<ancre>  partage/<ancre>  favori/<ancre>
+  //   lu/<ancre>  tiroir/<surspécialité>  recherche/<terme>  recherche-vide/<terme>
+  //   semaine/ouvert  inscription  appli/lancement  appli/installee
+  // Compteur bloqué (bloqueur de publicité) ou page locale : rien ne se passe. Un geste fait
+  // avant que le compteur soit chargé (arrivée par un lien du courriel) attend la fin du chargement.
+  const mesuresEnAttente = [];
+  function mesurer(chemin, titre) {
+    const gc = window.goatcounter;
+    if (!gc || typeof gc.count !== 'function') {
+      if (mesuresEnAttente.length < 20) mesuresEnAttente.push([chemin, titre]);
+      return;
+    }
+    try { gc.count({ path: chemin, title: titre || chemin, event: true }); }
+    catch (e) { /* la mesure ne doit jamais gêner la lecture */ }
+  }
+  window.addEventListener('load', () => mesuresEnAttente.splice(0).forEach(([c, t]) => mesurer(c, t)));
+  const titreCarte = card => { const t = card.querySelector('.art-title, h3'); return t ? t.textContent.trim() : ''; };
+  // départs vers l'extérieur : l'article original d'un côté, les analyses (TCTMD, ACC…) de l'autre
+  const noterSortie = ev => {
+    const lien = ev.target.closest && ev.target.closest('article.card .actions a[href^="http"]');
+    const card = lien && lien.closest('article.card');
+    if (!card || !card.id) return;
+    const libelle = lien.textContent.replace(/[↗\s]+$/, '').trim();
+    const sorte = /^(article original|texte)/i.test(libelle) ? 'original' : 'analyse';
+    mesurer(sorte + '/' + card.id, sorte === 'original' ? titreCarte(card) : libelle + ' · ' + titreCarte(card));
+  };
+  document.addEventListener('click', noterSortie);
+  document.addEventListener('auxclick', noterSortie);   // clic molette : ouverture dans un onglet
   function partager(card) {
     const h3 = card.querySelector('h3');
     const titre = h3 ? h3.textContent.trim() : 'Pause Cardio';
     const accroche = texteDe(card.dataset.fr);
-    const url = SITE_URL + (card.id ? '#' + card.id : '');
+    // ?ref=partage : GoatCounter range ces arrivées sous la source « partage »
+    const url = SITE_URL + (card.id ? '?ref=partage#' + card.id : '');
+    if (card.id) mesurer('partage/' + card.id, titre);
     const texte = (accroche ? accroche + ' \u2014 ' : '') + 'Pause Cardio';
     if (navigator.share) {
       navigator.share({ title: titre, text: texte, url }).catch(() => { /* partage annulé */ });
@@ -6813,6 +6847,7 @@
         }
       });
       row.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open && card.id) mesurer('fiche/' + card.id, titreCarte(card));
       // si la fermeture s'est faite au-dessus, la page a raccourci : on recale
       const delta = row.getBoundingClientRect().top - avant;
       if (delta) window.scrollBy(0, delta);
@@ -6921,6 +6956,7 @@
       memoriser();
       applyFilters();
       if (ouvrir) sec.scrollIntoView({ behavior: douceur ? 'smooth' : 'auto', block: 'start' });
+      if (ouvrir) mesurer('tiroir/' + spec, (SPECS[spec] || [, spec])[1]);
     };
     tete.addEventListener('click', basculer);
     tete.addEventListener('keydown', e => {
@@ -6939,7 +6975,20 @@
   });
   applyFilters();
   const qInput = document.getElementById('q');
-  qInput.addEventListener('input', () => { state.q = qInput.value; applyFilters(); });
+  qInput.addEventListener('input', () => { state.q = qInput.value; applyFilters(); noterRecherche(); });
+  // ce que les lecteurs cherchent, et surtout ce qu'ils cherchent sans le trouver : le terme
+  // n'est compté qu'après une pause de frappe, une seule fois par visite
+  const recherchesNotees = new Set();
+  function noterRecherche() {
+    clearTimeout(noterRecherche.h);
+    noterRecherche.h = setTimeout(() => {
+      const terme = norm(state.q).replace(/\s+/g, ' ').trim().slice(0, 40);
+      if (terme.length < 3 || recherchesNotees.has(terme)) return;
+      recherchesNotees.add(terme);
+      const trouves = [...document.querySelectorAll('article.card[data-spec]')].filter(c => c.style.display !== 'none').length;
+      mesurer((trouves ? 'recherche/' : 'recherche-vide/') + terme, terme);
+    }, 1800);
+  }
   document.getElementById('qclear').addEventListener('click', () => { qInput.value = ''; state.q = ''; applyFilters(); qInput.focus(); });
 
   // ---------- bandeau « cette semaine » : les sorties du dernier courriel ----------
@@ -6967,6 +7016,7 @@
     tete.addEventListener('click', () => {
       const ouvert = bloc.classList.toggle('ouvert');
       tete.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+      if (ouvert) mesurer('semaine/ouvert', 'Bandeau « Cette semaine » déplié');
     });
     const liste = document.createElement('div');
     liste.className = 'r-liste';
@@ -7138,7 +7188,7 @@
       nommer();
       etoile.addEventListener('click', e => {
         e.stopPropagation();
-        if (favoris.has(card.id)) favoris.delete(card.id); else favoris.add(card.id);
+        if (favoris.has(card.id)) favoris.delete(card.id); else { favoris.add(card.id); mesurer('favori/' + card.id, titreCarte(card)); }
         card.classList.toggle('fav', favoris.has(card.id));
         garder('pc-favoris', favoris); nommer(); compter();
         applyFilters();   // l'article change de liste aussitôt
@@ -7159,7 +7209,7 @@
       coche.addEventListener('click', e => {
         e.stopPropagation();
         const lu = !card.classList.contains('lu');
-        if (lu) lus.add(card.id); else lus.delete(card.id);
+        if (lu) { lus.add(card.id); mesurer('lu/' + card.id, titreCarte(card)); } else lus.delete(card.id);
         card.classList.toggle('lu', lu);
         garder('pc-lus', lus); nommerCoche(); compter();
         applyFilters();   // l'article change de liste aussitôt
@@ -7259,6 +7309,7 @@
           .then(r => r.json())
           .then(rep => {
             if (rep && rep.success) {
+              mesurer('inscription', 'Inscription au bulletin');
               mot.className = 'abo-m ok';
               mot.textContent = 'Merci — cliquez sur le lien du message de confirmation '
                 + 'qui vient de partir vers cette adresse. Pensez aux indésirables.';
@@ -7302,7 +7353,7 @@
     const ua = navigator.userAgent || '';
     const dejaInstalle = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
       || navigator.standalone === true;
-    if (dejaInstalle) return;
+    if (dejaInstalle) { mesurer('appli/lancement', 'Ouverture depuis l’icône Pause Cardio'); return; }
 
     const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const android = /Android/i.test(ua);
@@ -7317,6 +7368,7 @@
       boutons.forEach(b => { b.hidden = false; });
     });
     window.addEventListener('appinstalled', () => {
+      mesurer('appli/installee', 'Appli Pause Cardio installée');
       document.querySelectorAll('.instal').forEach(el => el.remove());
     });
 

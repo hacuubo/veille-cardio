@@ -251,8 +251,9 @@ Autres règles de mise en page :
 - **Bouton « Partager »** (ajouté le 08/09/2026) : posé par le script en fin de rangée `.actions` de
   chaque fiche, jamais écrit dans le HTML des cartes. Sur téléphone il ouvre la feuille de partage du
   système (WhatsApp, SMS, mail) avec le titre d'origine, l'accroche française et le lien direct
-  `https://pausecardio.fr/#ancre` (constante `SITE_URL` du script, la même adresse que dans les
-  courriels) ; ailleurs il copie le lien et affiche « Lien copié » (`#toast`).
+  `https://pausecardio.fr/?ref=partage#ancre` (constante `SITE_URL` du script ; `?ref=partage` sert
+  à la mesure d'audience, voir « Fréquentation du site ») ; ailleurs il copie le lien et affiche
+  « Lien copié » (`#toast`).
 - **Tiroirs de surspécialité** : la tête de section (`.spec-h`) est cliquable (chevron à droite, `role`
   et `aria-expanded` posés par le script) ; l'état ouvert est porté par `section.spec.ouvert` et par
   l'ensemble `ouverts` du script. Trois règles à ne pas casser : les tiroirs ouverts sont **mémorisés
@@ -569,6 +570,32 @@ Compteur **GoatCounter** (posé le 04/09/2026) : une balise `<script data-goatco
 `outils/bulletin.mjs`, fonction `rendreArchives`, pour qu'elle survive à chaque régénération). Sans
 cookie ni bandeau de consentement. Tableau de bord : https://pausecardio.goatcounter.com (compte de
 Robin). Ne pas ajouter d'autre outil de mesure sans demande explicite.
+
+**Mesure fine, depuis le 30/10/2026** (demande de Robin : savoir ce que les lecteurs font sur le
+site, d'où ils viennent et ce que fait venir le courriel). Toujours GoatCounter, toujours sans cookie :
+
+- **Gestes des lecteurs** : la fonction `mesurer(chemin, titre)` du script d'`index.html` signale à
+  GoatCounter des « événements » anonymes — `fiche/<ancre>` (fiche dépliée, pas repliée),
+  `original/<ancre>` et `analyse/<ancre>` (clic vers la revue ou vers TCTMD, ACC…), `partage/<ancre>`,
+  `favori/<ancre>` et `lu/<ancre>` (ajout seulement), `tiroir/<surspécialité>` (ouverture à la main),
+  `recherche/<terme>` et `recherche-vide/<terme>` (après 1,8 s sans frappe, 3 caractères au moins, une
+  fois par visite), `semaine/ouvert`, `inscription` (réponse positive de Brevo), `appli/lancement`
+  (page ouverte depuis l'icône) et `appli/installee` (Android). Un geste fait avant le chargement du
+  compteur attend l'événement `load`. Les pages `fiche/<ancre>/` portent les mêmes noms par l'attribut
+  `data-goatcounter-click` (gabarit dans `outils/pages-articles.mjs`), plus `vers-site/<ancre>`.
+  Garder ces noms stables : le tableau de bord les regroupe. Tout nouveau geste mesuré s'ajoute à la
+  liste en tête de `mesurer` et dans `outils/frequentation.mjs`.
+- **Liens marqués** : les liens du courriel vers le site portent
+  `?utm_source=courriel&utm_campaign=bulletin-AAAA-MM-JJ` (constante `SUIVI` de `rendreCourriel` dans
+  `outils/bulletin.mjs`) et le bouton Partager `?ref=partage`. GoatCounter en fait la source et la
+  campagne ; l'ancre reste après le `#`, donc les liens des anciens bulletins restent valables.
+- **Tableau de bord privé** : `node outils/frequentation.mjs [--jours=N | --depuis=AAAA-MM-JJ]` lit
+  GoatCounter et Brevo (lecture seule) et écrit un fichier JSON par tableau dans `frequentation/`.
+  Les clés sont dans `.env.local` à la racine (`GOATCOUNTER_CLE`, `BREVO_CLE_API`) — **ni les clés ni
+  les chiffres ne vont dans le dépôt, qui est public** (`.gitignore`). Ces fichiers alimentent le
+  tableau de bord privé de Robin sur claude.ai (https://claude.ai/artifact/Qsiid7m5RxhFuEUQZaiv1T),
+  dont la page a pour gabarit `outils/frequentation-tableau.html`. Mis à jour à la demande, depuis le
+  poste de Robin.
 
 ## Envoi du bulletin par e-mail
 

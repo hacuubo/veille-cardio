@@ -1,0 +1,384 @@
+<meta name="dash-one-writer">
+<!-- Pause Cardio — page du tableau de bord privé de fréquentation (type « Dashboard » de claude.ai).
+     Elle ne contient aucun chiffre : ils viennent des fichiers écrits par outils/frequentation.mjs,
+     joints au tableau de bord à chaque relevé. Ce fichier n'est que le gabarit, versionné ici. -->
+<style>
+  .pc { display: grid; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); }
+  .pc-tete { display: grid; gap: var(--cds-gap-xs); }
+  .pc-titre { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; }
+  .pc-phrase { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); }
+  .pc-phrase b { color: var(--color-fg); font-weight: 600; }
+  .pc-section { display: grid; gap: var(--cds-gap-md); }
+  .pc-section > h2 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+  .pc-grille { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); }
+  .pc-tuiles { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr)); }
+  .pc-carte { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
+  .pc-carte h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+  .pc-note { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .pc-tuile { gap: var(--cds-gap-xs); }
+  .pc-tuile .pc-lib { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .pc-tuile .pc-val { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .pc-tuile .pc-sous { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .pc-hausse { color: var(--color-ok); }
+  .pc-baisse { color: var(--color-bad); }
+  .pc-jours { position: relative; min-height: 240px; }
+  .pc-bulle { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; }
+  .pc-bulle .pc-bulle-date { color: var(--cds-text-secondary); }
+  .pc-barres { display: grid; gap: var(--cds-gap-xs); min-height: 2rem; }
+  .pc-barre { display: grid; grid-template-columns: minmax(0, 11rem) 1fr auto; gap: var(--cds-gap-sm); align-items: center; font-size: var(--cds-font-size-caption); }
+  .pc-barre-nom { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pc-barre-fond { height: 0.6rem; border-radius: 3px; background: var(--cds-chart-grid); overflow: hidden; }
+  .pc-barre-plein { height: 100%; border-radius: 3px; }
+  .pc-barre-val { font-variant-numeric: tabular-nums; min-width: 2.5rem; text-align: right; }
+  .pc-boite { max-height: 26rem; overflow: auto; }
+  .pc-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .pc-table th { position: sticky; top: 0; background: var(--color-panel); text-align: right; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); }
+  .pc-table td { text-align: right; padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); }
+  .pc-table th:first-child, .pc-table td:first-child { text-align: left; }
+  .pc-table td:first-child { max-width: 28rem; }
+  .pc-table .pc-spec { display: block; color: var(--color-fg-muted); }
+  .pc-table .pc-non { color: var(--color-warn); }
+  .pc-gestes { display: grid; gap: var(--cds-gap-xs); margin: 0; padding: 0; list-style: none; font-size: var(--cds-font-size-body); }
+  .pc-gestes li { display: flex; justify-content: space-between; gap: var(--cds-gap-md); border-bottom: 1px solid var(--color-border-line); padding-block: var(--cds-pad-xs); }
+  .pc-gestes b { font-variant-numeric: tabular-nums; font-weight: 600; }
+  [data-dash-source-state=empty] { color: transparent; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  @media (max-width: 640px) { .pc-cache-etroit { display: none; } }
+</style>
+
+<div class="pc">
+  <header class="pc-tete">
+    <h1 class="pc-titre">Fréquentation de Pause Cardio</h1>
+    <p class="pc-phrase">Du <b data-draw="debut" data-source="resume" data-field="debut" data-row="0">—</b> au <b data-draw="fin" data-source="resume" data-field="fin" data-row="0">—</b>&nbsp;: <b data-draw="visiteurs-phrase" data-source="resume" data-field="visiteurs" data-row="0">—</b> visiteurs, <b data-draw="evolution-phrase" data-source="resume" data-field="evolution_pct" data-row="0">—</b> par rapport à la période précédente. Relevé du <span data-draw="releve" data-source="resume" data-field="releve_le" data-row="0">—</span>.</p>
+  </header>
+
+  <section class="pc-section" id="essentiel">
+    <h2>L’essentiel</h2>
+    <div class="pc-tuiles">
+      <div class="pc-carte pc-tuile">
+        <span class="pc-lib">Visiteurs</span>
+        <span class="pc-val" data-draw="visiteurs" data-source="resume" data-field="visiteurs" data-row="0">—</span>
+        <span class="pc-sous"><span data-draw="evolution" data-source="resume" data-field="evolution_pct" data-row="0">—</span> sur la période précédente (<span data-draw="precedent" data-source="resume" data-field="visiteurs_periode_precedente" data-row="0">—</span>)</span>
+      </div>
+      <div class="pc-carte pc-tuile">
+        <span class="pc-lib">Fiches ouvertes</span>
+        <span class="pc-val" data-draw="fiches" data-source="resume" data-field="fiches_ouvertes" data-row="0">—</span>
+        <span class="pc-sous">sur le site, une fois par lecteur et par visite</span>
+      </div>
+      <div class="pc-carte pc-tuile">
+        <span class="pc-lib">Clics vers l’article original</span>
+        <span class="pc-val" data-draw="originaux" data-source="resume" data-field="clics_original" data-row="0">—</span>
+        <span class="pc-sous">et <span data-draw="analyses" data-source="resume" data-field="clics_analyse" data-row="0">—</span> vers une analyse (TCTMD, ACC…)</span>
+      </div>
+      <div class="pc-carte pc-tuile">
+        <span class="pc-lib">Partages</span>
+        <span class="pc-val" data-draw="partages" data-source="resume" data-field="partages" data-row="0">—</span>
+        <span class="pc-sous">par WhatsApp, SMS ou lien copié</span>
+      </div>
+      <div class="pc-carte pc-tuile">
+        <span class="pc-lib">Inscrits au bulletin</span>
+        <span class="pc-val" data-draw="inscrits" data-source="resume" data-field="inscrits" data-row="0">—</span>
+        <span class="pc-sous"><span data-draw="desinscrits" data-source="resume" data-field="desinscrits" data-row="0">—</span> désinscrits depuis le début</span>
+      </div>
+      <div class="pc-carte pc-tuile">
+        <span class="pc-lib">Ouverture des courriels</span>
+        <span class="pc-val" data-draw="ouverture" data-source="resume" data-field="taux_ouverture_moyen" data-row="0">—</span>
+        <span class="pc-sous"><span data-draw="clic" data-source="resume" data-field="taux_clic_moyen" data-row="0">—</span> des destinataires cliquent</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="pc-section" id="jours">
+    <h2>Jour par jour</h2>
+    <div class="pc-carte">
+      <h3>Visiteurs par jour</h3>
+      <p class="pc-note">Barres&nbsp;: la période choisie. Trait gris&nbsp;: la période précédente, de même durée, jour pour jour.</p>
+      <div class="pc-jours" data-draw="jours" data-source="visites_jour"></div>
+    </div>
+  </section>
+
+  <section class="pc-section" id="sources">
+    <h2>D’où viennent les lecteurs</h2>
+    <div class="pc-grille">
+      <div class="pc-carte">
+        <h3>Sources des visites</h3>
+        <p class="pc-note">«&nbsp;Accès direct&nbsp;»&nbsp;: lien tapé, favori, appli, ou messagerie qui ne dit pas d’où vient le lecteur. «&nbsp;courriel&nbsp;» et «&nbsp;partage&nbsp;» sont les liens marqués du bulletin et du bouton Partager.</p>
+        <div class="pc-barres" data-draw="sources" data-source="sources"></div>
+      </div>
+      <div class="pc-carte">
+        <h3>Visites amenées par chaque bulletin</h3>
+        <p class="pc-note">Lecteurs arrivés par un lien du courriel, bulletin par bulletin (marquage en place depuis le 31 octobre 2026).</p>
+        <div class="pc-barres" data-draw="campagnes" data-source="campagnes"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pc-section" id="articles">
+    <h2>Les articles qui intéressent</h2>
+    <div class="pc-carte">
+      <h3>Articles, du plus suivi au moins suivi</h3>
+      <p class="pc-note">Fiche&nbsp;: fiche dépliée sur le site. Original&nbsp;: clic vers la revue. Google&nbsp;: visites de la page de l’article, où arrivent les moteurs de recherche. Courriel&nbsp;: clics dans le bulletin.</p>
+      <div class="pc-boite">
+        <table class="pc-table" data-source="articles" data-row-key="ancre">
+          <thead><tr>
+            <th data-field="titre">Article</th>
+            <th data-field="fiches_ouvertes">Fiche</th>
+            <th data-field="clics_original">Original</th>
+            <th data-field="partages">Partages</th>
+            <th data-field="favoris" class="pc-cache-etroit">Favoris</th>
+            <th data-field="visites_page_article">Google</th>
+            <th data-field="clics_courriel">Courriel</th>
+          </tr></thead>
+          <tbody data-draw="t-articles"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="pc-section" id="courriels">
+    <h2>Les courriels du samedi</h2>
+    <div class="pc-carte">
+      <h3>Chaque envoi</h3>
+      <p class="pc-note">Le taux d’ouverture est surestimé&nbsp;: Apple Mail ouvre les messages de lui-même. Le taux de clic, lui, est fiable.</p>
+      <div class="pc-boite">
+        <table class="pc-table" data-source="courriels" data-row-key="date">
+          <thead><tr>
+            <th data-field="date">Envoi</th>
+            <th data-field="delivres">Délivrés</th>
+            <th data-field="taux_ouverture">Ouverture</th>
+            <th data-field="taux_clic">Clic</th>
+            <th data-field="visiteurs_amenes">Visiteurs amenés</th>
+            <th data-field="desinscriptions" class="pc-cache-etroit">Désinscriptions</th>
+          </tr></thead>
+          <tbody data-draw="t-courriels"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="pc-section" id="usages">
+    <h2>Ce que les lecteurs cherchent</h2>
+    <div class="pc-grille">
+      <div class="pc-carte">
+        <h3>Recherches</h3>
+        <p class="pc-note">«&nbsp;Non&nbsp;»&nbsp;: la recherche n’a rien trouvé. Ce sont des sujets qui manquent peut-être au site.</p>
+        <div class="pc-boite">
+          <table class="pc-table" data-source="recherches" data-row-key="terme,trouve">
+            <thead><tr>
+              <th data-field="terme">Terme</th>
+              <th data-field="trouve">Trouvé</th>
+              <th data-field="visiteurs">Lecteurs</th>
+            </tr></thead>
+            <tbody data-draw="t-recherches"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="pc-carte">
+        <h3>Surspécialités ouvertes</h3>
+        <p class="pc-note">Tiroirs ouverts à la main sur la page d’accueil.</p>
+        <div class="pc-barres" data-draw="tiroirs" data-source="tiroirs"></div>
+      </div>
+      <div class="pc-carte">
+        <h3>Autres gestes</h3>
+        <ul class="pc-gestes">
+          <li>Pages d’article lues (arrivées par les moteurs) <b data-draw="g-pages" data-source="resume" data-field="visites_pages_article" data-row="0">—</b></li>
+          <li>Articles mis en favori <b data-draw="g-favoris" data-source="resume" data-field="favoris" data-row="0">—</b></li>
+          <li>Articles cochés «&nbsp;lu&nbsp;» <b data-draw="g-lus" data-source="resume" data-field="lus" data-row="0">—</b></li>
+          <li>Inscriptions faites sur le site <b data-draw="g-inscriptions" data-source="resume" data-field="inscriptions_site" data-row="0">—</b></li>
+          <li>Ouvertures depuis l’icône de l’appli <b data-draw="g-lancements" data-source="resume" data-field="appli_lancements" data-row="0">—</b></li>
+          <li>Installations de l’appli (Android) <b data-draw="g-installations" data-source="resume" data-field="appli_installations" data-row="0">—</b></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="pc-section" id="appareils">
+    <h2>Appareils et pays</h2>
+    <div class="pc-grille">
+      <div class="pc-carte">
+        <h3>Systèmes</h3>
+        <div class="pc-barres" data-draw="systemes" data-source="appareils"></div>
+      </div>
+      <div class="pc-carte">
+        <h3>Tailles d’écran</h3>
+        <p class="pc-note">Téléphone, tablette ou ordinateur, d’après la largeur de l’écran.</p>
+        <div class="pc-barres" data-draw="ecrans" data-source="appareils"></div>
+      </div>
+      <div class="pc-carte">
+        <h3>Pays</h3>
+        <div class="pc-barres" data-draw="pays" data-source="pays"></div>
+      </div>
+    </div>
+    <p class="pc-note">Chiffres de GoatCounter (sans cookie) et de Brevo. Les bloqueurs de publicité empêchent une partie des comptages&nbsp;: ce sont des minimums. Chaque geste est compté une fois par lecteur et par visite.</p>
+  </section>
+</div>
+
+<script>
+  const nombre = new Intl.NumberFormat('fr-FR');
+  const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  const dateLongue = iso => { const [a, m, j] = String(iso).slice(0, 10).split('-').map(Number); return j + ' ' + MOIS[m - 1] + ' ' + a; };
+  const ligneResume = () => { const r = dash.data('resume'); return r.status === 'ok' ? r.data[0] : null; };
+  const vide = v => v === null || v === undefined || v === '';
+
+  // un chiffre du résumé dans un élément ; « — » tant qu'il n'est pas là
+  const chiffre = (nom, champ, forme = v => nombre.format(v)) => dash.draw(nom, el => {
+    const r = ligneResume();
+    el.textContent = r && !vide(r[champ]) ? forme(r[champ]) : '—';
+  });
+  const evolution = v => (v > 0 ? '+' : v < 0 ? '−' : '') + nombre.format(Math.abs(v)) + ' %';
+  const teinteEvolution = el => {
+    const r = ligneResume(), v = r ? r.evolution_pct : null;
+    el.classList.toggle('pc-hausse', v > 0);
+    el.classList.toggle('pc-baisse', v < 0);
+  };
+
+  chiffre('debut', 'debut', dateLongue);
+  chiffre('fin', 'fin', dateLongue);
+  chiffre('releve', 'releve_le');
+  chiffre('visiteurs', 'visiteurs');
+  chiffre('visiteurs-phrase', 'visiteurs');
+  chiffre('precedent', 'visiteurs_periode_precedente');
+  for (const nom of ['evolution', 'evolution-phrase']) dash.draw(nom, el => {
+    const r = ligneResume();
+    el.textContent = r && !vide(r.evolution_pct) ? evolution(r.evolution_pct) : '—';
+    teinteEvolution(el);
+  });
+  chiffre('fiches', 'fiches_ouvertes');
+  chiffre('originaux', 'clics_original');
+  chiffre('analyses', 'clics_analyse');
+  chiffre('partages', 'partages');
+  chiffre('inscrits', 'inscrits');
+  chiffre('desinscrits', 'desinscrits');
+  chiffre('ouverture', 'taux_ouverture_moyen', v => nombre.format(v) + ' %');
+  chiffre('clic', 'taux_clic_moyen', v => nombre.format(v) + ' %');
+  chiffre('g-pages', 'visites_pages_article');
+  chiffre('g-favoris', 'favoris');
+  chiffre('g-lus', 'lus');
+  chiffre('g-inscriptions', 'inscriptions_site');
+  chiffre('g-lancements', 'appli_lancements');
+  chiffre('g-installations', 'appli_installations');
+
+  // listes à barres horizontales, sur une échelle commune à la carte
+  const barres = (nom, source, { nomDe, valeurDe, filtre = () => true, max = 10, couleur = 0 }) => dash.draw(nom, el => {
+    const d = dash.data(source);
+    if (d.status !== 'ok') { el.textContent = '—'; return; }
+    const lignes = d.data.filter(filtre).sort((a, b) => valeurDe(b) - valeurDe(a)).slice(0, max);
+    const haut = d3.max(lignes, valeurDe) || 1;
+    el.replaceChildren(...lignes.map(l => {
+      const ligne = document.createElement('div');
+      ligne.className = 'pc-barre';
+      const n = document.createElement('span'); n.className = 'pc-barre-nom'; n.textContent = nomDe(l); n.title = nomDe(l);
+      const fond = document.createElement('span'); fond.className = 'pc-barre-fond';
+      const plein = document.createElement('span'); plein.className = 'pc-barre-plein';
+      plein.style.width = (100 * valeurDe(l) / haut) + '%';
+      plein.style.background = dash.colors[couleur];
+      plein.style.display = 'block';
+      fond.appendChild(plein);
+      const v = document.createElement('span'); v.className = 'pc-barre-val'; v.textContent = nombre.format(valeurDe(l));
+      ligne.append(n, fond, v);
+      return ligne;
+    }));
+  });
+  barres('sources', 'sources', { nomDe: l => l.source, valeurDe: l => +l.visiteurs, max: 12 });
+  barres('campagnes', 'campagnes', { nomDe: l => l.campagne.replace(/^bulletin-(\d{4}-\d{2}-\d{2})$/, (_, j) => 'Bulletin du ' + dateLongue(j)), valeurDe: l => +l.visiteurs, couleur: 1 });
+  barres('tiroirs', 'tiroirs', { nomDe: l => l.surspecialite, valeurDe: l => +l.ouvertures, couleur: 2 });
+  barres('systemes', 'appareils', { nomDe: l => l.nom, valeurDe: l => +l.visiteurs, filtre: l => l.categorie === 'Système', max: 6, couleur: 3 });
+  barres('ecrans', 'appareils', { nomDe: l => l.nom, valeurDe: l => +l.visiteurs, filtre: l => l.categorie === 'Écran', max: 6, couleur: 4 });
+  barres('pays', 'pays', { nomDe: l => l.pays, valeurDe: l => +l.visiteurs, max: 8, couleur: 5 });
+
+  // tableaux : une ligne par enregistrement, la clé portée par la ligne
+  const tableau = (nom, source, cle, cellules) => dash.draw(nom, el => {
+    const d = dash.data(source);
+    el.replaceChildren();
+    if (d.status !== 'ok') return;
+    for (const l of d.data) {
+      const tr = document.createElement('tr');
+      tr.dataset.key = cle(l);
+      for (const c of cellules) {
+        const td = document.createElement('td');
+        if (c.classe) td.className = c.classe;
+        c.remplir(td, l);
+        tr.appendChild(td);
+      }
+      el.appendChild(tr);
+    }
+  });
+  const nb = champ => ({ remplir: (td, l) => { td.textContent = vide(l[champ]) ? '' : nombre.format(l[champ]); } });
+  const pct = champ => ({ remplir: (td, l) => { td.textContent = vide(l[champ]) ? '' : nombre.format(l[champ]) + ' %'; } });
+  tableau('t-articles', 'articles', l => l.ancre, [
+    { remplir: (td, l) => {
+      td.textContent = l.titre;
+      if (l.surspecialite) { const s = document.createElement('span'); s.className = 'pc-spec'; s.textContent = l.surspecialite; td.appendChild(s); }
+    } },
+    nb('fiches_ouvertes'), nb('clics_original'), nb('partages'), { ...nb('favoris'), classe: 'pc-cache-etroit' },
+    nb('visites_page_article'), nb('clics_courriel'),
+  ]);
+  tableau('t-courriels', 'courriels', l => l.date, [
+    { remplir: (td, l) => {
+      td.textContent = dateLongue(l.date);
+      const s = document.createElement('span'); s.className = 'pc-spec'; s.textContent = l.sujet; td.appendChild(s);
+    } },
+    nb('delivres'), pct('taux_ouverture'), pct('taux_clic'), nb('visiteurs_amenes'), { ...nb('desinscriptions'), classe: 'pc-cache-etroit' },
+  ]);
+  tableau('t-recherches', 'recherches', l => encodeURIComponent(l.terme) + ',' + encodeURIComponent(l.trouve), [
+    { remplir: (td, l) => { td.textContent = l.terme; } },
+    { remplir: (td, l) => { td.textContent = l.trouve; td.classList.toggle('pc-non', l.trouve === 'non'); } },
+    nb('visiteurs'),
+  ]);
+
+  // visiteurs par jour : barres pour la période, trait pour la période précédente
+  dash.draw('jours', el => {
+    const d = dash.data('visites_jour');
+    el.replaceChildren();
+    if (d.status !== 'ok' || !d.data.length) { el.textContent = '—'; return; }
+    const lignes = d.data.map(r => ({ jour: new Date(String(r.jour).slice(0, 10) + 'T00:00:00Z'), v: +r.visiteurs, avant: vide(r.periode_precedente) ? null : +r.periode_precedente }));
+    const largeur = Math.max(280, el.clientWidth), hauteur = 240;
+    const haut = d3.max(lignes, r => Math.max(r.v, r.avant || 0)) || 1;
+    const y = d3.scaleLinear([0, haut], [hauteur - 26, 10]).nice();
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${largeur} ${hauteur}`);
+    const graduations = y.ticks(4);
+    const essai = svg.append('text').attr('font-size', 11).text(nombre.format(d3.max(graduations)));
+    const gauche = essai.node().getComputedTextLength() + 10;
+    essai.remove();
+    const x = d3.scaleBand(lignes.map(r => +r.jour), [gauche, largeur - 4]).padding(0.25);
+    svg.append('g').selectAll('line').data(graduations).join('line')
+      .attr('x1', gauche).attr('x2', largeur - 4).attr('y1', t => y(t)).attr('y2', t => y(t))
+      .attr('stroke', 'var(--cds-chart-grid)').attr('stroke-width', 1);
+    svg.append('g').selectAll('text').data(graduations).join('text')
+      .attr('x', gauche - 6).attr('y', t => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end')
+      .attr('font-size', 11).attr('fill', 'var(--color-fg-muted)').text(t => nombre.format(t));
+    const pas = Math.max(1, Math.ceil(lignes.length / Math.max(2, Math.floor(largeur / 70))));
+    svg.append('g').selectAll('text').data(lignes.filter((_, i) => i % pas === 0)).join('text')
+      .attr('x', r => x(+r.jour) + x.bandwidth() / 2).attr('y', hauteur - 8).attr('text-anchor', 'middle')
+      .attr('font-size', 11).attr('fill', 'var(--color-fg-muted)').text(r => r.jour.getUTCDate() + ' ' + MOIS[r.jour.getUTCMonth()].slice(0, 4).replace(/\.$/, ''));
+    svg.append('g').selectAll('rect').data(lignes).join('rect')
+      .attr('x', r => x(+r.jour)).attr('width', x.bandwidth())
+      .attr('y', r => y(r.v)).attr('height', r => Math.max(0, y(0) - y(r.v)))
+      .attr('rx', Math.min(3, x.bandwidth() / 2)).attr('fill', dash.colors[0]);
+    const avec = lignes.filter(r => r.avant !== null);
+    if (avec.length) svg.append('path').datum(avec)
+      .attr('d', d3.line().x(r => x(+r.jour) + x.bandwidth() / 2).y(r => y(r.avant)))
+      .attr('fill', 'none').attr('stroke', 'var(--cds-chart-muted)').attr('stroke-width', 2)
+      .attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    const bulle = document.createElement('div');
+    bulle.className = 'pc-bulle';
+    bulle.hidden = true;
+    el.appendChild(bulle);
+    svg.append('g').selectAll('rect').data(lignes).join('rect')
+      .attr('x', r => x(+r.jour) - x.step() * x.paddingInner() / 2).attr('width', x.step())
+      .attr('y', 0).attr('height', hauteur - 20).attr('fill', 'transparent')
+      .on('pointerenter pointermove', (ev, r) => {
+        bulle.replaceChildren();
+        const t = document.createElement('div'); t.className = 'pc-bulle-date'; t.textContent = dateLongue(r.jour.toISOString());
+        const a = document.createElement('div'); a.textContent = nombre.format(r.v) + ' visiteurs';
+        bulle.append(t, a);
+        if (r.avant !== null) { const p = document.createElement('div'); p.className = 'pc-bulle-date'; p.textContent = 'période précédente : ' + nombre.format(r.avant); bulle.append(p); }
+        bulle.hidden = false;
+        const echelle = el.clientWidth / largeur;
+        const cx = (x(+r.jour) + x.bandwidth() / 2) * echelle;
+        bulle.style.left = Math.min(Math.max(0, cx - bulle.offsetWidth / 2), el.clientWidth - bulle.offsetWidth) + 'px';
+        bulle.style.top = '0px';
+      })
+      .on('pointerleave', () => { bulle.hidden = true; });
+  });
+</script>

@@ -321,6 +321,10 @@ ${entrees}
  *  Gmail, Outlook et Apple Mail affichent tous correctement. */
 function rendreCourriel(nouveaux, dateIso, { congres = '', rappel = false } = {}) {
   const SITE_URL = 'https://pausecardio.fr/';
+  // marquage des liens : GoatCounter range ces visites sous la source « courriel » et la
+  // campagne « bulletin-AAAA-MM-JJ », pour mesurer ce que chaque courriel fait venir.
+  // L'ancre reste après le « # » : un lien sans marquage mènerait au même article.
+  const SUIVI = `?utm_source=courriel&amp;utm_campaign=bulletin-${dateIso}`;
   const n = nouveaux.length;
   const lundi = lundiDeLaSemaine(dateIso);
   const lundiPrecedent = new Date(lundi + 'T12:00:00Z');
@@ -351,7 +355,7 @@ function rendreCourriel(nouveaux, dateIso, { congres = '', rappel = false } = {}
         <span style="font-weight:normal;text-transform:none;letter-spacing:0;color:#898781;">&nbsp;·&nbsp;${articles.length}&nbsp;sortie${articles.length > 1 ? 's' : ''}</span></div>
     </td></tr>`;
     const cartes = articles.map(a => {
-      const lien = SITE_URL + '#' + a.ancre;
+      const lien = SITE_URL + SUIVI + '#' + a.ancre;
       const fond = /recommandation/i.test(brut(a.type)) ? '#fbf2f1' : '#fcfcfb';
       return `
     <tr><td style="padding:0 34px;">
@@ -395,7 +399,7 @@ function rendreCourriel(nouveaux, dateIso, { congres = '', rappel = false } = {}
       </td></tr>
 ${blocs}
       <tr><td align="center" style="padding:12px 20px 8px;">
-        <a href="${SITE_URL}" style="font-family:Helvetica,Arial,sans-serif;font-size:13.5px;font-weight:bold;color:#ffffff;background:#d03b3b;border-radius:8px;padding:11px 22px;text-decoration:none;display:inline-block;">Ouvrir le tableau de bord complet</a>
+        <a href="${SITE_URL}${SUIVI}" style="font-family:Helvetica,Arial,sans-serif;font-size:13.5px;font-weight:bold;color:#ffffff;background:#d03b3b;border-radius:8px;padding:11px 22px;text-decoration:none;display:inline-block;">Ouvrir le tableau de bord complet</a>
       </td></tr>
       <tr><td style="padding:16px 20px 8px;">
         <div style="font-family:Helvetica,Arial,sans-serif;font-size:11px;color:#898781;line-height:1.55;border-top:1px solid #e4e3dc;padding-top:12px;">

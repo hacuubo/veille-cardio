@@ -1,1 +1,5 @@
 __pycache__/
+
+# mesure d’audience : clés privées et chiffres de fréquentation, jamais dans le dépôt public
+.env.local
+frequentation/

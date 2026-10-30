@@ -172,8 +172,16 @@ function page(c) {
     }],
   };
   const ficheHtml = c.corpsFiche.replace(/<h4>/g, '<h2>').replace(/<\/h4>/g, '</h2>');
-  const boutons = [`<a class="btn primaire" href="${attr(surLeSite)}">Voir sur Pause Cardio</a>`]
-    .concat(c.liens.map(l => `<a class="btn" href="${attr(l.href)}" target="_blank" rel="noopener">${attr(l.libelle)} ↗</a>`));
+  // data-goatcounter-click : GoatCounter compte ces clics comme des événements, avec les
+  // mêmes noms que sur la page principale (original/…, analyse/…), plus vers-site/…
+  // pour le lecteur arrivé par un moteur de recherche qui passe sur le site
+  const mesure = (chemin, titre) => ` data-goatcounter-click="${attr(chemin)}" data-goatcounter-title="${attr(titre)}"`;
+  const boutons = [`<a class="btn primaire" href="${attr(surLeSite)}"${mesure('vers-site/' + c.ancre, c.titre)}>Voir sur Pause Cardio</a>`]
+    .concat(c.liens.map(l => {
+      const sorte = /^(article original|texte)/i.test(l.libelle) ? 'original' : 'analyse';
+      const titre = sorte === 'original' ? c.titre : l.libelle + ' · ' + c.titre;
+      return `<a class="btn" href="${attr(l.href)}" target="_blank" rel="noopener"${mesure(sorte + '/' + c.ancre, titre)}>${attr(l.libelle)} ↗</a>`;
+    }));
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>

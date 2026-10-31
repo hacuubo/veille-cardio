@@ -190,7 +190,10 @@
     "weightlossinolderpatientswithpersistentatrialfibrillationtheloseafrandomizedclinicaltrial",
     "immediateversusstagedcompleterevascularizationinmultivesseldiseaseandstemiametaanalysisofrandomizedtrials",
     "coronaryarterydiseasemanagementinpatientswithsevereaorticstenosisundergoingtranscatheteraorticvalveimplantationasystematicreviewandmetaanalysisofrandomisedcontrolledtrials",
-    "icarefasterimprovingcarebyfasterriskstratificationthroughuseofhighsensitivitypointofcaretroponininpatientspresentingwithpossibleacutecoronarysyndromeintheemergencydepartmentasteppedwedgeclusterrandomizedtrial"
+    "icarefasterimprovingcarebyfasterriskstratificationthroughuseofhighsensitivitypointofcaretroponininpatientspresentingwithpossibleacutecoronarysyndromeintheemergencydepartmentasteppedwedgeclusterrandomizedtrial",
+    "leftbundlebranchareapacingvsrightventricularpacingforatrioventricularblockandpreservedleftventricularfunctiontheleapblockrandomizedclinicaltrial",
+    "performanceof01hversus03hpathwaysinpatientswithsuspectedmyocardialinfarctionasystematicreviewandindividualparticipantdatametaanalysisofrandomisedcontrolledtrials",
+    "intensivevsmoreintensivelipidloweringtherapyandplaqueregressioninstatinnaivepatientsprespecifiedanalysesfromtheflowpromoterandomizedclinicaltrial"
   ],
   "bulletins": [
     {
@@ -258,11 +261,18 @@
       "fichier": "bulletin-2026-10-24.pdf",
       "nb": 2,
       "crit": 0
+    },
+    {
+      "date": "2026-10-31",
+      "fichier": "bulletin-2026-10-31.pdf",
+      "nb": 3,
+      "crit": 1
     }
   ],
-  "derniere_execution": "2026-10-24",
+  "derniere_execution": "2026-10-31",
   "dernier_lot": [
-    "coronaryarterydiseasemanagementinpatientswithsevereaorticstenosisundergoingtranscatheteraorticvalveimplantationasystematicreviewandmetaanalysisofrandomisedcontrolledtrials",
-    "icarefasterimprovingcarebyfasterriskstratificationthroughuseofhighsensitivitypointofcaretroponininpatientspresentingwithpossibleacutecoronarysyndromeintheemergencydepartmentasteppedwedgeclusterrandomizedtrial"
+    "leftbundlebranchareapacingvsrightventricularpacingforatrioventricularblockandpreservedleftventricularfunctiontheleapblockrandomizedclinicaltrial",
+    "performanceof01hversus03hpathwaysinpatientswithsuspectedmyocardialinfarctionasystematicreviewandindividualparticipantdatametaanalysisofrandomisedcontrolledtrials",
+    "intensivevsmoreintensivelipidloweringtherapyandplaqueregressioninstatinnaivepatientsprespecifiedanalysesfromtheflowpromoterandomizedclinicaltrial"
   ]
 }

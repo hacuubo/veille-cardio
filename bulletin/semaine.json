@@ -1,12 +1,13 @@
 {
- "date": "2026-10-24",
- "sujet": "Les sorties de la semaine du lundi 19 octobre",
+ "date": "2026-10-31",
+ "sujet": "Les sorties de la semaine du lundi 26 octobre",
  "rappel": false,
  "congres": "",
- "lundi": "2026-10-19",
- "nb": 2,
+ "lundi": "2026-10-26",
+ "nb": 3,
  "ancres": [
-  "coronary-artery-disease-management-in-patients-with-severe-aorti",
-  "icare-faster-improving-care-by-faster-risk-stratification-throug"
+  "left-bundle-branch-area-pacing-vs-right-ventricular-pacing-for-a",
+  "performance-of-0-1-h-versus-0-3-h-pathways-in-patients-with-susp",
+  "intensive-vs-more-intensive-lipid-lowering-therapy-and-plaque-re"
  ]
 }

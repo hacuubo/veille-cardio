@@ -193,7 +193,18 @@
     "icarefasterimprovingcarebyfasterriskstratificationthroughuseofhighsensitivitypointofcaretroponininpatientspresentingwithpossibleacutecoronarysyndromeintheemergencydepartmentasteppedwedgeclusterrandomizedtrial",
     "leftbundlebranchareapacingvsrightventricularpacingforatrioventricularblockandpreservedleftventricularfunctiontheleapblockrandomizedclinicaltrial",
     "performanceof01hversus03hpathwaysinpatientswithsuspectedmyocardialinfarctionasystematicreviewandindividualparticipantdatametaanalysisofrandomisedcontrolledtrials",
-    "intensivevsmoreintensivelipidloweringtherapyandplaqueregressioninstatinnaivepatientsprespecifiedanalysesfromtheflowpromoterandomizedclinicaltrial"
+    "intensivevsmoreintensivelipidloweringtherapyandplaqueregressioninstatinnaivepatientsprespecifiedanalysesfromtheflowpromoterandomizedclinicaltrial",
+    "sodiumbicarbonateforinhospitalcardiacarrestarandomizedclinicaltrial",
+    "antithrombotictherapyafterleftatrialappendageocclusionthesimplaafyrandomizedclinicaltrial",
+    "arandomizedcomparisonofcomprehensiveweightlossinterventionvsusualcareonrecurrencesofatrialfibrillationinobesepatientsaftercatheterablationhobitaftrial",
+    "efficacyandsafetyofroutinepostdilationinballoonexpandabletranscatheteraorticvalveimplantationplatformtheduotaprandomizedclinicaltrial",
+    "singlevsdoubleproglidedevicesforaccesssiteclosureaftertransfemoralaorticvalvereplacementthesingleclosuretrial",
+    "percutaneoustranscathetermitralvalvereplacementforsymptomaticmitralregurgitation2yearoutcomesfromtheencircletrial",
+    "tavrinpatientswithmoderateaorticstenosiswithatriskfeatures",
+    "coronaryctangiographyversusintravascularultrasoundguidanceforpci",
+    "transcatheteraorticvalvereplacementinpureaorticregurgitationtherandomizedseasonarclinicaltrial",
+    "hydralazineisosorbidedinitrateinchronicheartfailurewithreducedejectionfractionthehhefttrial",
+    "longtermimpactofvutrisiraninpatientswithttramyloidosiswithcardiomyopathy1yearefficacyandsafetyoutcomesfromtheheliosbopenlabelextension"
   ],
   "bulletins": [
     {
@@ -267,12 +278,25 @@
       "fichier": "bulletin-2026-10-31.pdf",
       "nb": 3,
       "crit": 1
+    },
+    {
+      "date": "2026-11-06",
+      "fichier": "bulletin-2026-11-06.pdf",
+      "nb": 10,
+      "crit": 2
     }
   ],
-  "derniere_execution": "2026-10-31",
+  "derniere_execution": "2026-11-06",
   "dernier_lot": [
-    "leftbundlebranchareapacingvsrightventricularpacingforatrioventricularblockandpreservedleftventricularfunctiontheleapblockrandomizedclinicaltrial",
-    "performanceof01hversus03hpathwaysinpatientswithsuspectedmyocardialinfarctionasystematicreviewandindividualparticipantdatametaanalysisofrandomisedcontrolledtrials",
-    "intensivevsmoreintensivelipidloweringtherapyandplaqueregressioninstatinnaivepatientsprespecifiedanalysesfromtheflowpromoterandomizedclinicaltrial"
+    "antithrombotictherapyafterleftatrialappendageocclusionthesimplaafyrandomizedclinicaltrial",
+    "arandomizedcomparisonofcomprehensiveweightlossinterventionvsusualcareonrecurrencesofatrialfibrillationinobesepatientsaftercatheterablationhobitaftrial",
+    "efficacyandsafetyofroutinepostdilationinballoonexpandabletranscatheteraorticvalveimplantationplatformtheduotaprandomizedclinicaltrial",
+    "singlevsdoubleproglidedevicesforaccesssiteclosureaftertransfemoralaorticvalvereplacementthesingleclosuretrial",
+    "percutaneoustranscathetermitralvalvereplacementforsymptomaticmitralregurgitation2yearoutcomesfromtheencircletrial",
+    "tavrinpatientswithmoderateaorticstenosiswithatriskfeatures",
+    "coronaryctangiographyversusintravascularultrasoundguidanceforpci",
+    "transcatheteraorticvalvereplacementinpureaorticregurgitationtherandomizedseasonarclinicaltrial",
+    "hydralazineisosorbidedinitrateinchronicheartfailurewithreducedejectionfractionthehhefttrial",
+    "longtermimpactofvutrisiraninpatientswithttramyloidosiswithcardiomyopathy1yearefficacyandsafetyoutcomesfromtheheliosbopenlabelextension"
   ]
 }

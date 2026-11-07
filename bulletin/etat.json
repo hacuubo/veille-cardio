@@ -204,7 +204,9 @@
     "coronaryctangiographyversusintravascularultrasoundguidanceforpci",
     "transcatheteraorticvalvereplacementinpureaorticregurgitationtherandomizedseasonarclinicaltrial",
     "hydralazineisosorbidedinitrateinchronicheartfailurewithreducedejectionfractionthehhefttrial",
-    "longtermimpactofvutrisiraninpatientswithttramyloidosiswithcardiomyopathy1yearefficacyandsafetyoutcomesfromtheheliosbopenlabelextension"
+    "longtermimpactofvutrisiraninpatientswithttramyloidosiswithcardiomyopathy1yearefficacyandsafetyoutcomesfromtheheliosbopenlabelextension",
+    "optimizationofpostpartumcareforpatientswithandatriskforprematureandlongtermcardiovasculardisease2026accexpertconsensusdecisionpathwayareportoftheamericancollegeofcardiologysolutionsetoversightcommittee",
+    "transcatheteraorticvalveimplantationvssurgicalreplacementinlowriskaorticstenosistimedependentlatemortalityinapooledanalysisoftrials"
   ],
   "bulletins": [
     {
@@ -284,19 +286,16 @@
       "fichier": "bulletin-2026-11-06.pdf",
       "nb": 10,
       "crit": 2
+    },
+    {
+      "date": "2026-11-07",
+      "fichier": "bulletin-2026-11-07.pdf",
+      "nb": 1,
+      "crit": 0
     }
   ],
-  "derniere_execution": "2026-11-06",
+  "derniere_execution": "2026-11-07",
   "dernier_lot": [
-    "antithrombotictherapyafterleftatrialappendageocclusionthesimplaafyrandomizedclinicaltrial",
-    "arandomizedcomparisonofcomprehensiveweightlossinterventionvsusualcareonrecurrencesofatrialfibrillationinobesepatientsaftercatheterablationhobitaftrial",
-    "efficacyandsafetyofroutinepostdilationinballoonexpandabletranscatheteraorticvalveimplantationplatformtheduotaprandomizedclinicaltrial",
-    "singlevsdoubleproglidedevicesforaccesssiteclosureaftertransfemoralaorticvalvereplacementthesingleclosuretrial",
-    "percutaneoustranscathetermitralvalvereplacementforsymptomaticmitralregurgitation2yearoutcomesfromtheencircletrial",
-    "tavrinpatientswithmoderateaorticstenosiswithatriskfeatures",
-    "coronaryctangiographyversusintravascularultrasoundguidanceforpci",
-    "transcatheteraorticvalvereplacementinpureaorticregurgitationtherandomizedseasonarclinicaltrial",
-    "hydralazineisosorbidedinitrateinchronicheartfailurewithreducedejectionfractionthehhefttrial",
-    "longtermimpactofvutrisiraninpatientswithttramyloidosiswithcardiomyopathy1yearefficacyandsafetyoutcomesfromtheheliosbopenlabelextension"
+    "transcatheteraorticvalveimplantationvssurgicalreplacementinlowriskaorticstenosistimedependentlatemortalityinapooledanalysisoftrials"
   ]
 }

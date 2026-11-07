@@ -218,6 +218,12 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://pausecardio.fr/fiche/transcatheter-aortic-valve-implantation-vs-surgical-replacement/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/efficacy-and-safety-of-routine-postdilation-in-balloon-expandabl/</loc>
     <lastmod>2026-11-06</lastmod>
     <changefreq>monthly</changefreq>
@@ -837,6 +843,12 @@
   </url>
   <url>
     <loc>https://pausecardio.fr/fiche/vutrisiran-in-patients-with-transthyretin-amyloidosis-with-cardi/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/optimization-of-postpartum-care-for-patients-with-and-at-risk-fo/</loc>
+    <lastmod>2026-11-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

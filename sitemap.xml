@@ -218,6 +218,12 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://pausecardio.fr/fiche/percutaneous-coronary-intervention-and-long-term-outcomes-in-sta/</loc>
+    <lastmod>2026-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/transcatheter-aortic-valve-implantation-vs-surgical-replacement/</loc>
     <lastmod>2026-11-07</lastmod>
     <changefreq>monthly</changefreq>
@@ -847,6 +853,24 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://pausecardio.fr/fiche/statin-ezetimibe-combination-therapy-vs-statin-monotherapy-in-at/</loc>
+    <lastmod>2026-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/intensive-blood-pressure-therapy-did-not-cut-cardiovascular-even/</loc>
+    <lastmod>2026-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/intensive-blood-pressure-control-in-patients-with-previous-ische/</loc>
+    <lastmod>2026-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/optimization-of-postpartum-care-for-patients-with-and-at-risk-fo/</loc>
     <lastmod>2026-11-07</lastmod>
     <changefreq>monthly</changefreq>
@@ -913,7 +937,7 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://pausecardio.fr/fiche/novartis-announces-lp-a-horizon-phase-iii-topline-results-for-pe/</loc>
+    <loc>https://pausecardio.fr/fiche/pelacarsen-and-cardiovascular-outcomes-in-patients-with-high-lip/</loc>
     <lastmod>2026-09-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -979,7 +1003,8 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://pausecardio.fr/fiche/zeus-ziltivekimab-in-people-with-ascvd-ckd-and-inflammation-topl/</loc>
+    <loc>https://pausecardio.fr/fiche/interleukin-6-inhibition-with-ziltivekimab-for-atherosclerotic-d/</loc>
+    <lastmod>2026-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

@@ -206,7 +206,13 @@
     "hydralazineisosorbidedinitrateinchronicheartfailurewithreducedejectionfractionthehhefttrial",
     "longtermimpactofvutrisiraninpatientswithttramyloidosiswithcardiomyopathy1yearefficacyandsafetyoutcomesfromtheheliosbopenlabelextension",
     "optimizationofpostpartumcareforpatientswithandatriskforprematureandlongtermcardiovasculardisease2026accexpertconsensusdecisionpathwayareportoftheamericancollegeofcardiologysolutionsetoversightcommittee",
-    "transcatheteraorticvalveimplantationvssurgicalreplacementinlowriskaorticstenosistimedependentlatemortalityinapooledanalysisoftrials"
+    "transcatheteraorticvalveimplantationvssurgicalreplacementinlowriskaorticstenosistimedependentlatemortalityinapooledanalysisoftrials",
+    "percutaneouscoronaryinterventionandlongtermoutcomesinstablecoronaryarterydiseaseextendedfollowupofthecouragerandomizedtrial",
+    "statinezetimibecombinationtherapyvsstatinmonotherapyinatheroscleroticcardiovasculardiseaseaprespecifiedsecondaryanalysisoftherandomizedezpavetrial",
+    "intensivebloodpressuretherapydidnotcutcardiovasculareventsinadultswithdiabetesoptimaldiabetes",
+    "intensivebloodpressurecontrolinpatientswithpreviousischemicstroke",
+    "pelacarsenandcardiovascularoutcomesinpatientswithhighlipoproteina",
+    "interleukin6inhibitionwithziltivekimabforatheroscleroticdisease"
   ],
   "bulletins": [
     {
@@ -292,10 +298,21 @@
       "fichier": "bulletin-2026-11-07.pdf",
       "nb": 1,
       "crit": 0
+    },
+    {
+      "date": "2026-11-08",
+      "fichier": "bulletin-2026-11-08.pdf",
+      "nb": 6,
+      "crit": 1
     }
   ],
-  "derniere_execution": "2026-11-07",
+  "derniere_execution": "2026-11-08",
   "dernier_lot": [
-    "transcatheteraorticvalveimplantationvssurgicalreplacementinlowriskaorticstenosistimedependentlatemortalityinapooledanalysisoftrials"
+    "percutaneouscoronaryinterventionandlongtermoutcomesinstablecoronaryarterydiseaseextendedfollowupofthecouragerandomizedtrial",
+    "statinezetimibecombinationtherapyvsstatinmonotherapyinatheroscleroticcardiovasculardiseaseaprespecifiedsecondaryanalysisoftherandomizedezpavetrial",
+    "intensivebloodpressuretherapydidnotcutcardiovasculareventsinadultswithdiabetesoptimaldiabetes",
+    "intensivebloodpressurecontrolinpatientswithpreviousischemicstroke",
+    "pelacarsenandcardiovascularoutcomesinpatientswithhighlipoproteina",
+    "interleukin6inhibitionwithziltivekimabforatheroscleroticdisease"
   ]
 }

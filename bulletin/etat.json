@@ -212,7 +212,13 @@
     "intensivebloodpressuretherapydidnotcutcardiovasculareventsinadultswithdiabetesoptimaldiabetes",
     "intensivebloodpressurecontrolinpatientswithpreviousischemicstroke",
     "pelacarsenandcardiovascularoutcomesinpatientswithhighlipoproteina",
-    "interleukin6inhibitionwithziltivekimabforatheroscleroticdisease"
+    "interleukin6inhibitionwithziltivekimabforatheroscleroticdisease",
+    "leftbundlebranchpacingversusrightventricularpacingforatrioventricularblock",
+    "longtermsurvivalafterinitialinvasiveorconservativemanagementofstablecoronarydiseaseinischemiaextend",
+    "communitycprandemsinterventionprogramdidnotincreasesurvivalaftercardiacarrestracecars",
+    "cangrelorversuscrushedticagrelorinacutemyocardialinfarctioncomplicatedbycardiogenicshockdaptshockamiarandomiseddoubleblindtrial",
+    "discontinuingstatinsinolderadultswithoutcardiovasculardisease",
+    "statinezetimibecombinationtherapyversusstatinmonotherapyinatheroscleroticcardiovasculardiseaseaprespecifiedsecondaryanalysisoftherandomizedezpavetrial"
   ],
   "bulletins": [
     {
@@ -304,15 +310,21 @@
       "fichier": "bulletin-2026-11-08.pdf",
       "nb": 6,
       "crit": 1
+    },
+    {
+      "date": "2026-11-09",
+      "fichier": "bulletin-2026-11-09.pdf",
+      "nb": 6,
+      "crit": 1
     }
   ],
-  "derniere_execution": "2026-11-08",
+  "derniere_execution": "2026-11-09",
   "dernier_lot": [
-    "percutaneouscoronaryinterventionandlongtermoutcomesinstablecoronaryarterydiseaseextendedfollowupofthecouragerandomizedtrial",
-    "statinezetimibecombinationtherapyvsstatinmonotherapyinatheroscleroticcardiovasculardiseaseaprespecifiedsecondaryanalysisoftherandomizedezpavetrial",
-    "intensivebloodpressuretherapydidnotcutcardiovasculareventsinadultswithdiabetesoptimaldiabetes",
-    "intensivebloodpressurecontrolinpatientswithpreviousischemicstroke",
-    "pelacarsenandcardiovascularoutcomesinpatientswithhighlipoproteina",
-    "interleukin6inhibitionwithziltivekimabforatheroscleroticdisease"
+    "leftbundlebranchpacingversusrightventricularpacingforatrioventricularblock",
+    "longtermsurvivalafterinitialinvasiveorconservativemanagementofstablecoronarydiseaseinischemiaextend",
+    "communitycprandemsinterventionprogramdidnotincreasesurvivalaftercardiacarrestracecars",
+    "cangrelorversuscrushedticagrelorinacutemyocardialinfarctioncomplicatedbycardiogenicshockdaptshockamiarandomiseddoubleblindtrial",
+    "discontinuingstatinsinolderadultswithoutcardiovasculardisease",
+    "statinezetimibecombinationtherapyversusstatinmonotherapyinatheroscleroticcardiovasculardiseaseaprespecifiedsecondaryanalysisoftherandomizedezpavetrial"
   ]
 }

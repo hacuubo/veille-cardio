@@ -20,6 +20,12 @@
   </url>
   <!--FICHES:DEBUT-->
   <url>
+    <loc>https://pausecardio.fr/fiche/left-bundle-branch-pacing-versus-right-ventricular-pacing-for-at/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/antithrombotic-therapy-after-left-atrial-appendage-occlusion-the/</loc>
     <lastmod>2026-11-06</lastmod>
     <changefreq>monthly</changefreq>
@@ -214,6 +220,12 @@
   </url>
   <url>
     <loc>https://pausecardio.fr/fiche/pulsed-field-or-cryoballoon-ablation-for-paroxysmal-atrial-fibri/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/long-term-survival-after-initial-invasive-or-conservative-manage/</loc>
+    <lastmod>2026-11-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -683,6 +695,18 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://pausecardio.fr/fiche/community-cpr-and-ems-intervention-program-did-not-increase-surv/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/cangrelor-versus-crushed-ticagrelor-in-acute-myocardial-infarcti/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/sodium-bicarbonate-for-in-hospital-cardiac-arrest-a-randomized-c/</loc>
     <lastmod>2026-11-06</lastmod>
     <changefreq>monthly</changefreq>
@@ -853,7 +877,13 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://pausecardio.fr/fiche/statin-ezetimibe-combination-therapy-vs-statin-monotherapy-in-at/</loc>
+    <loc>https://pausecardio.fr/fiche/discontinuing-statins-in-older-adults-without-cardiovascular-dis/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/statin-ezetimibe-combination-therapy-versus-statin-monotherapy-i/</loc>
     <lastmod>2026-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

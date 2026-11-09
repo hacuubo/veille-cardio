@@ -310,6 +310,10 @@ if (opt('sources') && cible.length) {
     if (pmid && !resume) resume = await get('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&rettype=abstract&retmode=xml&id=' + pmid);
     const abstract = [...resume.matchAll(/<AbstractText[^>]*>([\s\S]*?)<\/AbstractText>/g)].map(x => x[1].replace(/<[^>]+>/g, ' ')).join(' ');
     if (!abstract) { A(c, 'aucun résumé PubMed trouvé (recommandation, communiqué ou titre non indexé) : fidélité non contrôlable automatiquement'); continue; }
+    // Une lettre de recherche (JAMA « Research Letter ») n'a pas de résumé : PubMed ne
+    // porte qu'une phrase d'accroche d'une ligne. La comparer aux chiffres de la carte
+    // n'aurait aucun sens — tout serait « absent ». On la traite comme un résumé manquant.
+    if (abstract.replace(/\s+/g, ' ').trim().length < 200) { A(c, `résumé PubMed ${pmid} réduit à une phrase (lettre de recherche) : fidélité non contrôlable automatiquement`); continue; }
     const clair = decoder(abstract);
     const autorises = new Set([...nombresEn(clair), ...nombresEnLettres(clair), ...Array.from({ length: 32 }, (_, i) => String(i)), '95', '100', '2024', '2025', '2026']);
     const texte = [c.fr, brut(c.sum), brut(c.cle), brut(c.fiche)].join(' ').replace(/\b\d{1,2}\s+[a-zéû]+\s+20\d\d/g, ' ');

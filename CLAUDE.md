@@ -359,7 +359,14 @@ Règles de classement qui évitent les oublis constatés :
     non plus : le récapitulatif le remplace.
   - `MODE CLOTURE_HIER` → veille complète du congrès, Radar remis à jour, puis
     `bash outils/faire-bulletin.sh --congres="ESC 2026"` : courriel « Récapitulatif des sorties du
-    congrès "…" », envoyé à **07:50**.
+    congrès "…" », envoyé à **07:50**. **Ce qu'il contient** (règle du 11/11/2026, premier
+    récapitulatif, AHA 2026) : les bulletins quotidiens « sans courriel » des jours de congrès
+    mémorisent leurs cartes dans `etat.json`, qui ne distingue pas « mémorisé » et « annoncé » ;
+    en mode `--congres`, `bulletin.mjs` se fie donc aux courriels réellement envoyés
+    (`bulletin/courriel-*.html`) et reprend toute carte portant le sigle du congrès dans `.meta`,
+    ou parue depuis le dernier courriel envoyé, qui n'y figure pas — y compris la semaine dont le
+    courriel du samedi a été remplacé par le récapitulatif. Sans cette règle, 20 des 26 sorties
+    de l'AHA 2026 n'auraient jamais atteint les inscrits.
   - `MODE RIEN` → elle termine sans rien modifier.
   - Les congrès de **niveau 2** (TCT, EuroPCR, HRS, EHRA, HFA, sessions de cardiologie du sport)
     n'ont pas de mode propre : leurs sorties sont reprises par la veille du samedi.

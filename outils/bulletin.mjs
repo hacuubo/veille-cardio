@@ -28,7 +28,7 @@
  *               (« Semaine calme »), qui rappelle les sorties du dernier bulletin
  * --------------------------------------------------------------------------- */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -541,7 +541,29 @@ const depuis   = decaler(dateIso, -FENETRE_JOURS);
 const depuisRattrapage = decaler(depuis, -RATTRAPAGE_JOURS);
 const connus   = new Set(etat.connus);
 const inconnus = articles.filter(a => !connus.has(a.cle));
-const nouveaux = inconnus.filter(a => { const p = dateParution(a); return p && p >= depuisRattrapage && p <= dateIso; });
+let nouveaux = inconnus.filter(a => { const p = dateParution(a); return p && p >= depuisRattrapage && p <= dateIso; });
+/* Récapitulatif de congrès (--congres) : pendant un congrès de niveau 1, les bulletins
+   quotidiens partent « sans courriel » mais mémorisent leurs cartes dans etat.connus, qui
+   ne distingue donc pas « mémorisé » et « annoncé ». Ce qui fait foi ici, c'est ce que les
+   courriels déjà envoyés contiennent (bulletin/courriel-AAAA-MM-JJ.html, ancres) : toute
+   carte portant le sigle du congrès dans sa ligne .meta, ou parue depuis le dernier courriel
+   envoyé (tolérance de rattrapage comprise), et absente de tous les courriels précédents,
+   est reprise. Règle du 11/11/2026, premier récapitulatif (AHA 2026) : sans elle, 20 des 26
+   sorties du congrès n'auraient jamais été envoyées aux inscrits. */
+if (congres) {
+  const courriels = readdirSync(DOSSIER)
+    .filter(f => /^courriel-\d{4}-\d{2}-\d{2}\.html$/.test(f) && f < `courriel-${dateIso}.html`).sort();
+  const dejaEnvoyes = new Set(courriels.flatMap(f =>
+    [...readFileSync(join(DOSSIER, f), 'utf8').matchAll(/#([a-z0-9][a-z0-9-]{3,})/g)].map(m => m[1])));
+  const dernierCourriel = courriels.length ? courriels.at(-1).slice(9, 19) : depuis;
+  const depuisCongres = decaler(dernierCourriel, -RATTRAPAGE_JOURS);
+  nouveaux = articles.filter(a => {
+    if (dejaEnvoyes.has(a.ancre)) return false;
+    const p = dateParution(a);
+    return brut(a.meta).includes(congres) || (p && p >= depuisCongres && p <= dateIso);
+  });
+  console.log(`CONGRES ${congres} — dernier courriel envoyé le ${dernierCourriel}, ${dejaEnvoyes.size} ancre(s) déjà annoncée(s) ; ${nouveaux.length} sortie(s) reprises dans le récapitulatif`);
+}
 const ecartes  = inconnus.filter(a => !nouveaux.includes(a));
 for (const a of nouveaux) {
   const p = dateParution(a);

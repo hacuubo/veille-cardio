@@ -218,7 +218,13 @@
     "communitycprandemsinterventionprogramdidnotincreasesurvivalaftercardiacarrestracecars",
     "cangrelorversuscrushedticagrelorinacutemyocardialinfarctioncomplicatedbycardiogenicshockdaptshockamiarandomiseddoubleblindtrial",
     "discontinuingstatinsinolderadultswithoutcardiovasculardisease",
-    "statinezetimibecombinationtherapyversusstatinmonotherapyinatheroscleroticcardiovasculardiseaseaprespecifiedsecondaryanalysisoftherandomizedezpavetrial"
+    "statinezetimibecombinationtherapyversusstatinmonotherapyinatheroscleroticcardiovasculardiseaseaprespecifiedsecondaryanalysisoftherandomizedezpavetrial",
+    "lowvoltageareaablationforpersistentatrialfibrillationthecoastafrandomizedclinicaltrial",
+    "prehospitalextracorporeallifesupportinrefractoryoutofhospitalcardiacarrest",
+    "communityandemsinterventionstoimprovesurvivalincardiacarrest",
+    "cardiovascularoutcomeswithsurvodutideinadultswithobesityatincreasedcardiovascularrisksynchronizecvotadoubleblindrandomisedplacebocontrolledphase3trial",
+    "orforglipronforobstructivesleepapnearesultsfrom2randomizedclinicaltrialsattainosa",
+    "intensivebloodpressureloweringinpatientswithtype2diabetes"
   ],
   "bulletins": [
     {
@@ -316,15 +322,41 @@
       "fichier": "bulletin-2026-11-09.pdf",
       "nb": 6,
       "crit": 1
+    },
+    {
+      "date": "2026-11-11",
+      "fichier": "bulletin-2026-11-11.pdf",
+      "nb": 26,
+      "crit": 4
     }
   ],
-  "derniere_execution": "2026-11-09",
+  "derniere_execution": "2026-11-11",
   "dernier_lot": [
+    "lowvoltageareaablationforpersistentatrialfibrillationthecoastafrandomizedclinicaltrial",
     "leftbundlebranchpacingversusrightventricularpacingforatrioventricularblock",
+    "antithrombotictherapyafterleftatrialappendageocclusionthesimplaafyrandomizedclinicaltrial",
+    "arandomizedcomparisonofcomprehensiveweightlossinterventionvsusualcareonrecurrencesofatrialfibrillationinobesepatientsaftercatheterablationhobitaftrial",
     "longtermsurvivalafterinitialinvasiveorconservativemanagementofstablecoronarydiseaseinischemiaextend",
-    "communitycprandemsinterventionprogramdidnotincreasesurvivalaftercardiacarrestracecars",
+    "percutaneouscoronaryinterventionandlongtermoutcomesinstablecoronaryarterydiseaseextendedfollowupofthecouragerandomizedtrial",
+    "transcatheteraorticvalveimplantationvssurgicalreplacementinlowriskaorticstenosistimedependentlatemortalityinapooledanalysisoftrials",
+    "efficacyandsafetyofroutinepostdilationinballoonexpandabletranscatheteraorticvalveimplantationplatformtheduotaprandomizedclinicaltrial",
+    "singlevsdoubleproglidedevicesforaccesssiteclosureaftertransfemoralaorticvalvereplacementthesingleclosuretrial",
+    "percutaneoustranscathetermitralvalvereplacementforsymptomaticmitralregurgitation2yearoutcomesfromtheencircletrial",
+    "tavrinpatientswithmoderateaorticstenosiswithatriskfeatures",
+    "coronaryctangiographyversusintravascularultrasoundguidanceforpci",
+    "transcatheteraorticvalvereplacementinpureaorticregurgitationtherandomizedseasonarclinicaltrial",
+    "hydralazineisosorbidedinitrateinchronicheartfailurewithreducedejectionfractionthehhefttrial",
+    "prehospitalextracorporeallifesupportinrefractoryoutofhospitalcardiacarrest",
+    "communityandemsinterventionstoimprovesurvivalincardiacarrest",
     "cangrelorversuscrushedticagrelorinacutemyocardialinfarctioncomplicatedbycardiogenicshockdaptshockamiarandomiseddoubleblindtrial",
+    "longtermimpactofvutrisiraninpatientswithttramyloidosiswithcardiomyopathy1yearefficacyandsafetyoutcomesfromtheheliosbopenlabelextension",
+    "cardiovascularoutcomeswithsurvodutideinadultswithobesityatincreasedcardiovascularrisksynchronizecvotadoubleblindrandomisedplacebocontrolledphase3trial",
+    "orforglipronforobstructivesleepapnearesultsfrom2randomizedclinicaltrialsattainosa",
     "discontinuingstatinsinolderadultswithoutcardiovasculardisease",
-    "statinezetimibecombinationtherapyversusstatinmonotherapyinatheroscleroticcardiovasculardiseaseaprespecifiedsecondaryanalysisoftherandomizedezpavetrial"
+    "statinezetimibecombinationtherapyversusstatinmonotherapyinatheroscleroticcardiovasculardiseaseaprespecifiedsecondaryanalysisoftherandomizedezpavetrial",
+    "intensivebloodpressureloweringinpatientswithtype2diabetes",
+    "intensivebloodpressurecontrolinpatientswithpreviousischemicstroke",
+    "pelacarsenandcardiovascularoutcomesinpatientswithhighlipoproteina",
+    "interleukin6inhibitionwithziltivekimabforatheroscleroticdisease"
   ]
 }

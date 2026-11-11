@@ -20,6 +20,12 @@
   </url>
   <!--FICHES:DEBUT-->
   <url>
+    <loc>https://pausecardio.fr/fiche/low-voltage-area-ablation-for-persistent-atrial-fibrillation-the/</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/left-bundle-branch-pacing-versus-right-ventricular-pacing-for-at/</loc>
     <lastmod>2026-11-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -695,7 +701,13 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://pausecardio.fr/fiche/community-cpr-and-ems-intervention-program-did-not-increase-surv/</loc>
+    <loc>https://pausecardio.fr/fiche/prehospital-extracorporeal-life-support-in-refractory-out-of-hos/</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/community-and-ems-interventions-to-improve-survival-in-cardiac-a/</loc>
     <lastmod>2026-11-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -877,6 +889,18 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://pausecardio.fr/fiche/cardiovascular-outcomes-with-survodutide-in-adults-with-obesity/</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/orforglipron-for-obstructive-sleep-apnea-results-from-2-randomiz/</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/discontinuing-statins-in-older-adults-without-cardiovascular-dis/</loc>
     <lastmod>2026-11-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -889,7 +913,7 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://pausecardio.fr/fiche/intensive-blood-pressure-therapy-did-not-cut-cardiovascular-even/</loc>
+    <loc>https://pausecardio.fr/fiche/intensive-blood-pressure-lowering-in-patients-with-type-2-diabet/</loc>
     <lastmod>2026-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

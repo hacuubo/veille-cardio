@@ -224,7 +224,11 @@
     "communityandemsinterventionstoimprovesurvivalincardiacarrest",
     "cardiovascularoutcomeswithsurvodutideinadultswithobesityatincreasedcardiovascularrisksynchronizecvotadoubleblindrandomisedplacebocontrolledphase3trial",
     "orforglipronforobstructivesleepapnearesultsfrom2randomizedclinicaltrialsattainosa",
-    "intensivebloodpressureloweringinpatientswithtype2diabetes"
+    "intensivebloodpressureloweringinpatientswithtype2diabetes",
+    "leftatrialappendageclosureinpatientsconsideredunsuitablefororalanticoagulationrandomizedoutcomesthrough5yearsinasaptoo",
+    "leftatrialappendageclosureinatrialfibrillationpatientswithhighriskofstrokeandbleedinganindividualparticipantdatametaanalysisofrandomizedtrials",
+    "effectofintensivebloodpressurecontroloncognitiveoutcomesandbrainstructuresinadultswithtype2diabetesprespecifiedanalysisofsecondaryoutcomesofbproadrandomisedcontrolledtrial",
+    "effectofdiscontinuingantihypertensivesonperioperativehypotensioninolderpatientsbeforenoncardiacsurgerymulticentrerandomiseddoubleblindcontrolledtrial"
   ],
   "bulletins": [
     {
@@ -328,35 +332,17 @@
       "fichier": "bulletin-2026-11-11.pdf",
       "nb": 26,
       "crit": 4
+    },
+    {
+      "date": "2026-11-14",
+      "fichier": "bulletin-2026-11-14.pdf",
+      "nb": 2,
+      "crit": 0
     }
   ],
-  "derniere_execution": "2026-11-11",
+  "derniere_execution": "2026-11-14",
   "dernier_lot": [
-    "lowvoltageareaablationforpersistentatrialfibrillationthecoastafrandomizedclinicaltrial",
-    "leftbundlebranchpacingversusrightventricularpacingforatrioventricularblock",
-    "antithrombotictherapyafterleftatrialappendageocclusionthesimplaafyrandomizedclinicaltrial",
-    "arandomizedcomparisonofcomprehensiveweightlossinterventionvsusualcareonrecurrencesofatrialfibrillationinobesepatientsaftercatheterablationhobitaftrial",
-    "longtermsurvivalafterinitialinvasiveorconservativemanagementofstablecoronarydiseaseinischemiaextend",
-    "percutaneouscoronaryinterventionandlongtermoutcomesinstablecoronaryarterydiseaseextendedfollowupofthecouragerandomizedtrial",
-    "transcatheteraorticvalveimplantationvssurgicalreplacementinlowriskaorticstenosistimedependentlatemortalityinapooledanalysisoftrials",
-    "efficacyandsafetyofroutinepostdilationinballoonexpandabletranscatheteraorticvalveimplantationplatformtheduotaprandomizedclinicaltrial",
-    "singlevsdoubleproglidedevicesforaccesssiteclosureaftertransfemoralaorticvalvereplacementthesingleclosuretrial",
-    "percutaneoustranscathetermitralvalvereplacementforsymptomaticmitralregurgitation2yearoutcomesfromtheencircletrial",
-    "tavrinpatientswithmoderateaorticstenosiswithatriskfeatures",
-    "coronaryctangiographyversusintravascularultrasoundguidanceforpci",
-    "transcatheteraorticvalvereplacementinpureaorticregurgitationtherandomizedseasonarclinicaltrial",
-    "hydralazineisosorbidedinitrateinchronicheartfailurewithreducedejectionfractionthehhefttrial",
-    "prehospitalextracorporeallifesupportinrefractoryoutofhospitalcardiacarrest",
-    "communityandemsinterventionstoimprovesurvivalincardiacarrest",
-    "cangrelorversuscrushedticagrelorinacutemyocardialinfarctioncomplicatedbycardiogenicshockdaptshockamiarandomiseddoubleblindtrial",
-    "longtermimpactofvutrisiraninpatientswithttramyloidosiswithcardiomyopathy1yearefficacyandsafetyoutcomesfromtheheliosbopenlabelextension",
-    "cardiovascularoutcomeswithsurvodutideinadultswithobesityatincreasedcardiovascularrisksynchronizecvotadoubleblindrandomisedplacebocontrolledphase3trial",
-    "orforglipronforobstructivesleepapnearesultsfrom2randomizedclinicaltrialsattainosa",
-    "discontinuingstatinsinolderadultswithoutcardiovasculardisease",
-    "statinezetimibecombinationtherapyversusstatinmonotherapyinatheroscleroticcardiovasculardiseaseaprespecifiedsecondaryanalysisoftherandomizedezpavetrial",
-    "intensivebloodpressureloweringinpatientswithtype2diabetes",
-    "intensivebloodpressurecontrolinpatientswithpreviousischemicstroke",
-    "pelacarsenandcardiovascularoutcomesinpatientswithhighlipoproteina",
-    "interleukin6inhibitionwithziltivekimabforatheroscleroticdisease"
+    "effectofintensivebloodpressurecontroloncognitiveoutcomesandbrainstructuresinadultswithtype2diabetesprespecifiedanalysisofsecondaryoutcomesofbproadrandomisedcontrolledtrial",
+    "effectofdiscontinuingantihypertensivesonperioperativehypotensioninolderpatientsbeforenoncardiacsurgerymulticentrerandomiseddoubleblindcontrolledtrial"
   ]
 }

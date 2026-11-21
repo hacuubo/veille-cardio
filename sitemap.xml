@@ -242,6 +242,12 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://pausecardio.fr/fiche/intravascular-lithotripsy-vs-super-high-pressure-noncompliant-ba/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/long-term-survival-after-initial-invasive-or-conservative-manage/</loc>
     <lastmod>2026-11-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -278,8 +284,20 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://pausecardio.fr/fiche/10-year-outcomes-of-initial-cto-pci-vs-no-cto-pci-strategies-for/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://pausecardio.fr/fiche/tavr-in-patients-with-moderate-aortic-stenosis-with-at-risk-feat/</loc>
     <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/angiography-derived-vs-wire-based-fractional-flow-reserve-to-gui/</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -322,6 +340,12 @@
   <url>
     <loc>https://pausecardio.fr/fiche/multidisciplinary-approach-to-antiplatelet-management-in-coronar/</loc>
     <lastmod>2026-10-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/stent-retriever-thrombectomy-in-patients-with-myocardial-infarct/</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -897,6 +921,12 @@
   </url>
   <url>
     <loc>https://pausecardio.fr/fiche/vutrisiran-in-patients-with-transthyretin-amyloidosis-with-cardi/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pausecardio.fr/fiche/lipid-lowering-strategies-in-the-era-of-early-atherosclerosis-de/</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

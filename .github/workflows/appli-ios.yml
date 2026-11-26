@@ -1,0 +1,127 @@
+# Application iPhone Pause Cardio — bêta TestFlight
+#
+# Fabrique l'application sur un Mac de GitHub (gratuit pour un dépôt public) et l'envoie
+# sur TestFlight, à partir du dossier appli/ de la branche appli-beta.
+#
+# Garde-fous :
+#  - ne tourne QUE sur la branche appli-beta : rien ne part depuis main ;
+#  - ne touche ni au site, ni au bulletin, ni à la routine, et n'envoie aucun courriel ;
+#  - sans les quatre secrets Apple, il s'arrête proprement sans rien fabriquer.
+#
+# Secrets à poser une fois (Settings → Secrets and variables → Actions) :
+#  APPLE_TEAM_ID        identifiant d'équipe Apple (10 caractères, page Membership)
+#  APPSTORE_ISSUER_ID   « Issuer ID » de la page App Store Connect → Intégrations → API
+#  APPSTORE_KEY_ID      « Key ID » de la clé API créée sur cette même page (rôle Admin)
+#  APPSTORE_KEY_P8      contenu complet du fichier AuthKey_XXXX.p8 téléchargé à la création
+name: Appli iPhone (bêta TestFlight)
+
+on:
+  push:
+    branches: [appli-beta]
+    paths:
+      - 'appli/**'
+      - '.github/workflows/appli-ios.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: appli-ios
+  cancel-in-progress: true
+
+jobs:
+  testflight:
+    runs-on: macos-26
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: appli
+    env:
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+      APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+      APPSTORE_KEY_P8: ${{ secrets.APPSTORE_KEY_P8 }}
+    steps:
+      - name: Secrets Apple présents ?
+        id: cles
+        working-directory: .
+        run: |
+          if [ -z "$APPLE_TEAM_ID" ] || [ -z "$APPSTORE_ISSUER_ID" ] || [ -z "$APPSTORE_KEY_ID" ] || [ -z "$APPSTORE_KEY_P8" ]; then
+            echo "::notice::Secrets Apple absents : fabrication ignorée (rien n'est envoyé)."
+            echo "pret=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "pret=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.cles.outputs.pret == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.cles.outputs.pret == 'true'
+        with:
+          node-version: 22
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        if: steps.cles.outputs.pret == 'true'
+        with:
+          xcode-version: latest-stable
+
+      - name: Préparer le projet
+        if: steps.cles.outputs.pret == 'true'
+        run: |
+          npm ci
+          npx cap sync ios
+          xcodebuild -version
+
+      - name: Clé App Store Connect
+        if: steps.cles.outputs.pret == 'true'
+        run: |
+          printf '%s\n' "$APPSTORE_KEY_P8" > "$RUNNER_TEMP/AuthKey.p8"
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>${APPLE_TEAM_ID}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Fabriquer l'application
+        if: steps.cles.outputs.pret == 'true'
+        run: |
+          xcodebuild archive \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/PauseCardio.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
+            -authenticationKeyID "$APPSTORE_KEY_ID" \
+            -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}"
+
+      - name: Envoyer sur TestFlight
+        if: steps.cles.outputs.pret == 'true'
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/PauseCardio.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
+            -authenticationKeyID "$APPSTORE_KEY_ID" \
+            -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID"
+          echo "::notice::Version 0.1.0 (${{ github.run_number }}) envoyée : elle apparaît dans TestFlight après le traitement d'Apple (10 à 30 minutes)."
+
+      - name: Effacer la clé
+        if: always()
+        working-directory: .
+        run: rm -f "$RUNNER_TEMP/AuthKey.p8"

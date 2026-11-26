@@ -1,0 +1,12 @@
+{
+  "appId": "fr.pausecardio.app",
+  "appName": "Pause Cardio",
+  "webDir": "www",
+  "server": {
+    "url": "https://pausecardio.fr/",
+    "errorPath": "hors-ligne.html"
+  },
+  "ios": {
+    "contentInset": "never"
+  }
+}

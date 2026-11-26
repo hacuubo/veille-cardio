@@ -1,0 +1,16 @@
+{
+  "name": "pause-cardio-appli",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Coquille iPhone de Pause Cardio (bêta TestFlight) — affiche https://pausecardio.fr sans modifier le site",
+  "scripts": {
+    "sync": "cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.6.3",
+    "@capacitor/ios": "^8.6.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.3"
+  }
+}

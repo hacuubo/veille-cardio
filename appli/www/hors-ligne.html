@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pause Cardio — pas de connexion</title>
+<style>
+  :root { --page: #f9f9f7; --texte: #141412; --doux: #5f5e58; --marque: #d03b3b; }
+  @media (prefers-color-scheme: dark) { :root { --page: #0d0d0d; --texte: #f2f1ea; --doux: #a3a29b; --marque: #e2564f; } }
+  html, body { margin: 0; height: 100%; background: var(--page); color: var(--texte);
+    font: 17px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  main { min-height: 100%; display: grid; place-content: center; gap: 14px; text-align: center;
+    padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px); box-sizing: border-box; }
+  h1 { margin: 0; font-size: 22px; letter-spacing: .08em; }
+  p { margin: 0; color: var(--doux); max-width: 30ch; }
+  button { justify-self: center; margin-top: 8px; padding: 12px 22px; border: 0; border-radius: 999px;
+    background: var(--marque); color: #fff; font: inherit; font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>PAUSE CARDIO</h1>
+  <p>Pas de connexion pour le moment. Les fiches reviendront dès que le téléphone retrouvera le réseau.</p>
+  <button type="button" onclick="location.href='https://pausecardio.fr/'">Réessayer</button>
+</main>
+</body>
+</html>

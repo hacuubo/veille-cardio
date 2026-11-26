@@ -112,9 +112,9 @@ jobs:
           EOF
           done
 
-      # L'archive reçoit une signature locale (« - ») : une signature « développeur » exigerait un
-      # iPhone enregistré, et sans aucune signature le droit aux notifications serait perdu.
-      # C'est l'export qui signe pour la distribution (TestFlight) avec la clé App Store Connect.
+      # L'archive est fabriquée sans signature : une signature « développeur » exigerait un
+      # iPhone enregistré. C'est l'étape suivante qui signe pour la distribution (TestFlight),
+      # avec la clé App Store Connect, et envoie le tout chez Apple.
       - name: Fabriquer l'application
         if: steps.cles.outputs.pret == 'true'
         run: |
@@ -125,10 +125,7 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/PauseCardio.xcarchive" \
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY=- \
-            PROVISIONING_PROFILE_SPECIFIER= \
-            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}"
 
       # Contrôle : l'application signée doit porter le droit aux notifications (aps-environment).

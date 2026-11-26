@@ -9,12 +9,12 @@
  * Ce qu'il ajoute, tout sous la classe « pc-appli » posée sur <html> :
  *  - les marges de l'encoche et de la barre d'accueil (hauteur fournie par iOS) ;
  *  - une barre d'onglets en bas : Accueil, Favoris, Lus, Rechercher, Réglages ;
- *  - les surspécialités suivies (étoile dans la tête de chaque surspécialité), rangées en tête ;
- *  - une feuille « Réglages » : notifications du samedi, surspécialités suivies, à propos ;
+ *  - les surspécialités favorites (punaise dans la tête de chaque surspécialité), épinglées en tête ;
+ *  - une feuille « Réglages » : notifications du samedi, surspécialités favorites, à propos ;
  *  - les notifications (module Firebase), actives seulement quand la version les embarque.
  *
  * Mémoire propre à l'appli (sur le téléphone, jamais envoyée) :
- *  pc-appli-suivies  liste des surspécialités suivies (codes data-spec)
+ *  pc-appli-suivies  liste des surspécialités favorites (codes data-spec)
  *  pc-appli-notif    « oui » si le lecteur a demandé les notifications
  */
 (function () {
@@ -60,10 +60,10 @@
 
     /* étoile « suivre » dans la tête de surspécialité */
     '.pc-suivre { flex: none; width: 36px; height: 36px; margin: -6px -4px -6px 2px; border: 0; background: none;',
-    '  color: var(--text-muted, #8a897f); font-size: 19px; line-height: 36px; text-align: center; padding: 0; }',
+    '  color: var(--text-muted, #8a897f); padding: 0; display: flex; align-items: center; justify-content: center; }',
+    '.pc-suivre svg { width: 19px; height: 19px; }',
+    '.pc-suivre[aria-pressed="true"] svg { fill: currentColor; }',
     '.pc-suivre[aria-pressed="true"] { color: var(--brand, #d03b3b); }',
-    'section.spec.pc-suivie .spec-h h2::after { content: " · suivie"; font-size: 11.5px; font-weight: 600;',
-    '  color: var(--brand, #d03b3b); letter-spacing: .02em; }',
 
     /* feuille Réglages */
     '.pc-reglages { position: fixed; inset: 0; z-index: 190; background: rgba(0,0,0,.32); display: flex; align-items: flex-end;',
@@ -166,7 +166,11 @@
     window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
   }
 
-  // ---------- surspécialités suivies ----------
+  // ---------- surspécialités favorites (épinglées en tête) ----------
+  // une punaise, pour ne pas confondre avec l'étoile « favori » des articles
+  var EPINGLE = '<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" '
+    + 'stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">'
+    + '<path d="M9 3.5h6l-1 6.2 3.6 3.6v1.2H6.4v-1.2L10 9.7z"/><path d="M12 14.5v6"/></svg>';
   var suivies = new Set(lireListe('pc-appli-suivies'));
 
   function sections() { return Array.prototype.slice.call(document.querySelectorAll('section.spec')); }
@@ -196,8 +200,8 @@
       var b = sec.querySelector('.pc-suivre');
       if (b) {
         b.setAttribute('aria-pressed', oui ? 'true' : 'false');
-        b.textContent = oui ? '★' : '☆';
-        b.setAttribute('aria-label', (oui ? 'Ne plus suivre ' : 'Suivre ') + nomSpec(sec));
+        if (!b.firstChild) b.innerHTML = EPINGLE;
+        b.setAttribute('aria-label', (oui ? 'Retirer des favorites : ' : 'Épingler en tête : ') + nomSpec(sec));
       }
     });
     document.querySelectorAll('.pc-reglages input[data-spec]').forEach(function (i) { i.checked = suivies.has(i.dataset.spec); });
@@ -222,7 +226,7 @@
         e.stopPropagation();   // l'étoile ne doit pas ouvrir ou fermer le tiroir
         var oui = !suivies.has(sec.dataset.spec);
         basculerSuivie(sec.dataset.spec, oui);
-        annoncer(oui ? nomSpec(sec) + ' : suivie, en tête de liste' : nomSpec(sec) + ' : n’est plus suivie');
+        annoncer(oui ? nomSpec(sec) + ' : épinglée en tête de liste' : nomSpec(sec) + ' : retirée des favorites');
       });
       var chev = tete.querySelector('.spec-chev');
       tete.insertBefore(b, chev || null);
@@ -307,8 +311,8 @@
       + '<label class="pc-ligne"><span class="pc-txt">Nouvelles sorties<small>Une notification le samedi matin, quand paraissent les sorties de la semaine.</small></span>'
       + '<span class="pc-inter"><input type="checkbox" role="switch" class="pc-notif"><span></span></span></label>'
       + '</div><p class="pc-etat pc-notif-etat"></p></div>'
-      + '<div class="pc-bloc"><h3>Surspécialités suivies</h3><div class="pc-carte">' + lignesSpecs + '</div>'
-      + '<p class="pc-note">Les surspécialités suivies s’affichent en tête de liste. On peut aussi les suivre en touchant l’étoile ☆ à droite de leur titre.</p></div>'
+      + '<div class="pc-bloc"><h3>Surspécialités favorites</h3><div class="pc-carte">' + lignesSpecs + '</div>'
+      + '<p class="pc-note">Les surspécialités favorites s’affichent en tête de liste. On peut aussi les épingler en touchant la punaise à droite de leur titre.</p></div>'
       + '<div class="pc-bloc"><h3>À propos</h3><div class="pc-carte">'
       + '<div class="pc-ligne"><a href="https://pausecardio.fr/methode/">Comment Pause Cardio est fabriqué</a><span aria-hidden="true">›</span></div>'
       + '<div class="pc-ligne"><span class="pc-txt">Version bêta<small>Fiches rédigées à l’aide de l’IA — résumés à valider par le lecteur avant toute application clinique.</small></span></div>'

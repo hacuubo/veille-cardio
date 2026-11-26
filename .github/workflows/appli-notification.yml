@@ -1,0 +1,32 @@
+# Application iPhone Pause Cardio — notification d'essai (bêta)
+#
+# Envoie la notification « nouvelles sorties », préfixée « [Test] », aux téléphones qui l'ont
+# activée dans l'appli. Déclenché UNIQUEMENT par une modification de appli/notifications/
+# sur la branche appli-beta : rien ne part depuis main, aucun courriel n'est envoyé,
+# le site et la routine ne sont pas touchés.
+#
+# Secret : FIREBASE_SERVICE_ACCOUNT (JSON du compte de service Firebase). Sans lui : ignoré.
+name: Appli iPhone (notification d'essai)
+
+on:
+  push:
+    branches: [appli-beta]
+    paths:
+      - 'appli/notifications/**'
+
+permissions:
+  contents: read
+
+jobs:
+  envoyer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Envoyer la notification d'essai
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node appli/outils/notifier.mjs --test --forcer

@@ -13,6 +13,9 @@
 #  APPSTORE_ISSUER_ID   « Issuer ID » de la page App Store Connect → Intégrations → API
 #  APPSTORE_KEY_ID      « Key ID » de la clé API créée sur cette même page (rôle Admin)
 #  APPSTORE_KEY_P8      contenu complet du fichier AuthKey_XXXX.p8 téléchargé à la création
+# Facultatif (notifications) :
+#  FIREBASE_IOS_PLIST   contenu du fichier GoogleService-Info.plist du projet Firebase ;
+#                       sans lui, l'appli est fabriquée avec les notifications en sommeil
 name: Appli iPhone (bêta TestFlight)
 
 on:
@@ -41,6 +44,7 @@ jobs:
       APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
       APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
       APPSTORE_KEY_P8: ${{ secrets.APPSTORE_KEY_P8 }}
+      FIREBASE_IOS_PLIST: ${{ secrets.FIREBASE_IOS_PLIST }}
     steps:
       - name: Secrets Apple présents ?
         id: cles
@@ -73,23 +77,40 @@ jobs:
           npx cap sync ios
           xcodebuild -version
 
+      - name: Réglages Firebase (notifications)
+        if: steps.cles.outputs.pret == 'true' && env.FIREBASE_IOS_PLIST != ''
+        run: |
+          printf '%s\n' "$FIREBASE_IOS_PLIST" > ios/App/App/GoogleService-Info.plist
+          gem list -i xcodeproj >/dev/null || sudo gem install xcodeproj --no-document
+          ruby -e '
+            require "xcodeproj"
+            projet = Xcodeproj::Project.open("ios/App/App.xcodeproj")
+            cible = projet.targets.find { |t| t.name == "App" }
+            groupe = projet.main_group["App"]
+            fichier = groupe.files.find { |f| f.path == "GoogleService-Info.plist" } || groupe.new_file("GoogleService-Info.plist")
+            cible.resources_build_phase.add_file_reference(fichier, true)
+            projet.save'
+          echo "::notice::Notifications : réglages Firebase ajoutés à l'application."
+
       - name: Clé App Store Connect
         if: steps.cles.outputs.pret == 'true'
         run: |
           printf '%s\n' "$APPSTORE_KEY_P8" > "$RUNNER_TEMP/AuthKey.p8"
-          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          for dest in upload export; do
+          cat > "$RUNNER_TEMP/ExportOptions-$dest.plist" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
             <key>method</key><string>app-store-connect</string>
-            <key>destination</key><string>upload</string>
+            <key>destination</key><string>$dest</string>
             <key>teamID</key><string>${APPLE_TEAM_ID}</string>
             <key>signingStyle</key><string>automatic</string>
             <key>uploadSymbols</key><true/>
           </dict>
           </plist>
           EOF
+          done
 
       # L'archive est fabriquée sans signature : une signature « développeur » exigerait un
       # iPhone enregistré. C'est l'étape suivante qui signe pour la distribution (TestFlight),
@@ -107,18 +128,38 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}"
 
+      # Contrôle : l'application signée doit porter le droit aux notifications (aps-environment).
+      - name: Vérifier la signature
+        if: steps.cles.outputs.pret == 'true'
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/PauseCardio.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions-export.plist" \
+            -exportPath "$RUNNER_TEMP/ipa" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
+            -authenticationKeyID "$APPSTORE_KEY_ID" \
+            -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID"
+          cd "$RUNNER_TEMP/ipa" && unzip -q -o ./*.ipa
+          codesign -d --entitlements - --xml Payload/App.app 2>/dev/null | plutil -p - || true
+          if codesign -d --entitlements - --xml Payload/App.app 2>/dev/null | grep -q aps-environment; then
+            echo "::notice::Droit aux notifications présent dans l'application signée."
+          else
+            echo "::warning::Droit aux notifications ABSENT de l'application signée : les notifications ne pourront pas fonctionner."
+          fi
+
       - name: Envoyer sur TestFlight
         if: steps.cles.outputs.pret == 'true'
         run: |
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/PauseCardio.xcarchive" \
-            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions-upload.plist" \
             -exportPath "$RUNNER_TEMP/export" \
             -allowProvisioningUpdates \
             -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
             -authenticationKeyID "$APPSTORE_KEY_ID" \
             -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID"
-          echo "::notice::Version 0.1.0 (${{ github.run_number }}) envoyée : elle apparaît dans TestFlight après le traitement d'Apple (10 à 30 minutes)."
+          echo "::notice::Build ${{ github.run_number }} envoyé : elle apparaît dans TestFlight après le traitement d'Apple (10 à 30 minutes)."
 
       - name: Effacer la clé
         if: always()

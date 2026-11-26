@@ -34,6 +34,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    // Notifications : iOS remet ici l'adresse de l'appareil ; on la transmet au module
+    // Firebase (notifications du samedi), qui s'occupe du reste.
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+    }
+
     func application(_ application: UIApplication,
                      configurationForConnecting connectingSceneSession: UISceneSession,
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
@@ -46,16 +56,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 // MARK: - Écran principal de Pause Cardio
 //
-// Remplace l'écran Capacitor par défaut (voir Main.storyboard) pour deux choses seulement :
+// Remplace l'écran Capacitor par défaut (voir Main.storyboard) pour :
 //  1. glisser dans la page les réglages propres à l'appli (public/appli.js) — le site
 //     pausecardio.fr lui-même n'est pas modifié ;
-//  2. permettre de tirer la page vers le bas pour la recharger.
+//  2. donner à la page la hauteur exacte de la zone de l'heure et de la batterie ;
+//  3. permettre de tirer la page vers le bas pour la recharger ;
+//  4. dire à la page si les notifications sont configurées dans cette version.
 
 class PauseCardioViewController: CAPBridgeViewController {
+
+    private var scriptAppli: String?
+    private var hautConnu: Int = 0
+    private var observationChargement: NSKeyValueObservation?
 
     override func capacitorDidLoad() {
         super.capacitorDidLoad()
         guard let webView = bridge?.webView else { return }
+
+        // Capacitor bloque le rebond de la page : sans rebond, on ne peut pas tirer pour recharger
+        webView.scrollView.bounces = true
+        webView.scrollView.alwaysBounceVertical = true
+
+        let controleur = webView.configuration.userContentController
+        let pushConfigure = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil
+        controleur.addUserScript(WKUserScript(source: "window.__pcPushConfig = \(pushConfigure ? "true" : "false");",
+                                              injectionTime: .atDocumentStart, forMainFrameOnly: true))
 
         // même fond que le site (clair ou sombre selon le réglage du téléphone), pour éviter un éclair blanc
         let fond = UIColor { traits in
@@ -70,13 +95,52 @@ class PauseCardioViewController: CAPBridgeViewController {
 
         if let url = Bundle.main.url(forResource: "appli", withExtension: "js", subdirectory: "public"),
            let source = try? String(contentsOf: url, encoding: .utf8) {
-            let script = WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: true)
-            webView.configuration.userContentController.addUserScript(script)
+            scriptAppli = source
+            controleur.addUserScript(WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: true))
         }
 
         let tirer = UIRefreshControl()
         tirer.addTarget(self, action: #selector(recharger(_:)), for: .valueChanged)
         webView.scrollView.refreshControl = tirer
+
+        // Filet de sécurité : à la fin de chaque chargement, on redonne la hauteur de l'encoche
+        // et on glisse les réglages s'ils manquent (appli.js ne s'applique qu'une fois).
+        observationChargement = webView.observe(\.isLoading, options: [.new]) { [weak self] vue, _ in
+            guard let self = self, !vue.isLoading else { return }
+            self.appliquerHaut()
+            if let source = self.scriptAppli { vue.evaluateJavaScript(source, completionHandler: nil) }
+        }
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        appliquerHaut()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        appliquerHaut()
+    }
+
+    // Hauteur de la zone de l'heure et de la batterie, mesurée par iOS (59 points sur un
+    // iPhone récent), transmise à la page dans la variable CSS --pc-haut-natif.
+    private func appliquerHaut() {
+        guard let webView = bridge?.webView else { return }
+        var haut = view.safeAreaInsets.top
+        if haut <= 0, let barre = view.window?.windowScene?.statusBarManager?.statusBarFrame.height {
+            haut = barre
+        }
+        let points = Int(haut.rounded())
+        let bas = Int(view.safeAreaInsets.bottom.rounded())
+        guard points > 0 else { return }
+        let js = "(function(){window.__pcHautNatif=\(points);window.__pcBasNatif=\(bas);var r=document.documentElement;"
+            + "if(r){r.style.setProperty('--pc-haut-natif','\(points)px');r.style.setProperty('--pc-bas-natif','\(bas)px');}})();"
+        webView.evaluateJavaScript(js, completionHandler: nil)
+        if points != hautConnu {
+            hautConnu = points
+            webView.configuration.userContentController.addUserScript(
+                WKUserScript(source: js, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+        }
     }
 
     @objc private func recharger(_ sender: UIRefreshControl) {

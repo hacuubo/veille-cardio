@@ -1,0 +1,5 @@
+Modifier ce fichier sur la branche appli-beta envoie une notification d'essai
+(« [Test] … ») aux téléphones qui ont activé les notifications dans l'appli.
+Voir .github/workflows/appli-notification.yml.
+
+Dernière demande : 2026-11-26 (mise en place, secret Firebase pas encore posé)

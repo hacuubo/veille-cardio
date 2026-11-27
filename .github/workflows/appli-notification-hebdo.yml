@@ -1,0 +1,51 @@
+# Application iPhone Pause Cardio — notification du samedi (et du récapitulatif de congrès)
+#
+# Chaque matin, deux passages (05:05 et 06:05 UTC) : l'un tombe à 7 h à Paris, l'hiver comme
+# l'été ; le script ignore l'autre. À 7 h, si un courriel est parti aujourd'hui (liste
+# https://pausecardio.fr/bulletin/semaine.json datée du jour) et que ce n'est pas une semaine
+# calme, il envoie la notification « N nouvelles sorties cette semaine » aux téléphones qui
+# l'ont activée dans l'appli (sujet Firebase « hebdo »). Sinon il ne fait rien.
+#
+# Ce fichier est le SEUL élément de l'appli sur main (GitHub n'exécute les tâches programmées
+# que depuis la branche principale). Il ne touche ni au site, ni à la routine, ni au courriel :
+# il lit la page publique semaine.json et va chercher le script d'envoi sur la branche
+# appli-beta (appli/outils/notifier.mjs). Ajouté le 27/11/2026 avec l'accord de Robin.
+#
+# Secret : FIREBASE_SERVICE_ACCOUNT (JSON du compte de service Firebase). Sans lui : ignoré.
+name: Appli iPhone (notification du samedi)
+
+on:
+  schedule:
+    - cron: '5 5 * * *'
+    - cron: '5 6 * * *'
+  workflow_dispatch:
+    inputs:
+      essai:
+        description: "Essai à blanc (true = afficher le message sans rien envoyer)"
+        required: false
+        default: 'true'
+
+permissions:
+  contents: read
+
+jobs:
+  envoyer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: appli-beta
+          sparse-checkout: appli/outils
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Notification des nouvelles sorties
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.essai }}" != "false" ]; then
+            node appli/outils/notifier.mjs --essai
+          else
+            node appli/outils/notifier.mjs --auto
+          fi

@@ -13,6 +13,12 @@
 //   node appli/outils/notifier.mjs --test     envoi réel, titre préfixé « [Test] »
 //   --sujet=hebdo                             sujet visé (par défaut « hebdo »)
 //   --forcer                                  envoie même une semaine calme
+//   --auto                                    mode de la tâche programmée (voir plus bas)
+//
+// Mode --auto (tâche « Appli iPhone (notification du samedi) », lancée à 05:05 et 06:05 UTC) :
+// n'envoie que si (1) il est 7 h à Paris — l'un des deux passages tombe à 7 h l'hiver comme
+// l'été, l'autre est ignoré, ce qui évite tout doublon — et (2) le dernier courriel est parti
+// aujourd'hui (semaine.json daté du jour). Les semaines calmes n'envoient rien.
 //
 // Secret : FIREBASE_SERVICE_ACCOUNT = contenu du fichier JSON du compte de service Firebase.
 // Sans lui, le script s'arrête proprement (« envoi ignoré »).
@@ -23,6 +29,15 @@ const args = process.argv.slice(2);
 const essai = args.includes('--essai');
 const test = args.includes('--test');
 const forcer = args.includes('--forcer');
+const auto = args.includes('--auto');
+
+// date et heure de Paris, quel que soit le fuseau de la machine
+function maintenantParis() {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('fr-FR', {
+    timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23',
+  }).formatToParts(new Date()).map(x => [x.type, x.value]));
+  return { jour: `${p.year}-${p.month}-${p.day}`, heure: Number(p.hour) };
+}
 const sujet = (args.find(a => a.startsWith('--sujet=')) || '--sujet=hebdo').slice(8);
 const SITE = 'https://pausecardio.fr/';
 
@@ -86,7 +101,17 @@ async function jeton(compte) {
 }
 
 async function principal() {
+  if (auto) {
+    const ici = maintenantParis();
+    console.log('PARIS    ' + ici.jour + ' ' + ici.heure + ' h');
+    if (ici.heure !== 7) { console.log('ATTENTE  pas 7 h à Paris : rien à faire à ce passage'); return; }
+    var aujourdhui = ici.jour;
+  }
   const semaine = await lireSemaine();
+  if (auto && semaine.date !== aujourdhui) {
+    console.log('RIEN     dernier courriel du ' + semaine.date + ', pas d’aujourd’hui : pas de notification');
+    return;
+  }
   const m = composer(semaine);
   console.log('SUJET    ' + sujet);
   console.log('TITRE    ' + m.titre);

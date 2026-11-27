@@ -23,6 +23,8 @@ on:
     branches: [appli-beta]
     paths:
       - 'appli/**'
+      - '!appli/notifications/**'
+      - '!appli/outils/**'
       - '.github/workflows/appli-ios.yml'
 
 permissions:

@@ -199,12 +199,14 @@
 
   /* ---------- barre de recherche ---------- */
   .searchbar { position: relative; margin: 18px 0 4px; }
-  .searchbar input { width: 100%; font: inherit; font-size: 14.5px; padding: 11px 84px 11px 40px; border-radius: 12px; border: 1px solid var(--baseline); background: var(--surface-1); color: var(--text-primary); outline: none; }
+  /* 16 px minimum : en dessous, Safari sur iPhone zoome la page quand on touche le champ, et le zoom reste (page qui glisse de côté) */
+  .searchbar input { width: 100%; font: inherit; font-size: 16px; padding: 11px 14px 11px 40px; border-radius: 12px; border: 1px solid var(--baseline); background: var(--surface-1); color: var(--text-primary); outline: none; }
   .searchbar input:focus { border-color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--text-primary); }
   .searchbar input::placeholder { color: var(--text-muted); }
   .searchbar .icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 15px; pointer-events: none; }
   .searchbar .clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: var(--wash); color: var(--text-secondary); border-radius: 8px; padding: 4px 10px; font: inherit; font-size: 12px; cursor: pointer; display: none; }
   body.searching .searchbar .clear { display: block; }
+  body.searching .searchbar input { padding-right: 84px; }
   body:not(.searching) .spec-tag { display: none; }
   body.searching .spec-tag { display: inline-flex; }
   body.searching .spec-h, body.searching .year-h, body.searching .radar, body.searching .radar-h, body.searching .rythme { display: none !important; }
@@ -282,7 +284,7 @@
   .abo-mail {
     flex: 1 1 220px; min-width: 0; min-height: 44px; padding: 10px 13px;
     border: 1px solid var(--border); border-radius: 10px;
-    background: var(--page); color: var(--text-primary); font: inherit; font-size: 15px;
+    background: var(--page); color: var(--text-primary); font: inherit; font-size: 16px; /* 16 px : voir .searchbar input */
   }
   .abo-mail:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
   .abo-b {

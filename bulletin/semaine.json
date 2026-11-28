@@ -1,12 +1,13 @@
 {
- "date": "2026-11-21",
- "sujet": "Les sorties de la semaine du lundi 16 novembre",
+ "date": "2026-11-28",
+ "sujet": "Les sorties de la semaine du lundi 23 novembre",
  "rappel": false,
  "congres": "",
- "lundi": "2026-11-16",
- "nb": 2,
+ "lundi": "2026-11-23",
+ "nb": 3,
  "ancres": [
-  "intravascular-lithotripsy-vs-super-high-pressure-noncompliant-ba",
-  "lipid-lowering-strategies-in-the-era-of-early-atherosclerosis-de"
+  "transcatheter-edge-to-edge-repair-for-severe-isolated-tricuspid",
+  "gene-silencer-therapy-in-transthyretin-amyloid-cardiomyopathy-a",
+  "blood-pressure-lowering-treatment-across-the-cardiovascular-risk"
  ]
 }

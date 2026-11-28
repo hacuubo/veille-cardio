@@ -233,7 +233,10 @@
     "angiographyderivedvswirebasedfractionalflowreservetoguiderevascularizationtherandomizedlipsiastrategytrial",
     "stentretrieverthrombectomyinpatientswithmyocardialinfarctiontheopenlabelmulticenternaturesuperioritytrial",
     "intravascularlithotripsyvssuperhighpressurenoncompliantballoonsfortreatmentofcalcifiedcoronarylesionsthevictorytrial",
-    "lipidloweringstrategiesintheeraofearlyatherosclerosisdetection2026accscientificstatementareportoftheamericancollegeofcardiology"
+    "lipidloweringstrategiesintheeraofearlyatherosclerosisdetection2026accscientificstatementareportoftheamericancollegeofcardiology",
+    "transcatheteredgetoedgerepairforsevereisolatedtricuspidregurgitationafterextendedfollowupthetrifrrandomizedclinicaltrial",
+    "genesilencertherapyintransthyretinamyloidcardiomyopathyametaanalysisofoutcomestrials",
+    "bloodpressureloweringtreatmentacrossthecardiovascularriskspectrum"
   ],
   "bulletins": [
     {
@@ -349,11 +352,18 @@
       "fichier": "bulletin-2026-11-21.pdf",
       "nb": 2,
       "crit": 0
+    },
+    {
+      "date": "2026-11-28",
+      "fichier": "bulletin-2026-11-28.pdf",
+      "nb": 3,
+      "crit": 1
     }
   ],
-  "derniere_execution": "2026-11-21",
+  "derniere_execution": "2026-11-28",
   "dernier_lot": [
-    "intravascularlithotripsyvssuperhighpressurenoncompliantballoonsfortreatmentofcalcifiedcoronarylesionsthevictorytrial",
-    "lipidloweringstrategiesintheeraofearlyatherosclerosisdetection2026accscientificstatementareportoftheamericancollegeofcardiology"
+    "transcatheteredgetoedgerepairforsevereisolatedtricuspidregurgitationafterextendedfollowupthetrifrrandomizedclinicaltrial",
+    "genesilencertherapyintransthyretinamyloidcardiomyopathyametaanalysisofoutcomestrials",
+    "bloodpressureloweringtreatmentacrossthecardiovascularriskspectrum"
   ]
 }
